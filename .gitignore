@@ -1,0 +1,43 @@
+# ==============================
+# R / Positron project files
+# ==============================
+
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# ==============================
+# macOS system files
+# ==============================
+
+.DS_Store
+**/.DS_Store
+
+# ==============================
+# Raw data files
+# ==============================
+
+data/*.xlsx
+data/*.xls
+data/*.csv
+
+# ==============================
+# Quarto generated files
+# ==============================
+
+.quarto/
+_site/
+*_cache/
+*_files/
+
+# ==============================
+# Generated outputs
+# ==============================
+
+outputs/*.csv
+outputs/*.xlsx
+outputs/*.png
+outputs/*.jpg
+outputs/*.jpeg
+outputs/*.pdf
