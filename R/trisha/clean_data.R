@@ -180,31 +180,15 @@ ivi_anzsco4_clean |>
   ) |>
   filter(Missing > 0)
 
-# Check missing values by occupation
-ivi_anzsco4_clean |>
-  filter(is.na(Vacancies)) |>
-  count(ANZSCO_CODE, ANZSCO_TITLE, sort = TRUE)
-
-# Check missing values over time
-ivi_anzsco4_clean |>
-  group_by(Month) |>
-  summarise(
-    Missing = sum(is.na(Vacancies))
-  ) |>
-  filter(Missing > 0)
-
 # Missing values are structural and are retained as NA.
 # No imputation is performed.
 
-# Check duplicates
 ivi_anzsco4_clean |>
   count(ANZSCO_CODE, ANZSCO_TITLE, State, Month) |>
   filter(n > 1)
 
-# Check final structure
 glimpse(ivi_anzsco4_clean)
 
-# Check dimensions
 dim(ivi_anzsco4_clean)
 
 write_csv(
