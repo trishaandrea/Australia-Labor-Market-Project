@@ -704,7 +704,8 @@ latest_anzsco4_month <- max(
 top_anzsco4 <- anzsco4_analysis |>
   filter(
     State == "AUST",
-    Month == latest_anzsco4_month
+    Month == latest_anzsco4_month,
+    ANZSCO_TITLE != "Australia Total"
   ) |>
   arrange(desc(Vacancies)) |>
   slice_head(n = 20)

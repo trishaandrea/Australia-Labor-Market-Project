@@ -516,9 +516,27 @@ vacancy data is incorporated.
 The labour-demand component is being developed using Australian job
 vacancy data from Jobs and Skills Australia.
 
-The current focus is on identifying the most appropriate vacancy
-measure and checking its definitions, coverage, frequency and
-consistency before combining it with the labour-market slack data.
+The vacancy datasets have been cleaned and prepared for analysis, covering
+broad occupations, skill levels, detailed occupations, and states and
+territories.
+
+### Exploratory Data Analysis
+
+Initial EDA shows substantial changes in Australian labour demand between
+2006 and 2026. Vacancies declined sharply during the Global Financial Crisis
+and COVID-19, followed by a strong post-COVID recovery that peaked around
+2022 before declining towards 2026.
+
+Vacancy patterns also differ across occupations, skill levels, and states and
+territories. Professionals currently have the highest vacancies among broad
+occupation groups, while Skill Level 1 records the highest vacancy levels.
+At the detailed occupation level, General Clerks, Sales Assistants (General),
+and Registered Nurses have the highest three-month average vacancies in
+July 2026.
+
+The current focus is on identifying the most appropriate vacancy measure
+and checking its definitions, coverage, frequency and consistency before
+combining it with the labour-market slack data.
 
 ---
 
