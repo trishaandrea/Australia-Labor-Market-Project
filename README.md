@@ -106,6 +106,33 @@ the labour-market slack data. This includes checking the definitions,
 frequency, units, date coverage, seasonal adjustment, revisions and
 any possible changes in the series.
 
+## Labour Demand and Labour-Market Tightness
+
+### Labour Demand
+
+Labour demand is currently measured using the Jobs and Skills Australia (JSA) Internet Vacancy Index (IVI). The main measure is the seasonally adjusted Australian total IVI.
+
+Initial EDA shows substantial changes in vacancy activity over time, including declines around the Global Financial Crisis and COVID-19 periods, followed by a strong post-COVID recovery and a peak around 2022.
+
+An important limitation is that the IVI measures newly lodged online job advertisements during each month. Therefore, it is a flow measure rather than a stock of available job vacancies.
+
+### Labour-Market Tightness
+
+Following further investigation, labour-market tightness is being considered as an additional measure:
+
+**Labour-market tightness = Job Vacancies / Unemployed Persons**
+
+A higher ratio indicates a tighter labour market, with more vacancies relative to unemployed workers.
+
+For this measure, ABS Job Vacancies is currently being considered instead of IVI because ABS Job Vacancies is a stock measure. This provides a more consistent stock-to-stock comparison with unemployed persons.
+
+The current proposed measures are:
+
+- **Monthly labour demand:** JSA IVI, seasonally adjusted
+- **Labour-market tightness:** ABS Job Vacancies / ABS Unemployed Persons, seasonally adjusted
+
+The tightness measure is quarterly because ABS Job Vacancies is only available quarterly. This approach is still provisional and will be discussed with the supervisor.
+
 ---
 
 # Bringing the Two Parts Together
