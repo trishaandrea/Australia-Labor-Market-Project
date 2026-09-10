@@ -1,6 +1,6 @@
 
 # ------------------------------------------------------------
-# 1. Load packages
+# 1. LOAD PACKAGES
 # ------------------------------------------------------------
 
 library(readxl)
@@ -14,11 +14,13 @@ library(lubridate)
 
 
 # ------------------------------------------------------------
-# 2. Set data folder
+# 2. SET DATA FOLDERS
 # ------------------------------------------------------------
 
 raw_dir <- "data/raw"
+
 processed_dir <- "data/processed"
+
 
 dir.create(
   raw_dir,
@@ -26,33 +28,41 @@ dir.create(
   recursive = TRUE
 )
 
+
 dir.create(
   processed_dir,
   showWarnings = FALSE,
   recursive = TRUE
 )
 
+
 # ============================================================
-# 3. ABS WEB PAGES
+# 3. ABS LATEST RELEASE PAGE
 # ============================================================
 
 abs_latest_url <-
   "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release"
 
+
 # ============================================================
-# 4. READ ABS LABOUR FORCE PAGE
+# 4. START MESSAGE
 # ============================================================
 
 message("")
+
 message("============================================")
+
 message("ABS LABOUR FORCE DATA IMPORT")
+
 message("============================================")
+
 message("")
 
 
 message(
   "Checking ABS latest-release page..."
 )
+
 
 # ============================================================
 # 5. READ ABS LATEST RELEASE PAGE
@@ -100,6 +110,7 @@ message(
   reference_period
 )
 
+
 # ============================================================
 # 7. IDENTIFY RELEASE DATE
 # ============================================================
@@ -108,6 +119,7 @@ release_match <- str_match(
   page_text,
   "Released\\s+([0-9]{2}/[0-9]{2}/20[0-9]{2})"
 )
+
 
 if (
   !is.na(
@@ -137,37 +149,47 @@ message(
   release_date
 )
 
-# ------------------------------------------------------------
-# 8. CONVERT REFERENCE PERIOD TO VINTAGE
-# ------------------------------------------------------------
+
+# ============================================================
+# 8. CONVERT REFERENCE PERIOD TO DATE
+# ============================================================
 
 reference_date <- parse_date_time(
   reference_period,
   orders = "B Y"
 )
 
+
+# ============================================================
+# 9. CREATE DATA VINTAGE
+# ============================================================
+
 vintage <- format(
   release_date,
   "%Y-%m-%d"
 )
 
+
 message(
-  "Reference Period: ",
+  "Reference period: ",
   reference_period
 )
+
 
 message(
   "Release date: ",
   release_date
 )
 
+
 message(
   "Data vintage: ",
   vintage
 )
 
+
 # ============================================================
-# 9. FIND CURRENT ABS RELEASE FOLDER 
+# 10. FIND EXCEL DOWNLOAD LINKS
 # ============================================================
 
 excel_links <- abs_page |>
@@ -189,7 +211,9 @@ excel_links <- abs_page |>
           )
 
       )
+
     }
+
   ) |>
 
   filter(
@@ -226,6 +250,7 @@ excel_links <- abs_page |>
 
 
 message("")
+
 message(
   "Excel links found: ",
   nrow(excel_links)
@@ -242,17 +267,19 @@ if (
       "The ABS webpage structure may have changed."
     )
   )
+
 }
 
 
 # ============================================================
-# 10. IDENTIFY CURRENT RELEASE DIRECTORY
+# 11. IDENTIFY CURRENT ABS RELEASE FOLDER
 # ============================================================
 
 release_folder_match <- str_match(
   excel_links$url[1],
   "/labour-force-australia/([^/]+)/"
 )
+
 
 if (
   is.na(
@@ -263,33 +290,39 @@ if (
   stop(
     "Could not identify the current ABS release folder."
   )
+
 }
+
 
 release_folder <-
   release_folder_match[1, 2]
+
 
 message(
   "ABS release folder: ",
   release_folder
 )
 
+
 # ============================================================
-# 11. IDENTIFY REQUIRED FILES
+# 12. REQUIRED ABS FILES
 # ============================================================
 
 table_001_name <-
   "62020001.xlsx"
 
+
 table_013_name <-
   "62020013.xlsx"
+
 
 table_x29_name <-
   "62020X29.xlsx"
 
 
-# ------------------------------------------------------------
-# Find Table 001
-# ------------------------------------------------------------
+# ============================================================
+# 13. FIND TABLE 001
+# ============================================================
 
 table_001_url <- excel_links$url[
   str_detect(
@@ -298,9 +331,10 @@ table_001_url <- excel_links$url[
   )
 ][1]
 
-# ------------------------------------------------------------
-# Find Table 013
-# ------------------------------------------------------------
+
+# ============================================================
+# 14. FIND TABLE 013
+# ============================================================
 
 table_013_url <- excel_links$url[
   str_detect(
@@ -309,9 +343,10 @@ table_013_url <- excel_links$url[
   )
 ][1]
 
-# ------------------------------------------------------------
-# Find Table X29
-# ------------------------------------------------------------
+
+# ============================================================
+# 15. FIND TABLE X29
+# ============================================================
 
 table_x29_url <- excel_links$url[
   str_detect(
@@ -322,7 +357,7 @@ table_x29_url <- excel_links$url[
 
 
 # ============================================================
-# 11. CHECK REQUIRED LINKS
+# 16. CHECK REQUIRED LINKS
 # ============================================================
 
 required_links <- tibble(
@@ -349,9 +384,11 @@ required_links <- tibble(
 
 
 message("")
+
 message(
   "Required ABS files:"
 )
+
 
 print(
   required_links
@@ -373,6 +410,7 @@ if (
       )
     ]
 
+
   stop(
     paste(
       "Could not identify the following ABS files:",
@@ -382,11 +420,12 @@ if (
       )
     )
   )
+
 }
 
 
 # ============================================================
-# 12. CREATE VINTAGE FOLDER
+# 17. CREATE VINTAGE FOLDER
 # ============================================================
 
 vintage_dir <- file.path(
@@ -394,27 +433,30 @@ vintage_dir <- file.path(
   vintage
 )
 
+
 dir.create(
   vintage_dir,
   recursive = TRUE,
   showWarnings = FALSE
 )
 
+
 message("")
+
 message(
   "Vintage folder: ",
   vintage_dir
 )
 
+
 # ============================================================
-# 13. DOWNLOAD FUNCTION
+# 18. DOWNLOAD FUNCTION
 # ============================================================
 
 download_abs_file <- function(
     url,
     destination
 ) {
-
 
   if (
     file.exists(
@@ -481,7 +523,7 @@ download_abs_file <- function(
 
 
 # ============================================================
-# 14. CREATE FILE PATHS
+# 19. CREATE FILE PATHS
 # ============================================================
 
 table_001_file <- file.path(
@@ -503,7 +545,7 @@ table_x29_file <- file.path(
 
 
 # ============================================================
-# 15. DOWNLOAD TABLE 001
+# 20. DOWNLOAD TABLE 001
 # ============================================================
 
 download_abs_file(
@@ -513,7 +555,7 @@ download_abs_file(
 
 
 # ============================================================
-# 16. DOWNLOAD TABLE 013
+# 21. DOWNLOAD TABLE 013
 # ============================================================
 
 download_abs_file(
@@ -521,8 +563,9 @@ download_abs_file(
   table_013_file
 )
 
+
 # ============================================================
-# 17. DOWNLOAD TABLE X29
+# 22. DOWNLOAD TABLE X29
 # ============================================================
 
 download_abs_file(
@@ -530,8 +573,9 @@ download_abs_file(
   table_x29_file
 )
 
+
 # ============================================================
-# 18. CHECK DOWNLOADED FILES
+# 23. CHECK DOWNLOADED FILES
 # ============================================================
 
 required_files <- c(
@@ -542,7 +586,7 @@ required_files <- c(
 
 
 if (
-   !all(
+  !all(
     file.exists(
       required_files
     )
@@ -555,8 +599,9 @@ if (
 
 }
 
+
 # ============================================================
-# 19. SAVE DOWNLOAD METADATA
+# 24. SAVE DOWNLOAD METADATA
 # ============================================================
 
 abs_metadata <- tibble(
@@ -602,6 +647,7 @@ abs_metadata <- tibble(
 
 )
 
+
 write_csv(
 
   abs_metadata,
@@ -613,11 +659,13 @@ write_csv(
 
 )
 
+
 # ============================================================
-# 20. CHECK WORKBOOK SHEETS
+# 25. CHECK WORKBOOK SHEETS
 # ============================================================
 
 message("")
+
 message(
   "Table 001 sheets:"
 )
@@ -631,6 +679,7 @@ print(
 
 
 message("")
+
 message(
   "Table 013 sheets:"
 )
@@ -644,6 +693,7 @@ print(
 
 
 message("")
+
 message(
   "Table X29 sheets:"
 )
@@ -655,17 +705,19 @@ print(
   )
 )
 
+
 # ============================================================
-# 21. IMPORT TABLE 001
+# 26. IMPORT TABLE 001
 # ============================================================
 
 message("")
+
 message(
   "Reading Table 001..."
 )
 
 
-labour_force <- read_excel(
+table_001_raw <- read_excel(
 
   table_001_file,
 
@@ -673,7 +725,30 @@ labour_force <- read_excel(
 
   skip = 9
 
-) |>
+)
+
+
+# ------------------------------------------------------------
+# Check column names before selecting variables
+# ------------------------------------------------------------
+
+message("")
+
+message(
+  "Table 001 columns:"
+)
+
+
+print(
+  names(table_001_raw)
+)
+
+
+# ------------------------------------------------------------
+# IMPORT REQUIRED SERIES
+# ------------------------------------------------------------
+
+labour_force <- table_001_raw |>
 
   select(
 
@@ -715,9 +790,14 @@ labour_force <- read_excel(
     date
   )
 
+
+
+
 # ============================================================
-# 22. IMPORT TABLE 013
+# 27. IMPORT TABLE 013
 # ============================================================
+
+message("")
 
 message(
   "Reading Table 013..."
@@ -760,9 +840,12 @@ youth <- read_excel(
     date
   )
 
+
 # ============================================================
-# 23. IMPORT X29 UNDEREMPLOYMENT
+# 28. IMPORT X29 UNDEREMPLOYMENT
 # ============================================================
+
+message("")
 
 message(
   "Reading X29 underemployment..."
@@ -813,9 +896,12 @@ underemployment <- read_excel(
     date
   )
 
+
 # ============================================================
-# 24. IMPORT X29 UNDERUTILISATION
+# 29. IMPORT X29 UNDERUTILISATION
 # ============================================================
+
+message("")
 
 message(
   "Reading X29 underutilisation..."
@@ -866,8 +952,9 @@ underutilisation <- read_excel(
     date
   )
 
+
 # ============================================================
-# 25. COMBINE THE ABS DATASETS
+# 30. COMBINE ABS DATASETS
 # ============================================================
 
 labour_market_slack <- labour_force |>
@@ -891,104 +978,135 @@ labour_market_slack <- labour_force |>
     date
   )
 
+
 # ============================================================
-# 26. ADD DATA VINTAGE METADATA
+# 31. ADD DATA VINTAGE METADATA
 # ============================================================
 
-labour_market_slack <- labour_market_slack |> 
+labour_market_slack <- labour_market_slack |>
+
   mutate(
+
     data_reference_period =
       reference_period,
 
-    data_release_date = 
+    data_release_date =
       release_date,
 
-    data_vintage = 
+    data_vintage =
       vintage,
 
-    data_download_date = 
-    Sys.Date(),
+    data_download_date =
+      Sys.Date(),
 
     .before = 1
+
   )
 
+
 # ============================================================
-# 27. CREATE SUPPLEMENTARY MEASURES
+# 32. CREATE SUPPLEMENTARY MEASURES
 # ============================================================
 
-labour_market_slack <- labour_market_slack |> 
+labour_market_slack <- labour_market_slack |>
+
   mutate(
-    youth_unemployment_gap = 
+
+    youth_unemployment_gap =
+
       youth_unemployment_rate -
       unemployment_rate,
 
+
     youth_underemployment_gap =
-      youth_underemployment_rate - 
+
+      youth_underemployment_rate -
       underemployment_rate,
 
+
     youth_underutilisation_gap =
-      youth_underutilisation_rate - 
+
+      youth_underutilisation_rate -
       underutilisation_rate,
 
-    cal_underutilisation_rate = 
+
+    calculated_underutilisation_rate =
+
       unemployment_rate +
       underemployment_rate,
 
-    underutilisation_diff = 
-      underutilisation_rate - 
-      cal_underutilisation_rate
+
+    underutilisation_difference =
+
+      underutilisation_rate -
+      calculated_underutilisation_rate
+
   )
 
+
 # ============================================================
-# 28. BASIC DATASET CHECKS
+# 33. BASIC DATASET INFORMATION
 # ============================================================
 
 message("")
+
 message("============================================")
+
 message("DATASET CHECKS")
+
 message("============================================")
+
 message("")
+
 
 obs <- nrow(
   labour_market_slack
 )
 
+
 unique_dates <- n_distinct(
   labour_market_slack$date
 )
+
 
 first_date <- min(
   labour_market_slack$date,
   na.rm = TRUE
 )
 
+
 last_date <- max(
   labour_market_slack$date,
   na.rm = TRUE
 )
+
 
 message(
   "Observations: ",
   obs
 )
 
+
 message(
-  "Unique Dates: ",
+  "Unique dates: ",
   unique_dates
 )
 
+
 message(
-  "First_date: ",
+  "First date: ",
   first_date
 )
 
+
 message(
-  "Last Date: ",
+  "Last date: ",
   last_date
 )
 
+
 # ============================================================
-# 29. DUPLICATE DATE CHECK
+# 34. DUPLICATE DATE CHECK
 # ============================================================
 
 duplicate_dates <- labour_market_slack |>
@@ -1012,6 +1130,7 @@ if (
     "Duplicate dates detected."
   )
 
+
   print(
     duplicate_dates
   )
@@ -1024,45 +1143,61 @@ if (
 
 }
 
+
 # ============================================================
-# 30. MISSING VALUE CHECK
+# 35. MISSING VALUE CHECK
 # ============================================================
 
-missing_values <- labour_market_slack |> 
+missing_values <- labour_market_slack |>
+
   summarise(
 
     across(
       everything(),
       ~ sum(is.na(.))
     )
+
   )
 
+
 message("")
-message("Missing Values")
+
+message(
+  "Missing values:"
+)
+
 
 print(
   missing_values
 )
 
+
 # ============================================================
-# 31. MONTHLY SEQUENCE CHECK
+# 36. MONTHLY SEQUENCE CHECK
 # ============================================================
 
-date_check <- labour_market_slack |> 
+date_check <- labour_market_slack |>
+
   arrange(
     date
-  ) |> 
+  ) |>
+
   mutate(
-    month_difference = 
+
+    month_difference =
+
       (
         year(date) -
-          year(lag(date))
+        year(lag(date))
       ) * 12 +
-        (
-          month(date) -
-            month(lag(date))
-        )
+
+      (
+        month(date) -
+        month(lag(date))
+      )
+
   )
+
 
 date_gaps <- date_check |>
 
@@ -1075,96 +1210,138 @@ date_gaps <- date_check |>
     month_difference != 1
 
   )
-if(
+
+
+if (
   nrow(
     date_gaps
   ) > 0
 ) {
+
   warning(
-    "Potential gaps detected in the monthly series. "
+    "Potential gaps detected in the monthly series."
   )
+
 
   print(
     date_gaps
   )
+
 } else {
+
   message(
     "Monthly sequence check: PASSED"
   )
+
 }
 
+
 # ============================================================
-# 32. UNDERUTILISATION CONSISTENCY CHECK
+# 37. UNDERUTILISATION CONSISTENCY CHECK
 # ============================================================
 
-underutilisation_check <- labour_market_slack |> 
+underutilisation_check <- labour_market_slack |>
+
   summarise(
-    maximum_absolute_diff =
+
+    maximum_absolute_difference =
+
       max(
         abs(
-          underutilisation_diff
+          underutilisation_difference
         ),
         na.rm = TRUE
       ),
 
-    mean_absolute_diff = 
+
+    mean_absolute_difference =
+
       mean(
         abs(
-          underutilisation_diff
+          underutilisation_difference
         ),
         na.rm = TRUE
       )
+
   )
 
+
 message("")
+
 message(
   "Underutilisation consistency check:"
 )
+
 
 print(
   underutilisation_check
 )
 
+
 # ============================================================
-# 33. RATE RANGE CHECK
+# 38. RATE RANGE CHECK
 # ============================================================
 
-rate_check <- labour_market_slack |> 
+rate_check <- labour_market_slack |>
+
   summarise(
-    unemployment_min =
-      min(unemployment_rate,
-      na.rm = TRUE),
 
-    unemployment_max = 
-      max(unemployment_rate,
-      na.rm = TRUE),
+    unemployment_min =
+      min(
+        unemployment_rate,
+        na.rm = TRUE
+      ),
+
+    unemployment_max =
+      max(
+        unemployment_rate,
+        na.rm = TRUE
+      ),
+
 
     underemployment_min =
-      min(underemployment_rate,
-      na.rm = TRUE),
+      min(
+        underemployment_rate,
+        na.rm = TRUE
+      ),
 
-    underemployment_max = 
-      max(underemployment_rate,
-      na.rm = TRUE),
+    underemployment_max =
+      max(
+        underemployment_rate,
+        na.rm = TRUE
+      ),
 
-    underutilisation_min = 
-      min(underutilisation_rate,
-      na.rm = TRUE),
 
-    underutilisation_max = 
-      max(underutilisation_rate,
-      na.rm = TRUE),
+    underutilisation_min =
+      min(
+        underutilisation_rate,
+        na.rm = TRUE
+      ),
+
+    underutilisation_max =
+      max(
+        underutilisation_rate,
+        na.rm = TRUE
+      ),
+
 
     participation_min =
-      min(participation_rate,
-      na.rm = TRUE),
-    
-    participation_max = 
-      max(participation_rate,
-      na.rm = TRUE)
+      min(
+        participation_rate,
+        na.rm = TRUE
+      ),
+
+    participation_max =
+      max(
+        participation_rate,
+        na.rm = TRUE
+      )
+
   )
 
+
 message("")
+
 message(
   "Rate range check:"
 )
@@ -1176,50 +1353,73 @@ print(
 
 
 # ============================================================
-# 34. SAVE PROCESSED DATASET
+# 39. SAVE PROCESSED DATASET
 # ============================================================
 
 processed_file <- file.path(
+
   processed_dir,
+
   "labour_market_slack.csv"
+
 )
+
 
 write_csv(
+
   labour_market_slack,
+
   processed_file
+
 )
+
+
 # ============================================================
-# 35. FINAL 
+# 40. FINAL MESSAGE
 # ============================================================
 
 message("")
+
 message("============================================")
+
 message("ABS IMPORT COMPLETED")
+
 message("============================================")
+
 message("")
+
 
 message(
   "Reference period: ",
-reference_period)
+  reference_period
+)
+
 
 message(
-  "Release Date: ",
+  "Release date: ",
   release_date
 )
 
+
 message(
   "Data vintage: ",
-  vintage)
+  vintage
+)
+
 
 message(
   "ABS release folder: ",
-  release_folder)
+  release_folder
+)
+
 
 message("")
 
+
 message(
-  "Raw files saved in: "
+  "Raw files saved in:"
 )
+
 
 message(
   normalizePath(
@@ -1228,11 +1428,14 @@ message(
   )
 )
 
+
 message("")
+
 
 message(
   "Processed dataset:"
 )
+
 
 message(
   normalizePath(
@@ -1241,12 +1444,15 @@ message(
   )
 )
 
+
 message("")
+
 
 message(
   "Observations: ",
   obs
 )
+
 
 message(
   "Date range: ",
@@ -1255,5 +1461,7 @@ message(
   last_date
 )
 
+
 message("")
+
 message("============================================")
