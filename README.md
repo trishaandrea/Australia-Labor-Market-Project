@@ -136,7 +136,7 @@ The WPI is not being treated as proof that a particular level of slack is "good"
 
 # Trisha — Labour Demand
 
-Trisha's part of the project focuses on measuring and understanding labour demand in Australia using job vacancy data.
+Trisha's part of the project focuses on measuring and understanding labour demand and labour-market tightness in Australia using job vacancy and unemployment data.
 
 The analysis examines:
 
@@ -148,41 +148,44 @@ The analysis examines:
 * State and territory patterns
 * Labour-market tightness
 
-The main source for the monthly labour-demand component is the Jobs and Skills Australia Internet Vacancy Index (IVI).
+The main source for the monthly labour-demand component is the Jobs and Skills Australia Internet Vacancy Index (IVI). ABS Job Vacancies and ABS Labour Force data are also used to construct an initial measure of labour-market tightness.
 
-The vacancy data is checked carefully before being combined with labour-market slack measures. This includes examining definitions, frequency, units, date coverage, seasonal adjustment, revisions and possible changes in measurement.
+The data sources and their measurement concepts were reviewed before combining them with labour-market slack measures. This included examining their definitions, data collection methods, frequency, units, date coverage, seasonal adjustment and key limitations.
 
 ### Labour Demand
 
-Labour demand is currently measured using the Jobs and Skills Australia Internet Vacancy Index. The main measure is the seasonally adjusted Australian total IVI.
+Labour demand is measured using the Jobs and Skills Australia Internet Vacancy Index. The main measure is the seasonally adjusted Australian total IVI.
 
-The IVI measures newly lodged online job advertisements during each month and is used as an indicator of recruitment activity and labour demand.
+The IVI is based on administrative data from contributing online job boards, including SEEK, CareerOne and Workforce Australia. It measures newly lodged online job advertisements during each month and is used as an indicator of recruitment activity and labour demand.
 
 Initial EDA shows substantial changes in vacancy activity over time, including declines around the Global Financial Crisis and COVID-19 periods, followed by a strong post-COVID recovery and a peak around 2022.
 
-An important measurement limitation is that the IVI represents a flow of newly lodged online advertisements rather than the stock of job vacancies available at a particular point in time. It also does not capture all forms of recruitment.
+An important measurement limitation is that the IVI represents a flow of newly lodged online advertisements rather than the stock of job vacancies available at a particular point in time. It also does not capture all forms of recruitment, and a job advertisement does not necessarily correspond to a single vacancy.
 
 ### Labour-Market Tightness
 
-Following further investigation, labour-market tightness is being considered as an additional measure of labour-market conditions.
+Labour-market tightness is measured using the vacancy-to-unemployment ratio:
 
-A common starting measure is:
+**Labour-market tightness = ABS Job Vacancies / ABS Unemployed Persons**
 
-**Labour-market tightness = Job Vacancies / Unemployed Persons**
+A higher ratio indicates a tighter labour market, with more vacancies relative to the number of unemployed workers.
 
-A higher ratio indicates a tighter labour market, meaning that there are more vacancies relative to the number of unemployed workers.
+ABS Job Vacancies is used instead of the IVI for this measure because ABS Job Vacancies represents the stock of vacancies available for immediate filling at a reference date, while unemployed persons is also a stock measure. This provides a more consistent stock-to-stock comparison than directly dividing the flow-based IVI by unemployed persons.
 
-Using the IVI directly in this ratio raises a measurement issue because the IVI is a flow of new advertisements, while unemployed persons is a stock measure.
+ABS Job Vacancies data are collected through the Job Vacancies Survey (JVS), which surveys a sample of employing organisations. The analysis uses the seasonally adjusted Australian total series. Seasonally adjusted unemployed persons from the ABS Labour Force data are used as the denominator.
 
-For this reason, ABS Job Vacancies is being investigated as an alternative vacancy numerator. ABS Job Vacancies measures the stock of vacancies at a reference date, providing a more consistent stock-to-stock comparison with unemployed persons.
+Because ABS Job Vacancies is quarterly, unemployment observations are matched to the corresponding February, May, August and November vacancy reference months.
 
-The current provisional approach is:
+The initial quarterly tightness measure covers 2006–2026. Tightness was particularly low around the early COVID-19 period, reached its highest level in 2022, and has generally declined since then. In May 2026, the ratio was approximately 0.49 vacancies per unemployed person.
+
+The five missing observations from August 2008 to August 2009 reflect the suspension of the ABS Job Vacancies Survey during this period and are retained as missing rather than imputed.
+
+The current measures are therefore:
 
 * **Monthly labour demand:** JSA IVI, seasonally adjusted
-* **Labour-market tightness:** ABS Job Vacancies / ABS Unemployed Persons, seasonally adjusted
+* **Quarterly labour-market tightness:** ABS Job Vacancies / ABS Unemployed Persons, seasonally adjusted
 
-The tightness measure is quarterly because ABS Job Vacancies is available quarterly. This approach remains provisional and will be discussed with the supervisor.
-
+The next step is to align the tightness measure with the labour-market slack data and examine the relationship between labour demand, labour-market tightness and the selected measures of slack.
 ---
 
 # Bringing the Two Parts Together
