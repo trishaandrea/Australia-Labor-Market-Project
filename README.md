@@ -185,7 +185,7 @@ The current measures are therefore:
 * **Monthly labour demand:** JSA IVI, seasonally adjusted
 * **Quarterly labour-market tightness:** ABS Job Vacancies / ABS Unemployed Persons, seasonally adjusted
 
-The next step is to align the tightness measure with the labour-market slack data and examine the relationship between labour demand, labour-market tightness and the selected measures of slack.
+The next step is to align the tightness measure with the labour-market slack data and examine the relationship between labour demand, labour-market tightness and the selected measures of slack.git statusgit
 ---
 
 # Bringing the Two Parts Together
