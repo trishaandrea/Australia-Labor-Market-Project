@@ -186,6 +186,16 @@ The current measures are therefore:
 * **Quarterly labour-market tightness:** ABS Job Vacancies / ABS Unemployed Persons, seasonally adjusted
 
 The next step is to align the tightness measure with the labour-market slack data and examine the relationship between labour demand, labour-market tightness and the selected measures of slack.git statusgit
+
+### Combined Tightness and Slack Analysis
+
+The quarterly labour-market tightness measure was combined with the labour-market slack data using corresponding February, May, August and November observations.
+
+Initial analysis shows a negative association between labour-market tightness and the main measures of labour-market slack. The correlations between tightness and unemployment, underemployment and underutilisation were approximately -0.85, -0.55 and -0.70, respectively.
+
+To better align the analysis with the research question, quarter-to-quarter changes were also examined. Changes in tightness were negatively associated with changes in unemployment (-0.77), underemployment (-0.68) and underutilisation (-0.77).
+
+These results are descriptive and do not establish causality. The next stage is to further investigate the relationship between labour-market demand, tightness and slack, including whether lagged relationships should be considered.
 ---
 
 # Bringing the Two Parts Together
