@@ -857,7 +857,7 @@ ggplot(
     x = NULL,
     y = "Percentage point change",
     color = NULL,
-    source = "Australian Bureau of Statistics, Labour Force Australia"
+    caption = "Souce: Australian Bureau of Statistics, Labour Force Australia"
   ) +
   theme_minimal(base_size = 13) +
   theme(
