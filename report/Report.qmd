@@ -203,4 +203,79 @@ The resulting measure provides a quarterly series of labour-market
 tightness that can subsequently be compared with the measures of
 labour-market slack used in this project.
 
+## 4.1 ABS Job Vacancies Over Time
+The ABS Job Vacancies series provides a quarterly view of labour demand in Australia. Figure @fig-job-vacancies shows the seasonally adjusted number of job vacancies over the study period.
+
+```{r}
+#| label: fig-job-vacancies
+#| fig-cap: "Seasonally adjusted job vacancies in Australia"
+#| warning: false
+#| message: false
+
+library(tidyverse)
+
+job_vacancies <- read_csv(
+  "../data/processed/abs_job_vacancies_clean.csv",
+  show_col_types = FALSE
+) |>
+  mutate(Quarter = as.Date(Quarter))
+
+ggplot(job_vacancies, aes(x = Quarter, y = Job_Vacancies)) +
+  geom_line(linewidth = 0.8) +
+  labs(
+    x = NULL,
+    y = "Job vacancies ('000)",
+    title = "Job Vacancies in Australia",
+    subtitle = "Seasonally adjusted ABS Job Vacancies"
+  ) +
+  theme_minimal()
+```
+
+Job vacancies changed considerably over the study period. Vacancies declined during the late 2000s, although the series contains a gap between August 2008 and August 2009 due to the suspension of the Job Vacancies Survey during this period [@ABS2026JobVacancies].
+
+A particularly large decline is visible in 2020, followed by a strong increase during 2021 and 2022. Job vacancies reached their highest levels around 2022 before declining over the following years.
+
+These patterns indicate that labour demand has varied substantially over time. However, the figure is descriptive and does not by itself establish the causes of these movements.
+
+## 4.2 Internet Vacancy Index Over Time
+The Internet Vacancy Index provides a higher-frequency view of recruitment activity because it records newly lodged online job advertisements each month. Figure @fig-ivi-total shows the seasonally adjusted Australian total IVI.
+
+```{r}
+#| label: fig-ivi-total
+#| fig-cap: "Internet Vacancy Index for Australia"
+#| warning: false
+#| message: false
+
+library(tidyverse)
+
+ivi_anzsco2 <- read_csv(
+  "../data/processed/ivi_anzsco2_clean.csv",
+  show_col_types = FALSE
+)
+
+ivi_australia <- ivi_anzsco2 |>
+  filter(
+    Level == 1,
+    ANZSCO_CODE == "0",
+    State == "AUST"
+  ) |>
+  arrange(Month)
+
+ggplot(ivi_australia, aes(x = Month, y = Vacancies)) +
+  geom_line(linewidth = 0.8) +
+  labs(
+    x = NULL,
+    y = "Online job advertisements",
+    title = "Internet Vacancy Index in Australia",
+    subtitle = "Seasonally adjusted national series"
+  ) +
+  theme_minimal()
+```
+
+The IVI also shows substantial variation in recruitment activity over time. Online job advertisements increased during the earlier part of the series before declining around 2008–2009. Recruitment activity subsequently recovered, although further periods of decline and recovery are visible.
+
+One of the most pronounced movements occurs in 2020, when the IVI falls sharply. This is followed by a strong increase, with recruitment activity reaching particularly high levels around 2022. The index subsequently declines through the following years.
+
+The broad movements are similar to those observed in ABS Job Vacancies. However, the two series should not be interpreted as identical measures. The IVI measures the flow of newly lodged online advertisements each month, whereas ABS Job Vacancies measures the stock of vacancies available for immediate filling at a reference date [@JSAIVIMethodology; @ABS2026JobVacancies].
+
 # References
