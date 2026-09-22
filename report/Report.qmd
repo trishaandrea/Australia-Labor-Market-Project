@@ -47,7 +47,6 @@ The project considers three measures of labour-market slack: unemployment, under
 Labour-market tightness is examined as a complementary perspective rather than as a replacement for the main vacancy measure. This distinction is important because the research question specifically concerns changes in job vacancies, while tightness incorporates information from both vacancies and unemployment.
 
 ## 1.4 Research Objectives
-
 The project has four main objectives:
 
 To describe how job vacancies and labour-market slack have changed in Australia over the available data period.
@@ -58,7 +57,150 @@ To investigate labour-market tightness as an additional indicator of the balance
 The analysis uses data from the Australian Bureau of Statistics and Jobs and Skills Australia. The IVI is used to examine monthly online recruitment activity, while ABS Job Vacancies and Labour Force data provide measures of vacancies and labour availability. The different data sources are examined carefully because their definitions, frequency and measurement concepts are not identical.
 
 ## 1.5 Report Structure
-
 The remainder of this report is organised as follows. Section 2 introduces the main labour-market concepts and provides background on labour demand, labour-market slack and labour-market tightness. Section 3 describes the datasets, variable construction and measurement choices used in the analysis. Section 4 presents exploratory analysis of labour demand, slack and tightness in Australia. Section 5 describes the analytical methodology, including the analysis of changes, correlations and potential lagged relationships. Section 6 presents the empirical results, followed by a discussion of their interpretation in Section 7. Section 8 discusses the limitations of the analysis and possible extensions, and Section 9 concludes the report.
+
+# 2. Labour-Market Concepts and Background
+
+## 2.1 Labour Demand and Job Vacancies
+
+## 2.2 Labour-Market Slack
+
+## 2.3 Labour-Market Tightness
+
+## 2.4 Relationship Between Labour Demand and Slack
+
+## 2.5 Australian Labour-Market Context
+
+# 3. Data and Measurement
+
+## 3.1 Jobs and Skills Australia Internet Vacancy Index
+
+### 3.1.1 Data Source and Collection
+
+The Internet Vacancy Index (IVI), published by Jobs and Skills Australia
+(JSA), is used in this project as a monthly indicator of labour demand in
+Australia. The IVI measures online job advertisements newly lodged during
+each reference month on three contributing job boards: SEEK, CareerOne and
+Workforce Australia [@JSAIVIMethodology].
+
+The IVI is based on administrative data provided by the contributing job
+boards rather than data collected through an employer survey. JSA processes
+the advertisements and classifies them by occupation, skill level and
+geographical location. Duplicate advertisements posted on the same or
+multiple contributing job boards are removed during this process
+[@JSAIVIMethodology].
+
+### 3.1.2 Measurement and Coverage
+The IVI is available as a monthly time series from January 2006. The data
+provide information by occupation, skill level, state and territory, and
+regional areas. For the national labour-demand analysis in this project,
+the seasonally adjusted Australian total series is used.
+
+An important characteristic of the IVI is that it measures newly lodged
+advertisements during a month. It therefore represents a flow of online
+recruitment activity rather than the stock of vacancies that remain
+unfilled at a particular point in time [@JSAIVIMethodology].
+
+### 3.1.3 Limitations of the IVI
+The IVI does not represent all vacancies in the Australian labour market.
+It only includes advertisements from the contributing online job boards
+and therefore excludes recruitment through other job boards, employer
+websites, social media, newspapers and informal methods such as word of
+mouth. In addition, one advertisement may represent multiple available
+positions, while some vacancies may be filled without being advertised
+online [@JSAIVIMethodology].
+
+For these reasons, the IVI is interpreted in this project as an indicator
+of online recruitment activity and labour demand rather than a complete
+measure of all job vacancies in Australia.
+
+
+## 3.2 ABS Job Vacancies
+
+### 3.2.1 Job Vacancies Survey
+The second measure of labour demand is obtained from the Australian Bureau
+of Statistics (ABS) Job Vacancies Survey (JVS). Unlike the IVI, which is
+based on online job advertisements, the JVS collects information directly
+from a sample of employing organisations. Approximately 4,000 statistical
+units are selected from the ABS Business Register, with data collected
+through online electronic collection and/or telephone interviews
+[@ABS2026JobVacancies].
+
+The ABS defines a job vacancy as a job that is available for immediate
+filling on the survey reference date and for which recruitment action has
+been taken [@ABS2026JobVacancies].
+
+### 3.2.2 Measurement and Coverage
+The JVS is conducted quarterly. Its reference date is the third Friday of
+the middle month of each quarter, corresponding to February, May, August
+and November. The number of vacancies therefore refers to vacancies
+existing on a particular reference date rather than vacancies accumulated
+over the entire quarter [@ABS2026JobVacancies].
+
+For this project, the seasonally adjusted Australian total job-vacancy
+series is used. ABS classifies job vacancies as a stock measure because
+they are measured at a specific point in time [@ABS2026JobVacancies].
+
+There are five missing quarterly observations between August 2008 and
+August 2009 because the Job Vacancies Survey was suspended after May 2008
+and reinstated in November 2009. These observations are retained as
+missing rather than being imputed, as the ABS does not provide official
+estimates for the gap period [@ABS2026JobVacancies].
+
+### 3.2.3 IVI versus ABS Job Vacancies
+Although both series provide information about labour demand, they measure
+different concepts. The IVI counts newly lodged online job advertisements
+during a month and is therefore a flow measure of recruitment activity.
+In contrast, ABS Job Vacancies measures the number of vacancies available
+for immediate filling on a particular reference date and is therefore a
+stock measure [@JSAIVIMethodology; @ABS2026JobVacancies].
+
+This distinction is important for the analysis. The IVI is used to examine
+monthly changes in recruitment demand, while ABS Job Vacancies is used in
+constructing the quarterly labour-market tightness measure. Using ABS Job
+Vacancies for the tightness measure provides a more consistent comparison
+with the number of unemployed persons, since both represent quantities
+measured for a particular reference period.
+
+
+## 3.3 ABS Labour Force Data
+This section describes the ABS Labour Force data used to measure
+unemployment, underemployment and underutilisation.
+
+[To be completed with the labour-market slack component.]
+
+
+## 3.4 Labour-Market Tightness
+
+### 3.4.1 Vacancy-to-Unemployment Ratio
+Labour-market tightness is used to represent the balance between labour
+demand and the availability of unemployed workers. In this project,
+tightness is initially measured using the vacancy-to-unemployment ratio:
+
+$$
+\text{Labour-market tightness}_t =
+\frac{\text{Job Vacancies}_t}
+{\text{Unemployed Persons}_t}
+$$
+
+A higher value indicates that there are more job vacancies relative to
+the number of unemployed persons, representing a tighter labour market.
+Conversely, a lower value indicates fewer vacancies relative to unemployed
+persons.
+
+### 3.4.2 Construction of the Measure
+The numerator is the seasonally adjusted Australian total ABS Job
+Vacancies series, while the denominator is the seasonally adjusted number
+of unemployed persons from the ABS Labour Force data.
+
+Because Job Vacancies data are quarterly while Labour Force data are
+monthly, unemployed-person observations are matched to the corresponding
+vacancy reference months of February, May, August and November. Both
+series are measured in thousands of persons or positions, so the units
+cancel when the ratio is calculated.
+
+The resulting measure provides a quarterly series of labour-market
+tightness that can subsequently be compared with the measures of
+labour-market slack used in this project.
 
 # References
