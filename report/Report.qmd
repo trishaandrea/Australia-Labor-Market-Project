@@ -2,6 +2,7 @@
 title: "Labour-Market Tightness and Slack in Australia"
 author: "Rimlan & Trisha"
 format: html
+bibliography: references.bib
 ---
 
 **Executive Summary**
@@ -11,6 +12,53 @@ To be completed after the analyis and discussion are finalised.
 # 1. Introduction 
 
 ## 1.1 Background
+The labour market plays an important role in the Australian economy by connecting employers seeking workers with individuals who are available and willing to work. Labour-market conditions change over time as the demand for workers and the availability of labour respond to economic conditions. Understanding these changes requires consideration of both the demand for labour and the extent to which available labour resources are being utilised.
 
+One indicator of labour demand is the number of job vacancies. A higher level of vacancies generally indicates greater demand from employers for additional workers. However, different vacancy measures capture different aspects of recruitment activity. The Australian Bureau of Statistics (ABS) measures job vacancies as jobs that are available for immediate filling on a specific reference date and for which recruitment action has been taken [@ABS2026JobVacancies]. As a result, ABS Job Vacancies represents a stock measure of vacancies at a particular point in time.
 
+Jobs and Skills Australia (JSA) provides another measure of labour demand through the Internet Vacancy Index (IVI). The IVI is a monthly series based on newly lodged online job advertisements from SEEK, CareerOne and Workforce Australia. It provides detailed information by occupation, skill level and geographic area and can be used as an indicator of recruitment activity and labour demand. However, because it measures newly lodged advertisements during each month rather than vacancies existing at a particular point in time, it differs conceptually from the ABS Job Vacancies measure.
 
+Labour demand alone does not provide a complete picture of labour-market conditions. The supply side of the labour market is also important, particularly the amount of labour that is available but not fully utilised. This is commonly described as labour-market slack or labour underutilisation. Unemployment is one measure of unused labour capacity, but it does not capture workers who already have employment but would prefer and are available to work additional hours. The ABS therefore also publishes measures of underemployment and underutilisation. Underutilisation combines unemployment and underemployment and provides a broader measure of unused labour capacity in the labour market.
+
+Considering labour demand and labour-market slack together can provide a more complete view of labour-market conditions. For example, a period with relatively high demand for workers and limited available labour represents different conditions from a period with weak labour demand and substantial unused labour capacity. This motivates examining not only vacancies and slack separately, but also how they move in relation to one another over time.
+
+A related concept is labour-market tightness, which compares labour demand with the availability of workers. In this project, an initial measure of tightness is constructed as the ratio of ABS Job Vacancies to unemployed persons. A higher vacancy-to-unemployment ratio represents more vacancies relative to unemployed workers, while a lower ratio represents fewer vacancies relative to the number of unemployed workers. This measure provides an additional perspective on the balance between labour demand and available labour.
+
+## 1.2 Research Motivation
+Job vacancies, unemployment, underemployment and underutilisation each provide useful information about the Australian labour market, but they measure different aspects of labour-market conditions. Examining any one indicator independently may therefore provide an incomplete picture.
+
+This distinction is particularly relevant when measuring labour-market slack. Unemployment identifies people without employment who satisfy specific job-search and availability criteria, whereas underemployment captures employed people whose labour is not being fully utilised. The ABS defines underemployed workers as employed people who would prefer and are available to work more hours than they currently have. The underutilisation rate provides a broader indicator by combining unemployed and underemployed people relative to the labour force.
+
+The measurement of labour demand also requires careful consideration. The IVI captures the flow of newly lodged online job advertisements, while ABS Job Vacancies measures the stock of vacancies available for immediate filling on a reference date. In addition, the IVI does not represent all recruitment activity in Australia because it only covers advertisements from its contributing online job boards and excludes recruitment through other websites and informal channels. These differences mean that the choice of vacancy measure depends on the purpose of the analysis.
+
+This project is therefore motivated by the need to examine labour demand and labour-market slack jointly rather than treating them as independent indicators. In particular, examining changes in these measures allows the analysis to investigate whether increases or decreases in job vacancies are associated with corresponding changes in unused labour capacity.
+
+Labour-market tightness is also considered as a complementary measure. By relating the stock of job vacancies to the number of unemployed persons, tightness provides information about vacancies relative to the available pool of unemployed workers. This allows the project to investigate both the direct relationship between changes in vacancies and slack and the broader relationship between labour-market tightness and different measures of slack.
+
+## 1.3 Research Question
+Based on this motivation, the main research question is:
+
+To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?
+
+The wording of the research question focuses on association rather than causation. The purpose of the analysis is to determine whether movements in labour demand are systematically related to movements in labour-market slack and to examine how this relationship differs depending on the measure of slack considered.
+
+The project considers three measures of labour-market slack: unemployment, underemployment and underutilisation. This allows the relationship to be examined using both a narrower measure of unused labour capacity and broader measures that account for workers who are employed but would prefer additional hours.
+
+Labour-market tightness is examined as a complementary perspective rather than as a replacement for the main vacancy measure. This distinction is important because the research question specifically concerns changes in job vacancies, while tightness incorporates information from both vacancies and unemployment.
+
+## 1.4 Research Objectives
+
+The project has four main objectives:
+
+To describe how job vacancies and labour-market slack have changed in Australia over the available data period.
+To compare alternative measures of labour-market slack, including unemployment, underemployment and underutilisation.
+To examine the association between changes in job vacancies and changes in labour-market slack, including potential lagged relationships.
+To investigate labour-market tightness as an additional indicator of the balance between labour demand and available labour.
+
+The analysis uses data from the Australian Bureau of Statistics and Jobs and Skills Australia. The IVI is used to examine monthly online recruitment activity, while ABS Job Vacancies and Labour Force data provide measures of vacancies and labour availability. The different data sources are examined carefully because their definitions, frequency and measurement concepts are not identical.
+
+## 1.5 Report Structure
+
+The remainder of this report is organised as follows. Section 2 introduces the main labour-market concepts and provides background on labour demand, labour-market slack and labour-market tightness. Section 3 describes the datasets, variable construction and measurement choices used in the analysis. Section 4 presents exploratory analysis of labour demand, slack and tightness in Australia. Section 5 describes the analytical methodology, including the analysis of changes, correlations and potential lagged relationships. Section 6 presents the empirical results, followed by a discussion of their interpretation in Section 7. Section 8 discusses the limitations of the analysis and possible extensions, and Section 9 concludes the report.
+
+# References
