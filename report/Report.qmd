@@ -333,7 +333,53 @@ One of the most pronounced movements occurs in 2020, when the IVI falls sharply.
 
 The broad movements are similar to those observed in ABS Job Vacancies. However, the two series should not be interpreted as identical measures. The IVI measures the flow of newly lodged online advertisements each month, whereas ABS Job Vacancies measures the stock of vacancies available for immediate filling at a reference date [@JSAIVIMethodology; @ABS2026JobVacancies].
 
-## 4.3 Labour-Market Slack Over Time
+## 4.3 Vacancy Patterns by Occupation
+
+While the national IVI shows changes in overall recruitment activity, labour demand is not evenly distributed across occupations. The broad occupation-level IVI data are therefore examined to compare recruitment activity across major occupational groups.
+
+The latest available observation is used to provide a snapshot of the occupational composition of online recruitment demand.
+
+```{r}
+#| label: fig-occupation-vacancies
+#| fig-cap: "Online job advertisements by broad occupation group"
+#| warning: false
+#| message: false
+
+library(tidyverse)
+
+latest_month <- max(ivi_anzsco2$Month, na.rm = TRUE)
+
+occupation_latest <- ivi_anzsco2 |>
+  filter(
+    Level == 2,
+    State == "AUST",
+    Month == latest_month
+  ) |>
+  arrange(Vacancies) |>
+  mutate(Title = factor(Title, levels = Title))
+
+ggplot(
+  occupation_latest,
+  aes(x = Vacancies, y = Title)
+) +
+  geom_col() +
+  labs(
+    x = "Online job advertisements",
+    y = NULL,
+    title = "Online Job Advertisements by Occupation",
+    subtitle = paste("Australia,", latest_month)
+  ) +
+  theme_minimal()
+```
+
+Figure @fig-occupation-vacancies shows that online recruitment demand differs substantially across broad occupational groups. Professionals recorded the highest number of online job advertisements in the latest observation, indicating particularly high recruitment activity within this broad occupational category.
+
+Other occupational groups also account for substantial numbers of advertisements, demonstrating that labour demand is distributed across multiple parts of the Australian labour market. The differences across occupations are important because movements in aggregate vacancy measures may reflect different recruitment conditions across occupational groups.
+
+These results describe the composition of online recruitment activity rather than the total number of vacancies in each occupation. As discussed in Section 3, the IVI only captures newly lodged advertisements from the contributing online job boards and should therefore be interpreted as an indicator of recruitment activity [@JSAIVIMethodology].
+
+
+## 4.4 Labour-Market Slack Over Time
 
 The ABS Labour Force data provide a long-run view of labour-market slack in Australia. Figure @fig-labour-market-slack presents monthly unemployment, underemployment and underutilisation rates from February 1978 to July 2026. In this analysis, underutilisation is used as the primary observable proxy for labour-market slack, while unemployment and underemployment are examined separately to distinguish the different components of unused labour capacity.
 
@@ -346,7 +392,7 @@ The ABS Labour Force data provide a long-run view of labour-market slack in Aust
 library(tidyverse)
 
 slack <- read_csv(
-  "/Users/Hp/Desktop/Uni/ETC-5543/Australia-Labor-Market-Project/data/processed/labour_market_slack.csv",
+  "../data/processed/labour_market_slack.csv",
   show_col_types = FALSE
 )
 
@@ -429,19 +475,109 @@ knitr::kable(
 )
 ```
 
-The period averages show the level and composition of labour market slack have varied considerably across the sample. During 1978-1989, average unemployment was 7.37%, while underemployment averaged 3.36%, resulting in average underutilisation of  10.7%. Labour market slack was higher during 1990-1994, when average unemployment increased to 9.58% and average underutilisation reached 15.7%. The period also recorded a peak unemployment rate o approximately 11.2% and a peak underutilisation rate of approximately 18.2%.
+The period averages show that the level and composition of labour-market slack have varied considerably across the sample. During 1978–1989, average unemployment was 7.37%, while underemployment averaged 3.36%, resulting in average underutilisation of 10.7%. Labour-market slack was higher during 1990–1994, when average unemployment increased to 9.58% and average underutilisation reached 15.7%. The period also recorded a peak unemployment rate of approximately 11.2% and a peak underutilisation rate of approximately 18.2%.
 
-Between 1995 to 2007, average unemployment declined to 6.52%, while average underemployment increased to 6.60%. Average underutilisation was 13.1%. A similar pattern is evident between 2008 and 2019. Average unemployment declined further to 5.41%, while underemployment increased to 7.71%, leaving average underutilisation at approximately 13.1%. These results indicate that reductions in unemployment were not always accompanied by equivalent reductions in broader labour underutilisation.
+Between 1995 and 2007, average unemployment declined to 6.52%, while average underemployment increased to 6.60%. Average underutilisation was 13.1%. A similar pattern is evident between 2008 and 2019. Average unemployment declined further to 5.41%, while underemployment increased to 7.71%, leaving average underutilisation at approximately 13.1%. These results indicate that reductions in unemployment were not always accompanied by equivalent reductions in broader labour underutilisation.
 
-The COVID-19 period provides a distinct episode of elevated labour underutilisation. Between 2020 and 2021, average unemployment was 5.80%, while average underemployment increased to 9.32%. Average underutilisation reached 15.1%, with a peak of approximately 20.3%. The relatively large increase in underemployment during this period demonstrates the importance of considering insufficient working hours when examining labour market slack during periods of substantial economic disruption. 
+The COVID-19 period provides a distinct episode of elevated labour underutilisation. Between 2020 and 2021, average unemployment was 5.80%, while average underemployment increased to 9.32%. Average underutilisation reached 15.1%, with a peak of approximately 20.3%. The relatively large increase in underemployment during this period demonstrates the importance of considering insufficient working hours when examining labour-market slack during periods of substantial economic disruption.
 
-From 2022 onwards, average unemployment declined to 3.96%, while average underemployment remained at 6.19%. Average underutilisation was 10.2%. These averages indicate a lower level of measured labour underutilisation than in the preceding periods. Hoever, underemployment remained a meaningful component of total underutilisation, reinforcing the limitation of using unemployment alone to represent unused labour capacity. This period is also shorter than the historical intervals considered above, so comparisons should be interpreted with this difference in sample length in mind. 
+From 2022 onwards, average unemployment declined to 3.96%, while average underemployment remained at 6.19%. Average underutilisation was 10.2%. These averages indicate a lower level of measured labour underutilisation than in the preceding periods. However, underemployment remained a meaningful component of total underutilisation, reinforcing the limitation of using unemployment alone to represent unused labour capacity. This period is also shorter than the historical intervals considered above, so comparisons should be interpreted with this difference in sample length in mind.
 
-Overakk, the historical analysis demonstrates that labour market slack is not captured fully by unemployment alone. Although periods of elevated slack have generally coincided with higher unemployment, underemployment has also contributed substantially to total labour underutilisation, particularly in more recent periods. Underutilisation therefore provides a broader observable measure for the subsequent analysis, while unemployment and underemployment are retained as separate measures to examine the composition of slack.
-
-These historical patterns provide a basis for examining the relationship between labour market tightness and slack. The next section therefore compares the tightness measure with unemployment, underemployment and underutilisation to assess how these measures move relative to the availability of vacancies per unemployed person. 
+Overall, the historical analysis demonstrates that labour-market slack is not captured fully by unemployment alone. Although periods of elevated slack have generally coincided with higher unemployment, underemployment has also contributed substantially to total labour underutilisation, particularly in more recent periods. Underutilisation therefore provides a broader observable measure for the subsequent analysis, while unemployment and underemployment are retained as separate measures to examine the composition of slack.
 
 
-## 4.4 Labour-Market Tightness and Slack
+## 4.5 Labour-Market Tightness Over Time
+
+Job vacancies alone do not account for the number of workers available in the labour market. The vacancy-to-unemployment ratio constructed in Section 3 provides an additional perspective by measuring the number of job vacancies relative to the number of unemployed persons.
+
+```{r}
+#| label: fig-tightness
+#| fig-cap: "Labour-market tightness in Australia"
+#| warning: false
+#| message: false
+
+tightness <- read_csv(
+  "../data/processed/labour_market_tightness.csv",
+  show_col_types = FALSE
+) |>
+  mutate(Quarter = as.Date(Quarter))
+
+ggplot(tightness, aes(x = Quarter, y = Tightness)) +
+  geom_line(linewidth = 0.8) +
+  labs(
+    x = NULL,
+    y = "Vacancies per unemployed person",
+    title = "Labour-Market Tightness in Australia",
+    subtitle = "ABS Job Vacancies / Unemployed Persons"
+  ) +
+  theme_minimal()
+```
+
+Figure @fig-tightness shows substantial variation in labour-market tightness over the study period. The ratio was particularly low around early 2020, indicating that there were relatively few job vacancies compared with the number of unemployed persons. Tightness then increased rapidly and reached its highest level in 2022.
+
+Following the 2022 peak, labour-market tightness generally declined. By May 2026, the ratio was approximately 0.49, meaning that there were approximately 0.49 job vacancies for every unemployed person.
+
+The tightness measure therefore provides additional information beyond the vacancy series alone. An increase in job vacancies does not necessarily represent the same labour-market conditions if the number of unemployed persons is also changing. Considering vacancies relative to unemployment allows labour demand to be interpreted in relation to the available unemployed workforce.
+
+The five missing observations between August 2008 and August 2009 correspond to the period in which the ABS Job Vacancies Survey was suspended. These observations remain missing in the tightness series rather than being imputed [@ABS2026JobVacancies].
+
+
+## 4.6 Labour-Market Tightness and Slack
+To provide an initial view of the relationship between labour-market tightness and slack, the quarterly tightness measure is compared with unemployment, underemployment and underutilisation. Figure @fig-tightness-slack shows the relationship across the three measures.
+
+```{r}
+#| label: fig-tightness-slack
+#| fig-cap: "Labour-market tightness and measures of labour-market slack"
+#| warning: false
+#| message: false
+
+combined <- read_csv(
+  "../data/processed/combined_tightness_slack.csv",
+  show_col_types = FALSE
+)
+
+combined_long <- combined |>
+  select(
+    Tightness,
+    unemployment_rate,
+    underemployment_rate,
+    underutilisation_rate
+  ) |>
+  pivot_longer(
+    cols = c(
+      unemployment_rate,
+      underemployment_rate,
+      underutilisation_rate
+    ),
+    names_to = "measure",
+    values_to = "rate"
+  ) |>
+  mutate(
+    measure = recode(
+      measure,
+      unemployment_rate = "Unemployment",
+      underemployment_rate = "Underemployment",
+      underutilisation_rate = "Underutilisation"
+    )
+  )
+
+ggplot(combined_long, aes(x = Tightness, y = rate)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ measure, scales = "free_y") +
+  labs(
+    x = "Labour-market tightness",
+    y = "Rate (%)",
+    title = "Labour-Market Tightness and Labour-Market Slack",
+    subtitle = "Quarterly comparison of three slack measures"
+  ) +
+  theme_minimal()
+```
+
+The three panels show a generally negative relationship between labour-market tightness and each measure of labour-market slack. Periods with more job vacancies relative to unemployed persons tend to coincide with lower unemployment, underemployment and underutilisation.
+
+The relationship appears across all three measures, although its strength differs between them. This provides an initial descriptive indication that tighter labour-market conditions are associated with lower levels of unused labour capacity.
+
+These plots are descriptive and do not establish a causal relationship. The relationship is examined more formally in the subsequent analysis using changes in the variables and statistical measures of association.
 
 # References
