@@ -202,9 +202,24 @@ window.Quarto = {
 </section>
 <section id="labour-market-slack" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-slack">2.2 Labour-Market Slack</h2>
+<p>Labour market slack refers to the extent to which available labour resources are not fully utilised. While unemployment captures people who are without employment and actively seeking and avaiable to work, it does not capture all forms o unused labour capacity. Some employed people may wish to work additional hours, while other potential forms of labour underutilisation may not be reflected in the unemployment rate alone.</p>
+<p>This project therefore considers three related measures from the Australian Bureau of Statistics (ABS) Labour Force Survey: unemployment, underemployment and underutilisation. Unemployment provides an indicator of the number of people who are not employed but are available for work and actively seeking employment. Underemployment captures employed people who would like and are available to work additional hours. Underutilisation combines unemployment and underemployment and therefore provides a broader measure of labour that is not being fully utilised.</p>
+<p>Underutilisation is used in this project as the primary observable proxy for labour market slack. This is because slack is not directly observable as a single variable and underutilisation captures both the absence of employment and insufficient hours among employed people. Unemployment and underemployment are also analysed separately to identify whether changes in overall slack are associated more strongly with changes in the number of people without work or with the availability of additional hours among employed workers.</p>
+<p>The use of underutilisation as a proxy does not imply that it represents all unused labour capacity in the economy. Labour market slack can include dimensions that are not fully captured by the ABS measures, such as people who are marginally attached to the labour force or workers whose available hours do not fully reflect their preferred working arrangements. The measures should therefore be interpreted as observable indicators of labour underutilisation rather than a complete measure of all potential labour resources.</p>
+<p>Examining labour market slack alongside labour demad provides a basis for assessing how changes in employer demand are associated with the availability of unused labour. In periods of stronger labour demand, slack may decline as more people move into employment or increase their hours. Conversely, weaker labour demand may be associated with higher unemployment or underemployment. The relationship is not necessarily one-to-one, however, because labour market outcomes can also be affected by participation, industry composition, working hours and broader economic conditions.</p>
 </section>
 <section id="labour-market-tightness" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-tightness">2.3 Labour-Market Tightness</h2>
+<p>Labour market tightness describes the balance between the demand for workers and the availability of workers seeking employment. A labour market is generally considered tighter when employers have a relatively large number of vacancies compared with the number of unemployed people available to fill them. Conversely, a less tight labour market occurs when there are fewer vacancies relative to the number of unemployed people.</p>
+<p>In this project, labour market tightness is measured using the vacancy to unemployment ratio. The measure is calculated as the number of job vacancies relative to the number of unemployed people:</p>
+<p><span class="math display">\[
+\text{Labour-Market Tightness} =
+\frac{\text{Job Vacancies}}{\text{Unemployed Persons}}
+\]</span></p>
+<p>A higher ratio indicates that there are more vacancies relative to unemployed people, while a lower ratio indicates that unemployed people are more numerous relative to available vacancies. The measure therefore provides an indicator of the balance between labour demand and the available pool of unemployed workers.</p>
+<p>The vacancy to unemployment ratio is useful because considering vacancies and unemployment separately does not fully describe the conditions faced by employers and job seekers. An increase in vacancies may indicate stronger labour demand, but its implications for labour market conditions depend partly on how many unemployed workers are available. Similarly, a decline in unemployment may indicate improving labour market conditions, but the degree of tightness also depends on the number of vacancies available.</p>
+<p>In this analyis, the tightness measure is constructed using the seasonally adjusted ABS Job Vacancies series and the seasonally adjusted ABS number of unemployed persons. The resulting measure is examined at a quarterly frequency to investigate its relationship with labour market slack, particularly unemployment, underemployment and underutilisation.</p>
+<p>Labour market tightness and labour market slack represent two related but distinct dimensions of labour market conditions. Tightness focuses on the relationship between employer demand and the pool of unemployed workers, whereas slack focuses on the extent to which available labour in underutilised. Examining both measures together provides a broader view of whether changes in labour demand are associated with changes in unused labour capacity in Australia.</p>
 </section>
 <section id="relationship-between-labour-demand-and-slack" class="level2">
 <h2 class="anchored" data-anchor-id="relationship-between-labour-demand-and-slack">2.4 Relationship Between Labour Demand and Slack</h2>
@@ -255,7 +270,29 @@ window.Quarto = {
 <section id="abs-labour-force-data" class="level2">
 <h2 class="anchored" data-anchor-id="abs-labour-force-data">3.3 ABS Labour Force Data</h2>
 <p>This section describes the ABS Labour Force data used to measure unemployment, underemployment and underutilisation.</p>
-<p>[To be completed with the labour-market slack component.]</p>
+<section id="data-source-and-labour-market-measures" class="level3">
+<h3 class="anchored" data-anchor-id="data-source-and-labour-market-measures">3.3.1 Data Source and Labour-Market Measures</h3>
+<p>The analysis of labour market slack uses data from the Australian Bureau of Statistics (ABS) Labour Force Survey. The Labour Force Survey provides monthly measures of employment, unemployment, undermeployment and labour-force participation for the Australian population aged 15 years and over. These measures provide the basis for constructing observable indicators of labour market slack over time.</p>
+<p>Three measures are central to this analysis. The unemployment rate captures the proportion of the labour force that is unemployed, while the underemployment rate captures employed people who want and are available to work additional hours. The underutilisation rate combines unemployment and underemployment and provides a broader measure of labour underutilisation.</p>
+<p>The analysis retains unemployment and underemployment as separate measures while using underutilisation as the primary proxy for overall labour market slack. This approach allows the analysis to distinguish between different forms of unused labour capacity rather than relying on unemployment alone.</p>
+</section>
+<section id="measurement-of-labour-market-slack" class="level3">
+<h3 class="anchored" data-anchor-id="measurement-of-labour-market-slack">3.3.2 Measurement of Labour-Market Slack</h3>
+<p>Labour market slack is not directly observed as a single variable. Instead, it is approximated using observable measures of labour underutilisation. In this study, underutilisation is used as the main proxy because it incorporates both unemployment and underemployment.</p>
+<p>This distinction is important because unemployment alone may understate available labour capacity. An individual who is employed but wants and is available to work additional hours is not classified as unemployed, but their unused working time capacity is captured through underemployment. Including underemployment therefore provides a broader perspective on labour market slack.</p>
+<p>The analysis also examines unemployment and underemployment separately. This enables changes in overall underutilisation to be interpreted in terms of whether they are associated primarily with changes in unemployment, changes in the availability of additional working hours, or movements in both measures.</p>
+</section>
+<section id="data-period-and-frequency" class="level3">
+<h3 class="anchored" data-anchor-id="data-period-and-frequency">3.3.3 Data Period and Frequency</h3>
+<p>The ABS Labour Force data used in this study contain 582 monthly observations covering the period from February 1978 to July 2026. The long time span allows labour market slack to be examined across different economic conditions and major periods of labour market disruption.</p>
+<p>For the historical analysis, the data are grouped into six broad periods: 1978-1989, 1990-1994, 1995-2007, 2008-2019, 2020-2021 and 2022 onwards. These periods provide a basis for comparing labour market conditions across different phases of the Australian economy, including the early 1990s recession and the COVID-19 period.</p>
+<p>The monthly frequency of the Labour Force Survey also allows changes in unemployment, underemployment and underutilisation to be examined at a relatively detailed time scale. For the analysis of the labour market tightness, the monthly labour force measures are aligned with the quarterly ABS Job Vacancies data to construct the vacancy to unemployment ratio.</p>
+</section>
+<section id="measurement-considerations" class="level3">
+<h3 class="anchored" data-anchor-id="measurement-considerations">3.3.4 Measurement Considerations</h3>
+<p>The ABS Labour Force measures provide consistent and widely used indicators of labour market conditions, but they do not capture every dimension of unused labour capacity. In particular, underutilisation does not represent all potnetial forms of labour market slack, such as the capacity of people who are outside the labour force to enter employment or changes in workers preferred working arrangements that are not reflected in the standard measures.</p>
+<p>Underutilisation should thereore be interpreted as an observable proxy for labour market slack rather than a complete measure of unused labour resources. This limitation is important when interpreting the relationship between labour market tightness and slack. The analysis focuses on statistical associations between labour market tightness and slack. The analysis focuses on statistical associations between the measures and does not interpret these relationships as evidence of causality.</p>
+</section>
 </section>
 <section id="labour-market-tightness-1" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-tightness-1">3.4 Labour-Market Tightness</h2>
@@ -358,6 +395,182 @@ Figure&nbsp;2: Internet Vacancy Index for Australia
 <p>The IVI also shows substantial variation in recruitment activity over time. Online job advertisements increased during the earlier part of the series before declining around 2008–2009. Recruitment activity subsequently recovered, although further periods of decline and recovery are visible.</p>
 <p>One of the most pronounced movements occurs in 2020, when the IVI falls sharply. This is followed by a strong increase, with recruitment activity reaching particularly high levels around 2022. The index subsequently declines through the following years.</p>
 <p>The broad movements are similar to those observed in ABS Job Vacancies. However, the two series should not be interpreted as identical measures. The IVI measures the flow of newly lodged online advertisements each month, whereas ABS Job Vacancies measures the stock of vacancies available for immediate filling at a reference date <span class="citation" data-cites="JSAIVIMethodology ABS2026JobVacancies">(<a href="#ref-JSAIVIMethodology" role="doc-biblioref">Jobs and Skills Australia, n.d.</a>; <a href="#ref-ABS2026JobVacancies" role="doc-biblioref">Australian Bureau of Statistics 2026</a>)</span>.</p>
+</section>
+<section id="labour-market-slack-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="labour-market-slack-over-time">4.3 Labour-Market Slack Over Time</h2>
+<p>The ABS Labour Force data provide a long-run view of labour-market slack in Australia. Figure <a href="#fig-labour-market-slack" class="quarto-xref">Figure&nbsp;3</a> presents monthly unemployment, underemployment and underutilisation rates from February 1978 to July 2026. In this analysis, underutilisation is used as the primary observable proxy for labour-market slack, while unemployment and underemployment are examined separately to distinguish the different components of unused labour capacity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>slack <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"/Users/Hp/Desktop/Uni/ETC-5543/Australia-Labor-Market-Project/data/processed/labour_market_slack.csv"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>slack_long <span class="ot">&lt;-</span> slack <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    date,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    unemployment_rate,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    underemployment_rate,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    underutilisation_rate</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>      unemployment_rate,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      underemployment_rate,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      underutilisation_rate</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"measure"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"rate"</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">measure =</span> <span class="fu">recode</span>(</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>      measure,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">unemployment_rate =</span> <span class="st">"Unemployment"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">underemployment_rate =</span> <span class="st">"Underemployment"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">underutilisation_rate =</span> <span class="st">"Underutilisation"</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(slack_long, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> rate, <span class="at">colour =</span> measure)) <span class="sc">+</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Australian Labour-Market Slack Over Time"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Rate (%)"</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"Measure"</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-labour-market-slack" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-labour-market-slack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Report_files/figure-html/fig-labour-market-slack-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-labour-market-slack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Unemployment, underemployment and underutilisation in Australia
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The three measures display substantial variation over the study period and illustrate why unemployment alone may not capture the full extent of unused labour capacity. Unemployment measures people who are without work and actively seeking and available for work, whereas underemployment captures employed people who want and are available for additional hours. Underutilisation combines unemployment and underemployment and therefore provides a broader measure of labour underutilisation.</p>
+<p>To compare labour-market conditions across different stages of the sample, the analysis divides the period into six broad intervals: 1978–1989, 1990–1994, 1995–2007, 2008–2019, 2020–2021 and 2022 onwards. Table <a href="#tbl-slack-periods" class="quarto-xref">Table&nbsp;1</a> summarises the average unemployment, underemployment and underutilisation rates for each period.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>period_summary <span class="ot">&lt;-</span> slack <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">period =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"1978-02-01"</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"1989-12-01"</span>) <span class="sc">~</span> <span class="st">"1978–1989"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"1990-01-01"</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"1994-12-01"</span>) <span class="sc">~</span> <span class="st">"1990–1994"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"1995-01-01"</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2007-12-01"</span>) <span class="sc">~</span> <span class="st">"1995–2007"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"2008-01-01"</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-12-01"</span>) <span class="sc">~</span> <span class="st">"2008–2019"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"2020-01-01"</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2021-12-01"</span>) <span class="sc">~</span> <span class="st">"2020–2021"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"2022-01-01"</span>) <span class="sc">~</span> <span class="st">"2022–present"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">observations =</span> <span class="fu">n</span>(),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">unemployment =</span> <span class="fu">mean</span>(unemployment_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">underemployment =</span> <span class="fu">mean</span>(underemployment_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">underutilisation =</span> <span class="fu">mean</span>(underutilisation_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  period_summary,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Period"</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Observations"</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment (%)"</span>,</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment (%)"</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation (%)"</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-slack-periods" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slack-periods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Average labour-market slack measures by period
+</figcaption>
+<div aria-describedby="tbl-slack-periods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 20%">
+<col style="width: 23%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Period</th>
+<th style="text-align: right;">Observations</th>
+<th style="text-align: right;">Unemployment (%)</th>
+<th style="text-align: right;">Underemployment (%)</th>
+<th style="text-align: right;">Underutilisation (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1978–1989</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">7.37</td>
+<td style="text-align: right;">3.36</td>
+<td style="text-align: right;">10.73</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1990–1994</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">9.58</td>
+<td style="text-align: right;">6.12</td>
+<td style="text-align: right;">15.70</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1995–2007</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">6.52</td>
+<td style="text-align: right;">6.60</td>
+<td style="text-align: right;">13.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2008–2019</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">5.41</td>
+<td style="text-align: right;">7.71</td>
+<td style="text-align: right;">13.12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2020–2021</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">5.80</td>
+<td style="text-align: right;">9.32</td>
+<td style="text-align: right;">15.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022–present</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">3.96</td>
+<td style="text-align: right;">6.19</td>
+<td style="text-align: right;">10.16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The period averages show the level and composition of labour market slack have varied considerably across the sample. During 1978-1989, average unemployment was 7.37%, while underemployment averaged 3.36%, resulting in average underutilisation of 10.7%. Labour market slack was higher during 1990-1994, when average unemployment increased to 9.58% and average underutilisation reached 15.7%. The period also recorded a peak unemployment rate o approximately 11.2% and a peak underutilisation rate of approximately 18.2%.</p>
+<p>Between 1995 to 2007, average unemployment declined to 6.52%, while average underemployment increased to 6.60%. Average underutilisation was 13.1%. A similar pattern is evident between 2008 and 2019. Average unemployment declined further to 5.41%, while underemployment increased to 7.71%, leaving average underutilisation at approximately 13.1%. These results indicate that reductions in unemployment were not always accompanied by equivalent reductions in broader labour underutilisation.</p>
+<p>The COVID-19 period provides a distinct episode of elevated labour underutilisation. Between 2020 and 2021, average unemployment was 5.80%, while average underemployment increased to 9.32%. Average underutilisation reached 15.1%, with a peak of approximately 20.3%. The relatively large increase in underemployment during this period demonstrates the importance of considering insufficient working hours when examining labour market slack during periods of substantial economic disruption.</p>
+<p>From 2022 onwards, average unemployment declined to 3.96%, while average underemployment remained at 6.19%. Average underutilisation was 10.2%. These averages indicate a lower level of measured labour underutilisation than in the preceding periods. Hoever, underemployment remained a meaningful component of total underutilisation, reinforcing the limitation of using unemployment alone to represent unused labour capacity. This period is also shorter than the historical intervals considered above, so comparisons should be interpreted with this difference in sample length in mind.</p>
+<p>Overakk, the historical analysis demonstrates that labour market slack is not captured fully by unemployment alone. Although periods of elevated slack have generally coincided with higher unemployment, underemployment has also contributed substantially to total labour underutilisation, particularly in more recent periods. Underutilisation therefore provides a broader observable measure for the subsequent analysis, while unemployment and underemployment are retained as separate measures to examine the composition of slack.</p>
+<p>These historical patterns provide a basis for examining the relationship between labour market tightness and slack. The next section therefore compares the tightness measure with unemployment, underemployment and underutilisation to assess how these measures move relative to the availability of vacancies per unemployed person.</p>
+</section>
+<section id="labour-market-tightness-and-slack" class="level2">
+<h2 class="anchored" data-anchor-id="labour-market-tightness-and-slack">4.4 Labour-Market Tightness and Slack</h2>
 </section>
 </section>
 <section id="references" class="level1 unnumbered">
