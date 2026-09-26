@@ -145,9 +145,9 @@ wpi_vacancy_slack |>
     max_WPI_growth = max(WPI_growth, na.rm = TRUE) 
   )
 
-# ============================================================ 
-# 6. LEVEL RELATIONSHIPS 
-# ============================================================
+# ==================================================================
+# 6. ASSOCIATIONS BETWEEN LABOUR-MARKET CONDITIONS AND WAGE GROWTH
+# ==================================================================
 
 # Tightness and WPI growth 
 
@@ -313,6 +313,27 @@ wpi_vacancy_slack |>
       use = "complete.obs"
     )
   )
+
+wpi_timing <- tibble(
+  measure = c(
+    "Tightness",
+    "Underutilisation"
+  ),
+  same_quarter = c(
+    tightness_timing$same_quarter,
+    underutilisation_timing$same_quarter
+  ),
+  one_quarter_ahead = c(
+    tightness_timing$one_quarter_ahead,
+    underutilisation_timing$one_quarter_ahead
+  ),
+  two_quarter_ahead = c(
+    tightness_timing$two_quarters_ahead,
+    underutilisation_timing$two_quarters_ahead
+  )
+)
+
+wpi_timing
 
 # ============================================================
 # 10. SAVE FINAL WPI-LABOUR MARKET DATA
