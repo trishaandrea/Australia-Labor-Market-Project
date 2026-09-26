@@ -637,4 +637,37 @@ Particular care is required when interpreting the relationship between labour-ma
 
 The correlations are interpreted as measures of association only. A strong correlation does not establish that changes in vacancies or labour-market tightness cause changes in labour-market slack.
 
+## 5.5 Analysis of Changes
+
+The analysis considers both the levels and changes of labour-market indicators. While analysis in levels provides information about whether periods of relatively high labour-market tightess tend to coincide with higher or lower levels of labour-market slack, the research question focuses specifically on chnages in job vacancies and changes in labour market slack. The analysis of changes therefore provides a closer match in main research question. 
+
+For each labour market variable, the change between consecutive quarterly observations is calculated as:
+
+$$
+\Delta X_t = X_t - X_{t-1}
+$$
+where $X_t$ represents the value of the variable in the current quarter and $X_{t-1}$ represents its value in the previous quarter. A positive value therefore represents an increase relative to the previous quarter, while a negative value represents a decrease. 
+
+This transformation is applied to labour market tightness and the three measures of labour market slack. The change in tightness is calculated as :
+
+$$
+\Delta T_t = T_t - T_{t-1}
+$$
+where $T_t$ represents the vacancy-to-unemployment ratio. Changes in unemployment, underemployment and underutilisation are calculated similarly:
+$$
+\Delta U_t = U_t - U_{t-1}
+$$
+$$
+\Delta UE_t = UE_t - UE_{t-1}
+$$
+$$
+\Delta UR_t = UR_t - UR_{t-1}
+$$
+where $U_t$ denotes the unemployment rate, $UE_t$ denotes the underemployment rate and $UR_t$ denotes the underutilisation rate.
+
+The change-based analysis is used to examine whether periods in which labour-market tightness increases or decreases are associated with corresponding movements in labour-market slack. This reduces the emphasis on long-run differences in the level of the variables and instead focuses on quarter-to-quarter movements.
+The analysis also compares changes in labour-market conditions between observations classified as high-tightness and high-slack periods and the remaining observations. This provides an exploratory way of identifying whether periods in which relatively high labour-market tightness coexists with relatively high labour-market slack exhibit different patterns of change.
+The change analysis remains descriptive. A correlation between changes in two variables indicates that their movements are associated over the period examined, but it does not establish that a change in one variable causes a change in the other.
+
+
 # References
