@@ -757,6 +757,77 @@ Figure&nbsp;6: Labour-market tightness and measures of labour-market slack
 <p>Particular care is required when interpreting the relationship between labour-market tightness and unemployment because unemployed persons are included in the denominator of the tightness measure. Consequently, part of the negative relationship between these two variables may arise mechanically from the construction of the ratio. Comparisons with underemployment and underutilisation provide additional evidence because these measures are not directly used in the calculation of the tightness ratio.</p>
 <p>The correlations are interpreted as measures of association only. A strong correlation does not establish that changes in vacancies or labour-market tightness cause changes in labour-market slack.</p>
 </section>
+<section id="analysis-of-changes" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-of-changes">5.5 Analysis of Changes</h2>
+<p>The analysis considers both the levels and changes of labour-market indicators. While analysis in levels provides information about whether periods of relatively high labour-market tightess tend to coincide with higher or lower levels of labour-market slack, the research question focuses specifically on chnages in job vacancies and changes in labour market slack. The analysis of changes therefore provides a closer match in main research question.</p>
+<p>For each labour market variable, the change between consecutive quarterly observations is calculated as:</p>
+<p><span class="math display">\[
+\Delta X_t = X_t - X_{t-1}
+\]</span> where <span class="math inline">\(X_t\)</span> represents the value of the variable in the current quarter and <span class="math inline">\(X_{t-1}\)</span> represents its value in the previous quarter. A positive value therefore represents an increase relative to the previous quarter, while a negative value represents a decrease.</p>
+<p>This transformation is applied to labour market tightness and the three measures of labour market slack. The change in tightness is calculated as :</p>
+<p><span class="math display">\[
+\Delta T_t = T_t - T_{t-1}
+\]</span> where <span class="math inline">\(T_t\)</span> represents the vacancy-to-unemployment ratio. Changes in unemployment, underemployment and underutilisation are calculated similarly: <span class="math display">\[
+\Delta U_t = U_t - U_{t-1}
+\]</span> <span class="math display">\[
+\Delta UE_t = UE_t - UE_{t-1}
+\]</span> <span class="math display">\[
+\Delta UR_t = UR_t - UR_{t-1}
+\]</span> where <span class="math inline">\(U_t\)</span> denotes the unemployment rate, <span class="math inline">\(UE_t\)</span> denotes the underemployment rate and <span class="math inline">\(UR_t\)</span> denotes the underutilisation rate.</p>
+<p>The change-based analysis is used to examine whether periods in which labour-market tightness increases or decreases are associated with corresponding movements in labour-market slack. This reduces the emphasis on long-run differences in the level of the variables and instead focuses on quarter-to-quarter movements. The analysis also compares changes in labour-market conditions between observations classified as high-tightness and high-slack periods and the remaining observations. This provides an exploratory way of identifying whether periods in which relatively high labour-market tightness coexists with relatively high labour-market slack exhibit different patterns of change. The change analysis remains descriptive. A correlation between changes in two variables indicates that their movements are associated over the period examined, but it does not establish that a change in one variable causes a change in the other.</p>
+</section>
+<section id="timing-and-lagged-relationships" class="level2">
+<h2 class="anchored" data-anchor-id="timing-and-lagged-relationships">5.6 Timing and Lagged Relationships</h2>
+<p>The analysis also exmaines whether relationships between labour market conditions and wage growth occur contemporaneously or with a time lag. This is relevant because changes in labour market tightness or slack may not be reflected immediately in wage outcomes. Employers and workers may take time to adjust wages following changes in labour market conditions.</p>
+<p>To examine the timing of these relationships, correlations are calculated between labour market indicators in the current quarter and Wage Price Index (WPI) growth in the same quarter and subsequent quarters. The same quarter relationship is represented as :</p>
+<p><span class="math display">\[
+Corr(X_t, Y_t)
+\]</span> where <span class="math inline">\(X_t\)</span> represents the labour market indicator in quarter <span class="math inline">\(t\)</span> and <span class="math inline">\(Y_t\)</span> represents WPI growth in the same quarter.</p>
+<p>A one-quarter ahead relationship is calculated as:</p>
+<p><span class="math display">\[
+Corr(X_t, Y_{t+1})
+\]</span></p>
+<p>where WPI growth occurs one quarter after the labour market indicator. A two-quarter ahead relationship is similarly calculated as:</p>
+<p><span class="math display">\[
+Corr(X_t, Y_{t+2})
+\]</span></p>
+<p>where WPI growth occurs two quarters after the labour-market indicator.</p>
+<p>This approach is applied to labour market tightness and underutilisation. Tightness represents the number of job vacancies relative to unemployed persons, while underutilisation provides the primary observable measure of labour market slack. WPI growth is calculated as the percentage change in the Wage Price Index between consecutive quarters:</p>
+<p><span class="math display">\[
+g_t =
+\left(
+\frac{WPI_t}{WPI_{t-1}} - 1
+\right) \times 100
+\]</span></p>
+<p>The timing analysis is intended to identify whether the statistical association between labour market conditions and wage growth is stronger contemporaneously or at subsequent quarters. It does not constitute a forecasting model and does not establish that changes n labour market conditions cause subsequent changes in wages. The results are therefore interpreted as evidence of the timing and strength of statistical associations within the sample.</p>
+<p>The analysis also provides a complementary perspective on. the relationship between labour market tightness, labour market slack and wage outcomes. If the relationship between tightness and WPI growth is stronger at subsequent quarters, this may indicate that wage growth is more closely associated with earlier labour market cinditions than with conditions measured in the same quarter. Similarly, differences in the timing of the underutilisation relationship provide information about how broader labour market slack and wage growth move together over time.</p>
+</section>
+<section id="high-tightness-and-high-slack-classification" class="level2">
+<h2 class="anchored" data-anchor-id="high-tightness-and-high-slack-classification">5.7 High-Tightness and High-Slack Classification</h2>
+<p>To further exmaine periods in which labour market tightness and labour market slack occur simultaneously, the analysis classifies quarterly observations according to whether labour market tightness and underutilisation are above or below their respective sample medians. The median is used as the classification threshold because it divides the observations into relatively high and low values without imposing an arbitrary numerical cutoff.</p>
+<p>For labour-market tightness, the classification is defined as:</p>
+<p><span class="math display">\[
+T_t =
+\begin{cases}
+\text{High tightness}, &amp; T_t &gt; \widetilde{T} \\
+\text{Low tightness}, &amp; T_t \leq \widetilde{T}
+\end{cases}
+\]</span></p>
+<p>where <span class="math inline">\(T_t\)</span> represents labour-market tightness in quarter <span class="math inline">\(t\)</span> and <span class="math inline">\(\widetilde{T}\)</span> represents the sample median of labour-market tightness.</p>
+<p>Underutilisation is classified in the same way:</p>
+<p><span class="math display">\[
+UU_t =
+\begin{cases}
+\text{High slack}, &amp; UU_t &gt; \widetilde{UU} \\
+\text{Low slack}, &amp; UU_t \leq \widetilde{UU}
+\end{cases}
+\]</span></p>
+<p>where <span class="math inline">\(UU_t\)</span> represents the underutilisation rate in quarter <span class="math inline">\(t\)</span> and <span class="math inline">\(\widetilde{UU}\)</span> represents its sample median.</p>
+<p>Combining the two classifications produces four groups: low tightness with low slack, low tightness with high slack, high tightness with low slack, and high tightness with high slack. The resulting groups are used to examine whether periods of relatively high labour-market tightness consistently coincide with lower labour-market slack, or whether there are periods in which both measures are relatively high.</p>
+<p>The high-tightness and high-slack group is of particular interest because it represents periods in which the number of vacancies relative to unemployed persons is relatively high while the underutilisation rate is also relatively high. Such observations may be consistent with differences between the types of workers available and the types of jobs being advertised, differences in working hours, occupational or geographic factors, or other recruitment frictions. However, the aggregate data used in this study cannot directly identify the mechanism underlying these observations.</p>
+<p>The classification is therefore treated as an exploratory descriptive analysis rather than a formal test of labour-market mismatch. In particular, a high-tightness and high-slack observation does not by itself demonstrate that a mismatch exists. It only identifies a period in which the two aggregate indicators are simultaneously above their respective sample medians.</p>
+<p>The analysis subsequently compares the number and characteristics of observations in each group. Changes in tightness, unemployment, underemployment and underutilisation are also compared between the high-tightness and high-slack group and the remaining observations. This provides an additional basis for examining whether these periods display different patterns of labour-market adjustment.</p>
+</section>
 </section>
 <section id="references" class="level1 unnumbered">
 
