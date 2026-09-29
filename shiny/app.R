@@ -657,7 +657,22 @@ ui <- fluidPage(
 
         br(),
 
-
+        # ------------------------------------------------------
+        # LABOUR DEMAND SNAPSHOT
+        # ------------------------------------------------------
+        
+        h4("Labour Demand Snapshot"),
+        
+        strong("Latest job vacancies"),
+        
+        br(),
+        
+        textOutput(
+          "latest_vacancies"
+        ),
+        
+        br(),
+        br(),
         div(
 
           class = "info-box",
@@ -1061,7 +1076,41 @@ server <- function(input, output, session) {
 
   )
 
-
+  # ==========================================================
+  # LATEST JOB VACANCIES
+  # ==========================================================
+  
+  output$latest_vacancies <- renderText({
+    
+    data <-
+      filtered_data()
+    
+    latest <-
+      data |>
+      filter(
+        !is.na(Job_Vacancies)
+      ) |>
+      slice_tail(
+        n = 1
+      )
+    
+    if (nrow(latest) == 0) {
+      
+      return("N/A")
+      
+    }
+    
+    paste0(
+      round(
+        latest$Job_Vacancies,
+        1
+      ),
+      " thousand"
+    )
+    
+  })
+  
+  
   # ==========================================================
   # AVERAGE SLACK
   # ==========================================================
