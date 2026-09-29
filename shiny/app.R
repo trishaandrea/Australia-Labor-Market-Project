@@ -793,6 +793,30 @@ ui <- fluidPage(
 
         ),
 
+        # --------------------------------------------------
+        # JOB VACANCIES OVER TIME
+        # --------------------------------------------------
+        
+        div(
+          
+          class = "dashboard-card",
+          
+          h3(
+            class = "section-title",
+            "Job Vacancies Over Time"
+          ),
+          
+          p(
+            class = "section-description",
+            "Quarterly job vacancies across the selected analysis period."
+          ),
+          
+          plotlyOutput(
+            "vacancies_plot",
+            height = "500px"
+          )
+          
+        ),
 
         # --------------------------------------------------
         # TIME SERIES
@@ -1357,7 +1381,72 @@ server <- function(input, output, session) {
 
   })
 
-
+  # ==========================================================
+  # JOB VACANCIES PLOT
+  # ==========================================================
+  
+  output$vacancies_plot <- renderPlotly({
+    
+    data <-
+      filtered_data() |>
+      filter(
+        !is.na(Job_Vacancies)
+      )
+    
+    p <-
+      ggplot(
+        data,
+        aes(
+          x = Quarter,
+          y = Job_Vacancies,
+          text = paste0(
+            "<b>", Quarter, "</b>",
+            "<br>Job vacancies: ",
+            round(Job_Vacancies, 1),
+            " thousand"
+          )
+        )
+      ) +
+      
+      geom_line(
+        linewidth = 1.1,
+        colour = "#2563eb"
+      ) +
+      
+      geom_point(
+        size = 2.5,
+        colour = "#2563eb"
+      ) +
+      
+      labs(
+        x = NULL,
+        y = "Job vacancies ('000)"
+      ) +
+      
+      theme_minimal(
+        base_size = 14
+      ) +
+      
+      theme(
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank()
+      )
+    
+    ggplotly(
+      p,
+      tooltip = "text"
+    ) |>
+      
+      layout(
+        hovermode = "x unified"
+      ) |>
+      
+      config(
+        displaylogo = FALSE
+      )
+    
+  })
+  
   # ==========================================================
   # TIME SERIES PLOT
   # ==========================================================
