@@ -1027,6 +1027,96 @@ Figure&nbsp;7: Labour-Market Tightness and Labour-Market Slack
 </div>
 </div>
 </section>
+<section id="timing-of-labour-market-conditions-and-wage-growth" class="level2">
+<h2 class="anchored" data-anchor-id="timing-of-labour-market-conditions-and-wage-growth">6.4 Timing of Labour-Market Conditions and Wage Growth</h2>
+<p>The WPI analysis provides an extension to the main investigation by examining whether labour market conditions are associated with subsequent wage growth. Quarterly WPI growth has compared with labour market tightness and underutilisation rate. To examine the timing of these reationships, correlations were calculated between each labour market measure and WPI growth in the same quarter, one quarter ahead and two quarters ahead.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>wpi_timing <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Labour-market measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Labour-market tightness"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Same quarter</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.403</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.774</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">One quarter ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.422</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.751</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Two quarters ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.438</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.649</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  wpi_timing,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Labour market measure"</span>,</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Same quarter"</span>,</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"One quarter ahead"</span>,</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Two quarters ahead"</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-wpi-timing" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wpi-timing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Correlations between labour market conditions and WPI growth at different horizons
+</figcaption>
+<div aria-describedby="tbl-wpi-timing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 17%">
+<col style="width: 24%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Labour market measure</th>
+<th style="text-align: right;">Same quarter</th>
+<th style="text-align: right;">One quarter ahead</th>
+<th style="text-align: right;">Two quarters ahead</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Labour-market tightness</td>
+<td style="text-align: right;">0.403</td>
+<td style="text-align: right;">0.422</td>
+<td style="text-align: right;">0.438</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Underutilisation</td>
+<td style="text-align: right;">-0.774</td>
+<td style="text-align: right;">-0.751</td>
+<td style="text-align: right;">-0.649</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The results show a positive association between labour market tightness and WPI growth. The same quarter correlation is 0.403, increasing to 0.422 when WPI growth is measured one quarter ahead and to 0.438 when measured two quarters ahead. This indicates that periods of higher labour market tightness are associated with higher wage growth both contemporaneiysly and at the subsequent one and two-quarters ahead. The slightly stronger correlations at the longer horizons suggest that the association between tightness and wage growth may persist beyond the quarter in which labour market conditions are measured.</p>
+<p>Underutilisation shows a stronger negative association with WPI growth. The same-quarter correlation is -0.774, compared with -0.751 for WPI growth one quarter ahead and -0.649 for WPI growth for two-quarters ahead. Thus, higher levels of labour underutilisation are associated with lower wage growth, while lower underutilisation is associated with stronger wage growth. Although magnitude of the negative association declines as the time hoirzon increases, the relationship remains negative across all three periods exmained.</p>
+<p>Overall, the WPI extension provides evidence that the mmeasure of labour market conditions examined in this report are associated with wage growth. The positive relationship between tightness and WPI growth and the negative relationship between tightness and WPI growth and negative relationship between underutilisation and WPI growth are consistent with a labour market in which tighter conditions and lower unused labour capacity coincide with stronger wage growth. However, these results are based on correlations and therefore describe statistical associations rather than casual effects. other economic factors that influence wage growth are not controlled for in this analysis.</p>
+</section>
+<section id="high-tightness-and-high-slack-periods" class="level2">
+<h2 class="anchored" data-anchor-id="high-tightness-and-high-slack-periods">6.5 High-Tightness and High-Slack Periods</h2>
+<p>The previous results show that labour market tightness is generally negatively associated with unemployment, underemployment and underutilisation. However, this overall relationship does not imply that high tigntness and high labour market slack never occur simultaneously. To exmaine this possibility, quarterly observations were classifed according to whether labour market tightness and underutilisation were above or below their respective sample medians.</p>
+<p>The classification identifies four groups: low tightness with low slack, low tightness with high slack, high tightness with low slack, and high tightness with high slack. The high tightness and high slack group is particularly relevant because it identifies periods in which vacancies were relatively high comapred with the number of unemployed persons while the broader measure of labour underutilisation was also relatively high.</p>
+<p>The high tightness and high slack classification identified 10 observations, while the remaining 72 observations were classified into the three groups. The high tightness and high slack observations had an average tightness ratio of approximately 0.372, compared with 0.381 for the remaining observations. Despite the classification as high tightness, the average tightness ratio was therefore not substantially higher than that of the remaining observations.</p>
+<p>The differences are more apparent in the measures of labour market slack. The high tightness and high slack group had an average unemployment rate of approximately 5.18%, compared with 5.01% for the remaining observations. Average underemployment was higher at approximately 8.40%, compared with 7.28% in the remaining observations. Similarly, average underutilisation was approximately 13.6% in the high tightness and high slack group, compared with 12.3% for the remaining observations.</p>
+<p>These results demonstrate that periods of relatively high labour market tightness can occur alongside relatively high labour market slack. The difference is particularly evident for udnermeployment and underutilisation, while the diference in unemployment is comparatively small. This suggests that the coexistence of high tightness and high slack is not necessarily driven by a large increase in unemployment alone.</p>
+<p>The simultaneous occurence of high tightness and high slack may be consistent with several possible labour market mechanisms. For example, the vacancies being advertised may not correspond closely to the skills, occupations, locations or working hour preferences of workers experiencing underutilisation. Recruitment frictions or differences between the types of labour demanded and the labour available could also contribute. However, the aggregate data used in this study do not allow these mechanisms to be identified directly.</p>
+<p>The change analysis provides an additional perspective. Comparing quarter-to-quarter movements between the high-tightness and high-slack observations and the remaining observations helps assess whether these periods are characterised by different patterns of labour-market adjustment. These comparisons should be interpreted cautiously because the high-tightness and high-slack group contains relatively few observations.</p>
+<p>Overall, the classification provides evidence that high labour-market tightness and high labour-market slack can coexist in the Australian data. However, the classification should not be interpreted as a formal measure of labour-market mismatch. It identifies periods in which two aggregate indicators are simultaneously above their sample medians, but it does not establish why this occurs. The finding therefore complements the correlation analysis by showing that the generally negative relationship between tightness and slack is not universal across all individual observations.</p>
+</section>
 </section>
 <section id="references" class="level1 unnumbered">
 
