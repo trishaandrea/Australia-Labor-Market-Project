@@ -5,10 +5,6 @@
 # Research Question:
 # To what extent are changes in job vacancies associated
 # with changes in labour-market slack in Australia?
-#
-# IMPORTANT:
-# app.R is inside the /shiny folder.
-# Therefore all project data paths use ../data/...
 # ============================================================
 
 
@@ -26,12 +22,6 @@ library(scales)
 # ============================================================
 # 2. PROJECT PATHS
 # ============================================================
-
-# Because this app.R is inside:
-# Australia-Labor-Market-Project/shiny/
-#
-# the data folder is one level above:
-# ../data/processed/
 
 data_path <- function(file) {
   file.path("..", "data", "processed", file)
