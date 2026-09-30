@@ -63,6 +63,10 @@ The remainder of this report is organised as follows. Section 2 introduces the m
 
 ## 2.1 Labour Demand and Job Vacancies
 
+Labour demand refers to employers' demand for workers. Job vacancies provide an observable measure of this demand because they represent positions that employers are seeking to fill. Higher vacancies generally indicate stronger labour demand, while lower vacancies may indicate weaker demand.
+
+This project uses job vacancies as the main measure of labour demand and examines whether short-run changes in vacancies are associated with changes in unemployment, underemployment and underutilisation. The vacancy datasets used in the analysis are described in Section 3.
+
 ## 2.2 Labour-Market Slack
 
 Labour market slack refers to the extent to which available labour resources are not fully utilised. While unemployment captures people who are without employment and actively seeking and avaiable to work, it does not capture all forms o unused labour capacity. Some employed people may wish to work additional hours, while other potential forms of labour underutilisation may not be reflected in the unemployment rate alone. 
@@ -96,7 +100,15 @@ Labour market tightness and labour market slack represent two related but distin
 
 ## 2.4 Relationship Between Labour Demand and Slack
 
+Labour demand and labour-market slack are generally expected to move in opposite directions. Stronger demand for workers may create more employment opportunities and reduce unemployment or underemployment, while weaker demand may be associated with greater slack.
+
+However, this relationship may not be immediate or consistent across all periods. The analysis therefore examines whether short-run changes in job vacancies are associated with changes in unemployment, underemployment and underutilisation, with labour-market tightness used as a complementary measure.
+
 ## 2.5 Australian Labour-Market Context
+
+Australia's labour market has experienced substantial changes over the period covered by this study, including economic slowdowns and major disruptions such as the Global Financial Crisis and the COVID-19 pandemic. These events affected both labour demand and unused labour capacity.
+
+These changing conditions provide useful context for examining whether the relationship between job vacancies and labour-market slack varies over time. The historical analysis provides broader context, while the main analysis focuses on periods where vacancy and slack measures can be consistently aligned.
 
 # 3. Data and Measurement
 
