@@ -936,71 +936,222 @@ This indicates that quarters with increasing labour-market tightness generally c
 
 Together with Section 6.2, these results show that the negative relationship between tightness and slack is visible both in their levels and in their short-run movements. However, these correlations describe contemporaneous associations and do not establish causation.
 
-## 6.4 Timing of Labour-Market Conditions and Wage Growth
+## 6.4 Differences Across Occupations and Skill Levels
 
-The WPI analysis provides an extension to the main investigation by examining whether labour market conditions are associated with subsequent wage growth. Quarterly WPI growth has compared with labour market tightness and underutilisation rate. To examine the timing of these reationships, correlations were calculated between each labour market measure and WPI growth in the same quarter, one quarter ahead and two quarters ahead. 
+The aggregate vacancy measures used in the previous sections may conceal differences in labour demand across different parts of the labour market. To explore this variation, Internet Vacancy Index (IVI) data were examined across broad occupation groups and skill levels using the latest available national observation.
+
+### Broad Occupation Groups
+
+The latest available national observation was used to compare online job vacancies across broad occupation groups.
 
 ```{r}
-#| label: tbl-wpi-timing
-#| tbl-cap: "Correlations between labour market conditions and WPI growth at different horizons"
+#| label: fig-results-occupation-vacancies
+#| fig-cap: "Online job vacancies by broad occupation group in the latest available observation"
 #| warning: false
 #| message: false
 
+latest_month <- max(
+  ivi_anzsco2$Month,
+  na.rm = TRUE
+)
 
-wpi_timing <- tibble(
+occupation_latest <- ivi_anzsco2 |>
+  filter(
+    Level == 2,
+    State == "AUST",
+    Month == latest_month
+  ) |>
+  arrange(Vacancies)
+
+ggplot(
+  occupation_latest,
+  aes(
+    x = Vacancies,
+    y = reorder(Title, Vacancies),
+    fill = Title
+  )
+) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_viridis_d(option = "D") +
+  labs(
+    title = "Online Job Vacancies by Occupation",
+    subtitle = paste(
+      "Australia,",
+      format(latest_month, "%B %Y")
+    ),
+    x = "Online job vacancies",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      size = 16,
+      face = "bold"
+    ),
+    plot.subtitle = element_text(size = 11),
+    axis.text.y = element_text(size = 10)
+  )
+```
+
+Figure @fig-results-occupation-vacancies shows that online job vacancies are not evenly distributed across broad occupation groups. Professionals recorded the highest number of vacancies in the latest available observation, followed by Technicians and Trades Workers and Clerical and Administrative Workers. Machinery Operators and Drivers and Labourers recorded comparatively lower vacancy levels.
+
+These differences show that aggregate vacancy measures can conceal substantial variation in labour demand across occupations. Therefore, changes in total vacancies may reflect different labour-demand conditions across different parts of the labour market.
+
+### Skill Levels
+
+Vacancy levels were also compared across skill levels to examine whether labour demand was distributed evenly across different skill requirements.
+
+```{r}
+#| label: load-skill-data
+#| include: false
+
+ivi_skill <- read_csv(
+  "../data/processed/ivi_skill_clean.csv",
+  show_col_types = FALSE
+)
+```
+
+```{r}
+#| label: fig-results-skill-vacancies
+#| fig-cap: "Online job vacancies by skill level in the latest available observation"
+#| warning: false
+#| message: false
+
+latest_skill_month <- max(
+  ivi_skill$Month,
+  na.rm = TRUE
+)
+
+skill_latest <- ivi_skill |>
+  filter(
+    State == "AUST",
+    Month == latest_skill_month,
+    Skill_level %in% 1:5
+  ) |>
+  group_by(Skill_level) |>
+  summarise(
+    Vacancies = sum(Vacancies, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(
+  skill_latest,
+  aes(
+    x = Vacancies,
+    y = reorder(
+      paste("Skill Level", Skill_level),
+      Vacancies
+    ),
+    fill = factor(Skill_level)
+  )
+) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_viridis_d(option = "D") +
+  labs(
+    title = "Online Job Vacancies by Skill Level",
+    subtitle = paste(
+      "Australia,",
+      format(latest_skill_month, "%B %Y")
+    ),
+    x = "Online job vacancies",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      size = 16,
+      face = "bold"
+    ),
+    plot.subtitle = element_text(size = 11),
+    axis.text.y = element_text(size = 10)
+  )
+```
+
+Figure @fig-results-skill-vacancies shows that online job vacancies also differ across skill levels. Skill Level 1 recorded the highest vacancy level among the five skill-level categories in the latest available observation, while the remaining skill levels recorded lower levels of vacancies.
+
+Together, the occupation and skill-level results indicate that labour demand is not distributed uniformly across the Australian labour market. This provides additional context for the aggregate results in the previous sections: movements in overall vacancies may conceal different labour-demand conditions across occupations and skill requirements.
+
+However, this analysis provides a cross-sectional snapshot of the latest available observation rather than evidence that occupation or skill-level differences explain the aggregate relationship between vacancies and labour-market slack. Further analysis would be required to directly link occupation- or skill-specific vacancy patterns with corresponding measures of labour-market slack.
+
+## 6.5 Wage Price Index Extension
+
+As a supplementary analysis, the Wage Price Index (WPI) was used to examine whether labour-market conditions are associated with wage growth. This extends the main analysis by considering whether tighter labour-market conditions and lower labour-market slack are also reflected in wage movements.
+
+The analysis compares quarterly WPI growth with labour-market tightness and underutilisation in the same quarter, as well as WPI growth one and two quarters ahead.
+
+```{r}
+#| label: tbl-wpi-timing
+#| tbl-cap: "Correlation between labour-market conditions and WPI growth"
+#| warning: false
+#| message: false
+
+wpi_data <- read_csv(
+  "../data/processed/wpi_vacancy_slack.csv",
+  show_col_types = FALSE
+) |>
+  arrange(Quarter) |>
+  mutate(
+    WPI_growth_lead1 = lead(WPI_growth, 1),
+    WPI_growth_lead2 = lead(WPI_growth, 2)
+  )
+
+wpi_results <- tibble(
   `Labour-market measure` = c(
-    "Labour-market tightness",
+    "Tightness",
     "Underutilisation"
   ),
+
   `Same quarter` = c(
-    0.403,
-    -0.774
+    cor(
+      wpi_data$Tightness,
+      wpi_data$WPI_growth,
+      use = "complete.obs"
+    ),
+    cor(
+      wpi_data$underutilisation_rate,
+      wpi_data$WPI_growth,
+      use = "complete.obs"
+    )
   ),
-  `One quarter ahead` = c(
-    0.422,
-    -0.751
+
+  `1 quarter ahead` = c(
+    cor(
+      wpi_data$Tightness,
+      wpi_data$WPI_growth_lead1,
+      use = "complete.obs"
+    ),
+    cor(
+      wpi_data$underutilisation_rate,
+      wpi_data$WPI_growth_lead1,
+      use = "complete.obs"
+    )
   ),
-  `Two quarters ahead` = c(
-    0.438,
-    -0.649
+
+  `2 quarters ahead` = c(
+    cor(
+      wpi_data$Tightness,
+      wpi_data$WPI_growth_lead2,
+      use = "complete.obs"
+    ),
+    cor(
+      wpi_data$underutilisation_rate,
+      wpi_data$WPI_growth_lead2,
+      use = "complete.obs"
+    )
   )
 )
 
 knitr::kable(
-  wpi_timing,
-  digits = 3, 
-  col.names = c(
-    "Labour market measure",
-    "Same quarter",
-    "One quarter ahead",
-    "Two quarters ahead"
-  )
+  wpi_results,
+  digits = 2
 )
 ```
 
-The results show a positive association between labour market tightness and WPI growth. The same quarter correlation is 0.403, increasing to 0.422 when WPI growth is measured one quarter ahead and to 0.438 when measured two quarters ahead. This indicates that periods of higher labour market tightness are associated with higher wage growth both contemporaneiysly and at the subsequent one and two-quarters ahead. The slightly stronger correlations at the longer horizons suggest that the association between tightness and wage growth may persist beyond the quarter in which labour market conditions are measured. 
+Table @tbl-wpi-timing compares the relationship between labour-market conditions and wage growth across different timing assumptions. Labour-market tightness is positively associated with WPI growth, while underutilisation is negatively associated with WPI growth.
 
-Underutilisation shows a stronger negative association with WPI growth. The same-quarter correlation is -0.774, compared with -0.751 for WPI growth one quarter ahead and -0.649 for WPI growth for two-quarters ahead. Thus, higher levels of labour underutilisation are associated with lower wage growth, while lower underutilisation is associated with stronger wage growth. Although magnitude of the negative association declines as the time hoirzon increases, the relationship remains negative across all three periods exmained. 
+The relationships persist when labour-market conditions are compared with wage growth one and two quarters ahead. For tightness, the correlation increases slightly from 0.40 in the same quarter to 0.44 two quarters ahead. In contrast, the negative correlation for underutilisation becomes weaker, changing from -0.77 in the same quarter to -0.65 two quarters ahead. This suggests that the timing of the relationship with wage growth differs across the two labour-market measures.
 
-Overall, the WPI extension provides evidence that the mmeasure of labour market conditions examined in this report are associated with wage growth. The positive relationship between tightness and WPI growth and the negative relationship between tightness and WPI growth and negative relationship between underutilisation and WPI growth are consistent with a labour market in which tighter conditions and lower unused labour capacity coincide with stronger wage growth. However, these results are based on correlations and therefore describe statistical associations rather than casual effects. other economic factors that influence wage growth are not controlled for in this analysis. 
+Overall, the WPI extension provides additional context for the main findings. Tighter labour-market conditions tend to be associated with stronger wage growth, while greater underutilisation tends to be associated with weaker wage growth. These relationships are descriptive and should not be interpreted as evidence of causality.
 
-## 6.5 High-Tightness and High-Slack Periods
-
-The previous results show that labour market tightness is generally negatively associated with unemployment, underemployment and underutilisation. However, this overall relationship does not imply that high tigntness and high labour market slack never occur simultaneously. To exmaine this possibility, quarterly observations were classifed according to whether labour market tightness and underutilisation were above or below their respective sample medians. 
-
-The classification identifies four groups: low tightness with low slack, low tightness with high slack, high tightness with low slack, and high tightness with high slack. The high tightness and high slack group is particularly relevant because it identifies periods in which vacancies were relatively high comapred with the number of unemployed persons while the broader measure of labour underutilisation was also relatively high. 
-
-The high tightness and high slack classification identified 10 observations, while the remaining 72 observations were classified into the three groups. The high tightness and high slack observations had an average tightness ratio of approximately 0.372, compared with 0.381 for the remaining  observations. Despite the classification as high tightness, the average tightness ratio was therefore not substantially higher than that of the remaining observations. 
-
-The differences are more apparent in the measures of labour market slack. The high tightness and high slack group had an average unemployment rate of approximately 5.18%, compared with 5.01% for the remaining observations. Average underemployment was higher at approximately 8.40%, compared with 7.28% in the remaining observations. Similarly, average underutilisation was approximately 13.6% in the high tightness and high slack group, compared with 12.3% for the remaining observations. 
-
-These results demonstrate that periods of relatively high labour market tightness can occur alongside relatively high labour market slack. The difference is particularly evident for udnermeployment and underutilisation, while the diference in unemployment is comparatively small. This suggests that the coexistence of high tightness and high slack is not necessarily driven by a large increase in unemployment alone. 
-
-The simultaneous occurence of high tightness and high slack may be consistent with several possible labour market mechanisms. For example, the vacancies being advertised may not correspond closely to the skills, occupations, locations or working hour preferences of workers experiencing underutilisation. Recruitment frictions or differences between the types of labour demanded and the labour available could also contribute. However, the aggregate data used in this study do not allow these mechanisms to be identified directly.
-
-
-The change analysis provides an additional perspective. Comparing quarter-to-quarter movements between the high-tightness and high-slack observations and the remaining observations helps assess whether these periods are characterised by different patterns of labour-market adjustment. These comparisons should be interpreted cautiously because the high-tightness and high-slack group contains relatively few observations.
-
-Overall, the classification provides evidence that high labour-market tightness and high labour-market slack can coexist in the Australian data. However, the classification should not be interpreted as a formal measure of labour-market mismatch. It identifies periods in which two aggregate indicators are simultaneously above their sample medians, but it does not establish why this occurs. The finding therefore complements the correlation analysis by showing that the generally negative relationship between tightness and slack is not universal across all individual observations.
 
 # References
