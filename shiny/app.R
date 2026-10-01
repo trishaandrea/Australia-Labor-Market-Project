@@ -1,10 +1,12 @@
 # ============================================================
-# AUSTRALIA LABOUR-MARKET PROJECT
-# Shiny Dashboard
+# AUSTRALIAN LABOUR MARKET DASHBOARD
+# ETC-5543
 #
 # Research Question:
 # To what extent are changes in job vacancies associated
 # with changes in labour-market slack in Australia?
+#
+# Author: Rimlan
 # ============================================================
 
 
@@ -14,222 +16,607 @@
 
 library(shiny)
 library(tidyverse)
+library(lubridate)
 library(plotly)
 library(DT)
 library(scales)
 
 
 # ============================================================
-# 2. PROJECT PATHS
+# 2. COLOUR PALETTE
 # ============================================================
 
-data_path <- function(file) {
-  file.path("..", "data", "processed", file)
-}
+dashboard_palette <- c(
+  "Unemployment" = "#2774C6",
+  "Underemployment" = "#E67E22",
+  "Underutilisation" = "#087F8C",
+  "Youth" = "#7657A8",
+  "Overall" = "#12355B",
+  "Vacancies" = "#2774C6",
+  "Tightness" = "#087F8C",
+  "WPI Growth" = "#E67E22"
+)
 
-
-# ============================================================
-# 3. COLOUR PALETTE
-# ============================================================
-
-COLORS <- list(
-
-  # Main brand colours
-  navy = "#17324D",
-  teal = "#176B87",
-  orange = "#E76F51",
-  gold = "#F4A261",
-  purple = "#7B61A8",
-
-  # Slack colours
-  unemployment = "#E76F51",
-  underemployment = "#F4A261",
-  underutilisation = "#176B87",
-
-  # Demand / tightness
-  vacancies = "#2A9D8F",
-  tightness = "#176B87",
-
-  # Supporting colours
-  grey = "#6C757D",
-  light_grey = "#EEF3F7",
-  dark = "#243447",
-  white = "#FFFFFF"
+occupation_palette <- c(
+  "#12355B",
+  "#2774C6",
+  "#087F8C",
+  "#19947A",
+  "#E67E22",
+  "#D95F02",
+  "#7657A8",
+  "#8C6BB1",
+  "#5C7AEA",
+  "#4E9F8A"
 )
 
 
 # ============================================================
-# 4. HELPER FUNCTIONS
+# 3. HELPER FUNCTIONS
 # ============================================================
 
-safe_read_csv <- function(path) {
+# ------------------------------------------------------------
+# Find files regardless of whether app is run from project
+# root or from shiny/
+# ------------------------------------------------------------
 
-  if (!file.exists(path)) {
-    return(NULL)
+find_project_file <- function(filename) {
+
+  possible_paths <- c(
+    file.path("..", "data", "processed", filename),
+    file.path("data", "processed", filename),
+    file.path("..", "..", "data", "processed", filename)
+  )
+
+  existing_paths <- possible_paths[file.exists(possible_paths)]
+
+  if (length(existing_paths) == 0) {
+    return(NA_character_)
+  }
+
+  existing_paths[1]
+}
+
+
+# ------------------------------------------------------------
+# Safely read CSV
+# ------------------------------------------------------------
+
+safe_read_csv <- function(filename) {
+
+  file_path <- find_project_file(filename)
+
+  if (is.na(file_path)) {
+    message("File not found: ", filename)
+    return(tibble())
   }
 
   tryCatch(
-    read_csv(
-      path,
-      show_col_types = FALSE
-    ),
+    {
+      read_csv(
+        file_path,
+        show_col_types = FALSE
+      )
+    },
     error = function(e) {
-      NULL
+      message(
+        "Could not read ",
+        filename,
+        ": ",
+        e$message
+      )
+      tibble()
     }
   )
 }
 
 
-parse_date_safe <- function(x) {
+# ------------------------------------------------------------
+# Safely parse dates
+# ------------------------------------------------------------
+
+safe_date <- function(x) {
 
   if (inherits(x, "Date")) {
     return(x)
   }
 
-  if (inherits(x, "POSIXct") || inherits(x, "POSIXt")) {
-    return(as.Date(x))
-  }
+  x <- as.character(x)
 
-  suppressWarnings(as.Date(x))
+  result <- suppressWarnings(
+    parse_date_time(
+      x,
+      orders = c(
+        "Y-m-d",
+        "d/m/Y",
+        "m/d/Y",
+        "Y/m/d",
+        "Y-m",
+        "m-Y",
+        "b Y",
+        "B Y",
+        "Y"
+      )
+    )
+  )
+
+  as.Date(result)
 }
 
 
-safe_cor <- function(x, y) {
+# ------------------------------------------------------------
+# Safe numeric conversion
+# ------------------------------------------------------------
 
-  complete <- complete.cases(x, y)
+safe_numeric <- function(x) {
 
-  if (sum(complete) < 3) {
-    return(NA_real_)
-  }
-
-  cor(
-    x[complete],
-    y[complete],
-    use = "complete.obs"
+  suppressWarnings(
+    as.numeric(
+      gsub(
+        ",",
+        "",
+        as.character(x)
+      )
+    )
   )
 }
 
 
-fmt_number <- function(x, digits = 1) {
+# ------------------------------------------------------------
+# Safe correlation
+# ------------------------------------------------------------
+
+safe_cor <- function(x, y) {
+
+  x <- safe_numeric(x)
+  y <- safe_numeric(y)
+
+  valid <- complete.cases(x, y)
+
+  if (sum(valid) < 3) {
+    return(NA_real_)
+  }
+
+  suppressWarnings(
+    cor(
+      x[valid],
+      y[valid]
+    )
+  )
+}
+
+
+# ------------------------------------------------------------
+# Number formatting
+# ------------------------------------------------------------
+
+format_number <- function(x, digits = 1) {
 
   if (length(x) == 0 || is.na(x)) {
     return("—")
   }
 
-  number(
+  scales::number(
     x,
-    accuracy = 10^-digits,
+    accuracy = 10^(-digits),
     big.mark = ","
   )
 }
 
 
-fmt_percent <- function(x, digits = 1) {
+# ------------------------------------------------------------
+# Percentage formatting
+# ------------------------------------------------------------
+
+format_percent <- function(x, digits = 1) {
 
   if (length(x) == 0 || is.na(x)) {
     return("—")
   }
 
   paste0(
-    number(
+    scales::number(
       x,
-      accuracy = 10^-digits
+      accuracy = 10^(-digits)
     ),
     "%"
   )
 }
 
 
-plotly_clean <- function(p) {
+# ------------------------------------------------------------
+# DT options
+# ------------------------------------------------------------
 
-  p |>
-    config(
-      displaylogo = FALSE,
-      responsive = TRUE,
-      modeBarButtonsToRemove = c(
-        "lasso2d",
-        "select2d"
+datatable_options <- function(default = 10) {
+
+  list(
+
+    pageLength = default,
+
+    lengthMenu = list(
+      c(
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        -1
+      ),
+      c(
+        "10",
+        "25",
+        "50",
+        "100",
+        "250",
+        "500",
+        "All"
+      )
+    ),
+
+    lengthChange = TRUE,
+    searching = TRUE,
+    ordering = TRUE,
+    paging = TRUE,
+    info = TRUE,
+    scrollX = TRUE,
+    autoWidth = TRUE,
+
+    language = list(
+      lengthMenu = "Show _MENU_ entries",
+      search = "Search:",
+      info = "Showing _START_ to _END_ of _TOTAL_ entries",
+      infoEmpty = "Showing 0 to 0 of 0 entries",
+      infoFiltered = "(filtered from _MAX_ total entries)"
+    )
+  )
+}
+
+
+# ------------------------------------------------------------
+# Empty Plotly chart
+# ------------------------------------------------------------
+
+empty_plot <- function(message = "No data available") {
+
+  plot_ly() |> 
+    layout(
+      xaxis = list(visible = FALSE),
+      yaxis = list(visible = FALSE),
+      annotations = list(
+        list(
+          text = message,
+          x = 0.5,
+          y = 0.5,
+          xref = "paper",
+          yref = "paper",
+          showarrow = FALSE,
+          font = list(
+            size = 16,
+            color = "#718096"
+          )
+        )
       )
     )
 }
 
 
-# ============================================================
-# 5. LOAD CORE DATA
-# ============================================================
+# ------------------------------------------------------------
+# Clean Plotly
+# ------------------------------------------------------------
 
-combined_data <- safe_read_csv(
-  data_path("combined_tightness_slack.csv")
-)
+clean_plotly <- function(plot) {
 
-slack_data <- safe_read_csv(
-  data_path("labour_market_slack.csv")
-)
+  plot |> 
 
-wpi_data <- safe_read_csv(
-  data_path("labour_market_wpi.csv")
-)
+    layout(
+      font = list(
+        family = "Arial",
+        size = 13,
+        color = "#263648"
+      ),
 
-ivi_anzsco2 <- safe_read_csv(
-  data_path("ivi_anzsco2_clean.csv")
-)
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
 
-ivi_anzsco4 <- safe_read_csv(
-  data_path("ivi_anzsco4_clean.csv")
-)
+      hoverlabel = list(
+        bgcolor = "white",
+        bordercolor = "#D9E2EC",
+        font = list(
+          color = "#263648"
+        )
+      ),
 
-ivi_skill <- safe_read_csv(
-  data_path("ivi_skill_clean.csv")
-)
+      margin = list(
+        l = 65,
+        r = 30,
+        t = 30,
+        b = 60
+      )
+    ) |> 
 
-
-# ============================================================
-# 6. PREPARE CORE DATA
-# ============================================================
-
-if (!is.null(combined_data)) {
-
-  combined_data <- combined_data |>
-    mutate(
-      Quarter = parse_date_safe(Quarter)
-    ) |>
-    arrange(Quarter) |>
-    mutate(
-
-      vacancy_change =
-        Job_Vacancies - lag(Job_Vacancies),
-
-      vacancy_pct_change =
-        (Job_Vacancies / lag(Job_Vacancies) - 1) * 100,
-
-      tightness_change =
-        Tightness - lag(Tightness),
-
-      unemployment_change =
-        unemployment_rate - lag(unemployment_rate),
-
-      underemployment_change =
-        underemployment_rate -
-        lag(underemployment_rate),
-
-      underutilisation_change =
-        underutilisation_rate -
-        lag(underutilisation_rate)
+    config(
+      displaylogo = FALSE,
+      responsive = TRUE
     )
 }
 
 
 # ============================================================
-# 7. PREPARE SLACK DATA
+# 4. LOAD DATA
 # ============================================================
 
-if (!is.null(slack_data)) {
+labour_market_slack <- safe_read_csv(
+  "labour_market_slack.csv"
+)
 
-  slack_data <- slack_data |>
+combined_data <- safe_read_csv(
+  "combined_tightness_slack.csv"
+)
+
+wpi_data <- safe_read_csv(
+  "labour_market_wpi.csv"
+)
+
+ivi_anzsco2 <- safe_read_csv(
+  "ivi_anzsco2_clean.csv"
+)
+
+ivi_anzsco4 <- safe_read_csv(
+  "ivi_anzsco4_clean.csv"
+)
+
+ivi_skill <- safe_read_csv(
+  "ivi_skill_clean.csv"
+)
+
+
+# ============================================================
+# 5. PREPARE SLACK DATA
+# ============================================================
+
+if (nrow(labour_market_slack) > 0) {
+
+  if ("date" %in% names(labour_market_slack)) {
+
+    labour_market_slack$date <-
+      safe_date(
+        labour_market_slack$date
+      )
+
+  } else {
+
+    labour_market_slack <-
+      tibble()
+  }
+}
+
+
+if (nrow(labour_market_slack) > 0) {
+
+  labour_market_slack <-
+    labour_market_slack |> 
+
+    arrange(date) |> 
+
     mutate(
-      date = parse_date_safe(date)
-    ) |>
-    arrange(date)
+
+      period = case_when(
+
+        date < as.Date("1990-01-01") ~
+          "1978–1989",
+
+        date < as.Date("1995-01-01") ~
+          "1990–1994",
+
+        date < as.Date("2008-01-01") ~
+          "1995–2007",
+
+        date < as.Date("2020-01-01") ~
+          "2008–2019",
+
+        date < as.Date("2022-01-01") ~
+          "2020–2021",
+
+        TRUE ~
+          "2022–present"
+      ),
+
+      unemploy_change =
+        unemployment_rate -
+        lag(unemployment_rate),
+
+      underemploy_change =
+        underemployment_rate -
+        lag(underemployment_rate),
+
+      underutilise_change =
+        underutilisation_rate -
+        lag(underutilisation_rate),
+
+      unemploy_yoy =
+        unemployment_rate -
+        lag(
+          unemployment_rate,
+          12
+        ),
+
+      underemploy_yoy =
+        underemployment_rate -
+        lag(
+          underemployment_rate,
+          12
+        ),
+
+      underutilise_yoy =
+        underutilisation_rate -
+        lag(
+          underutilisation_rate,
+          12
+        )
+    )
+}
+
+
+# ============================================================
+# 6. PREPARE COMBINED DATA
+# ============================================================
+
+if (nrow(combined_data) > 0) {
+
+  if ("Quarter" %in% names(combined_data)) {
+
+    combined_data$Quarter <-
+      safe_date(
+        combined_data$Quarter
+      )
+
+  } else {
+
+    combined_data <-
+      tibble()
+  }
+}
+
+
+if (nrow(combined_data) > 0) {
+
+  combined_data <-
+    combined_data |> 
+
+    arrange(Quarter) |> 
+
+    mutate(
+
+      Job_Vacancies =
+        safe_numeric(
+          Job_Vacancies
+        ),
+
+      Tightness =
+        safe_numeric(
+          Tightness
+        ),
+
+      unemployment_rate =
+        safe_numeric(
+          unemployment_rate
+        ),
+
+      underemployment_rate =
+        safe_numeric(
+          underemployment_rate
+        ),
+
+      underutilisation_rate =
+        safe_numeric(
+          underutilisation_rate
+        ),
+
+      change_vacancies =
+        Job_Vacancies -
+        lag(Job_Vacancies),
+
+      change_unemployment =
+        unemployment_rate -
+        lag(unemployment_rate),
+
+      change_underemployment =
+        underemployment_rate -
+        lag(underemployment_rate),
+
+      change_underutilisation =
+        underutilisation_rate -
+        lag(underutilisation_rate),
+
+      change_tightness =
+        Tightness -
+        lag(Tightness)
+    )
+}
+
+
+# ============================================================
+# 7. PREPARE WPI DATA
+# ============================================================
+
+if (nrow(wpi_data) > 0) {
+
+  wpi_date_candidates <-
+    names(wpi_data)[
+      grepl(
+        "date|quarter|period",
+        names(wpi_data),
+        ignore.case = TRUE
+      )
+    ]
+
+  wpi_value_candidates <-
+    names(wpi_data)[
+      grepl(
+        "wpi",
+        names(wpi_data),
+        ignore.case = TRUE
+      )
+    ]
+
+  if (
+    length(wpi_date_candidates) > 0 &&
+    length(wpi_value_candidates) > 0
+  ) {
+
+    wpi_date_col <-
+      wpi_date_candidates[1]
+
+    wpi_value_col <-
+      wpi_value_candidates[1]
+
+    wpi_data <-
+      wpi_data |> 
+
+      mutate(
+
+        wpi_date =
+          safe_date(
+            .data[[wpi_date_col]]
+          ),
+
+        WPI_value =
+          safe_numeric(
+            .data[[wpi_value_col]]
+          )
+      ) |> 
+
+      arrange(wpi_date) |> 
+
+      mutate(
+
+        WPI_growth =
+          (
+            WPI_value /
+              lag(WPI_value) -
+              1
+          ) * 100,
+
+        WPI_growth_lead1 =
+          lead(
+            WPI_growth,
+            1
+          ),
+
+        WPI_growth_lead2 =
+          lead(
+            WPI_growth,
+            2
+          )
+      )
+
+  } else {
+
+    wpi_data <-
+      tibble()
+  }
 }
 
 
@@ -237,712 +624,811 @@ if (!is.null(slack_data)) {
 # 8. PREPARE IVI DATA
 # ============================================================
 
-if (!is.null(ivi_anzsco2)) {
+prepare_ivi <- function(data) {
 
-  if ("Month" %in% names(ivi_anzsco2)) {
-
-    ivi_anzsco2 <- ivi_anzsco2 |>
-      mutate(
-        Month = parse_date_safe(Month)
-      ) |>
-      arrange(Month)
+  if (nrow(data) == 0) {
+    return(tibble())
   }
+
+  required_columns <- c(
+    "Month",
+    "Vacancies"
+  )
+
+  if (
+    !all(
+      required_columns %in%
+        names(data)
+    )
+  ) {
+
+    return(tibble())
+  }
+
+  data |> 
+
+    mutate(
+
+      Month =
+        safe_date(
+          Month
+        ),
+
+      Vacancies =
+        safe_numeric(
+          Vacancies
+        )
+    ) |> 
+
+    arrange(Month)
 }
 
 
-if (!is.null(ivi_anzsco4)) {
+ivi_anzsco2 <-
+  prepare_ivi(
+    ivi_anzsco2
+  )
 
-  if ("Month" %in% names(ivi_anzsco4)) {
+ivi_anzsco4 <-
+  prepare_ivi(
+    ivi_anzsco4
+  )
 
-    ivi_anzsco4 <- ivi_anzsco4 |>
-      mutate(
-        Month = parse_date_safe(Month)
-      ) |>
-      arrange(Month)
-  }
-}
-
-
-if (!is.null(ivi_skill)) {
-
-  if ("Month" %in% names(ivi_skill)) {
-
-    ivi_skill <- ivi_skill |>
-      mutate(
-        Month = parse_date_safe(Month)
-      ) |>
-      arrange(Month)
-  }
-}
+ivi_skill <-
+  prepare_ivi(
+    ivi_skill
+  )
 
 
 # ============================================================
 # 9. NATIONAL IVI
 # ============================================================
 
-ivi_australia <- NULL
+national_ivi <- tibble()
 
-if (!is.null(ivi_anzsco2)) {
 
-  required_cols <- c(
-    "Level",
-    "ANZSCO_CODE",
-    "State",
-    "Vacancies",
-    "Month"
+if (
+  nrow(ivi_anzsco2) > 0 &&
+  all(
+    c(
+      "Level",
+      "ANZSCO_CODE",
+      "State"
+    ) %in%
+    names(ivi_anzsco2)
   )
+) {
 
-  if (all(required_cols %in% names(ivi_anzsco2))) {
+  national_ivi <-
+    ivi_anzsco2 |> 
 
-    ivi_australia <- ivi_anzsco2 |>
-      filter(
-        Level == 1,
-        ANZSCO_CODE == "0",
-        State == "AUST"
-      ) |>
-      arrange(Month) |>
-      mutate(
-        monthly_change =
-          Vacancies - lag(Vacancies),
+    filter(
 
-        monthly_pct_change =
-          (Vacancies / lag(Vacancies) - 1) * 100,
+      as.character(Level) == "1",
 
-        yoy_change =
-          Vacancies - lag(Vacancies, 12),
+      as.character(ANZSCO_CODE) == "0",
 
-        yoy_pct_change =
-          (Vacancies / lag(Vacancies, 12) - 1) * 100
-      )
-  }
-}
-
-
-# ============================================================
-# 10. OCCUPATION-LEVEL IVI
-# ============================================================
-
-ivi_occupation <- NULL
-
-if (!is.null(ivi_anzsco2)) {
-
-  if (
-    all(
-      c(
-        "Level",
-        "State",
-        "Vacancies",
-        "Month"
-      ) %in% names(ivi_anzsco2)
-    )
-  ) {
-
-    ivi_occupation <- ivi_anzsco2 |>
-      filter(
-        Level == 2,
-        State == "AUST"
-      ) |>
-      arrange(Month)
-  }
-}
-
-
-# ============================================================
-# 11. PERIOD CLASSIFICATION
-# ============================================================
-
-if (!is.null(slack_data)) {
-
-  slack_data <- slack_data |>
-    mutate(
-
-      period = case_when(
-
-        year(date) >= 1978 &
-          year(date) <= 1989 ~
-          "1978–1989",
-
-        year(date) >= 1990 &
-          year(date) <= 1994 ~
-          "1990–1994",
-
-        year(date) >= 1995 &
-          year(date) <= 2007 ~
-          "1995–2007",
-
-        year(date) >= 2008 &
-          year(date) <= 2019 ~
-          "2008–2019",
-
-        year(date) >= 2020 &
-          year(date) <= 2021 ~
-          "2020–2021",
-
-        year(date) >= 2022 ~
-          "2022–present",
-
-        TRUE ~ NA_character_
-      )
+      toupper(
+        as.character(State)
+      ) == "AUST"
     )
 }
 
 
-# ============================================================
-# 12. MEDIAN CLASSIFICATION
-# ============================================================
+# Fallback if national rows cannot be found
 
-tightness_median <- NA_real_
-underutilisation_median <- NA_real_
+if (
+  nrow(national_ivi) == 0 &&
+  nrow(ivi_anzsco2) > 0
+) {
 
-if (!is.null(combined_data)) {
+  national_ivi <-
+    ivi_anzsco2 |> 
 
-  tightness_median <- median(
-    combined_data$Tightness,
-    na.rm = TRUE
-  )
+    group_by(Month) |> 
 
-  underutilisation_median <- median(
-    combined_data$underutilisation_rate,
-    na.rm = TRUE
-  )
-
-  combined_data <- combined_data |>
-    mutate(
-
-      tightness_group =
-        if_else(
-          Tightness >= tightness_median,
-          "High tightness",
-          "Low tightness"
-        ),
-
-      slack_group =
-        if_else(
-          underutilisation_rate >=
-            underutilisation_median,
-          "High slack",
-          "Low slack"
-        ),
-
-      quadrant =
-        paste(
-          tightness_group,
-          slack_group,
-          sep = " + "
-        )
-    )
-}
-
-
-# ============================================================
-# 13. HISTORICAL SLACK SUMMARY
-# ============================================================
-
-period_summary <- NULL
-
-if (!is.null(slack_data)) {
-
-  period_summary <- slack_data |>
-    filter(!is.na(period)) |>
-    group_by(period) |>
     summarise(
-
-      unemployment =
-        mean(
-          unemployment_rate,
+      Vacancies =
+        sum(
+          Vacancies,
           na.rm = TRUE
         ),
-
-      underemployment =
-        mean(
-          underemployment_rate,
-          na.rm = TRUE
-        ),
-
-      underutilisation =
-        mean(
-          underutilisation_rate,
-          na.rm = TRUE
-        ),
-
       .groups = "drop"
     )
 }
 
 
 # ============================================================
-# 14. WPI PREPARATION
+# 10. OCCUPATION DATA
 # ============================================================
 
-wpi_plot_data <- NULL
+occupation_data <- tibble()
 
-if (!is.null(wpi_data)) {
 
-  # Identify a date column
-  possible_dates <- c(
-    "date",
-    "Date",
-    "Quarter",
-    "quarter"
-  )
+if (
+  nrow(ivi_anzsco2) > 0 &&
+  "Level" %in% names(ivi_anzsco2)
+) {
 
-  date_col <- possible_dates[
-    possible_dates %in% names(wpi_data)
-  ][1]
+  occupation_data <-
+    ivi_anzsco2 |> 
 
-  if (!is.na(date_col)) {
-
-    wpi_data[[date_col]] <-
-      parse_date_safe(wpi_data[[date_col]])
-
-    # Find numeric columns
-    numeric_cols <- names(
-      wpi_data[
-        vapply(
-          wpi_data,
-          is.numeric,
-          logical(1)
-        )
-      ]
+    filter(
+      as.character(Level) == "2"
     )
-
-    # Remove columns that are obviously not WPI
-    numeric_cols <- numeric_cols[
-      !numeric_cols %in% c(
-        "year",
-        "month",
-        "quarter"
-      )
-    ]
-
-    if (length(numeric_cols) > 0) {
-
-      value_col <- numeric_cols[1]
-
-      wpi_plot_data <- wpi_data |>
-        transmute(
-          date = .data[[date_col]],
-          wpi = .data[[value_col]]
-        ) |>
-        filter(
-          !is.na(date),
-          !is.na(wpi)
-        )
-    }
-  }
 }
 
 
 # ============================================================
-# 15. USER INTERFACE
+# 11. UI
 # ============================================================
 
 ui <- fluidPage(
 
   # ----------------------------------------------------------
-  # Custom CSS
+  # CSS
   # ----------------------------------------------------------
 
   tags$head(
 
     tags$style(
-      HTML(
-        "
-        /* ==================================================
-           GLOBAL
-           ================================================== */
+      HTML("
 
-        body {
-          background-color: #EEF3F7;
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            'Segoe UI',
-            Roboto,
-            Arial,
-            sans-serif;
-          color: #243447;
-        }
+      body {
+        background:
+          linear-gradient(
+            180deg,
+            #F4F7FB 0%,
+            #F8FAFC 100%
+          );
 
-        .container-fluid {
-          padding-left: 28px;
-          padding-right: 28px;
-        }
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Arial,
+          sans-serif;
+
+        color:
+          #263648;
+      }
 
 
-        /* ==================================================
-           HEADER
-           ================================================== */
+      .container-fluid {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+
+
+      /* HEADER */
+
+      .dashboard-header {
+
+        background:
+          linear-gradient(
+            135deg,
+            #102A43 0%,
+            #164E63 50%,
+            #087F8C 100%
+          );
+
+        color: white;
+
+        padding: 34px 38px;
+
+        border-radius: 18px;
+
+        margin-top: 18px;
+        margin-bottom: 25px;
+
+        box-shadow:
+          0 8px 25px
+          rgba(
+            16,
+            42,
+            67,
+            0.15
+          );
+      }
+
+
+      .dashboard-header h1 {
+
+        margin: 0 0 8px 0;
+
+        font-size: 30px;
+
+        font-weight: 750;
+      }
+
+
+      .dashboard-header p {
+
+        margin: 4px 0;
+
+        color:
+          rgba(
+            255,
+            255,
+            255,
+            0.88
+          );
+      }
+
+
+      /* TABS */
+
+      .nav-tabs {
+
+        border-bottom:
+          1px solid #DCE5ED;
+
+        margin-bottom: 20px;
+      }
+
+
+      .nav-tabs > li > a {
+
+        color:
+          #526579;
+
+        font-weight:
+          600;
+
+        border:
+          none !important;
+
+        padding:
+          12px 14px;
+      }
+
+
+      .nav-tabs > li > a:hover {
+
+        color:
+          #087F8C;
+
+        background:
+          #EEF8F9 !important;
+
+        border-radius:
+          8px 8px 0 0;
+      }
+
+
+      .nav-tabs > li.active > a,
+      .nav-tabs > li.active > a:hover,
+      .nav-tabs > li.active > a:focus {
+
+        color:
+          #087F8C !important;
+
+        background:
+          transparent !important;
+
+        border:
+          none !important;
+
+        border-bottom:
+          3px solid #087F8C !important;
+
+        font-weight:
+          700;
+      }
+
+
+      /* CARDS */
+
+      .section-card {
+
+        background:
+          white;
+
+        border:
+          1px solid #E3EAF1;
+
+        border-radius:
+          16px;
+
+        padding:
+          24px;
+
+        margin-bottom:
+          24px;
+
+        box-shadow:
+          0 4px 18px
+          rgba(
+            31,
+            50,
+            70,
+            0.055
+          );
+      }
+
+
+      .section-card h3 {
+
+        color:
+          #102A43;
+
+        font-size:
+          20px;
+
+        font-weight:
+          750;
+
+        margin-top:
+          0;
+
+        margin-bottom:
+          18px;
+
+        padding-bottom:
+          12px;
+
+        border-bottom:
+          1px solid #EDF1F5;
+      }
+
+
+      .section-card h3::before {
+
+        content:
+          '';
+
+        display:
+          inline-block;
+
+        width:
+          5px;
+
+        height:
+          20px;
+
+        background:
+          #087F8C;
+
+        border-radius:
+          5px;
+
+        margin-right:
+          10px;
+
+        vertical-align:
+          -3px;
+      }
+
+
+      /* KPI */
+
+      .kpi-card {
+
+        background:
+          white;
+
+        border:
+          1px solid #E3EAF1;
+
+        border-left:
+          5px solid #087F8C;
+
+        border-radius:
+          15px;
+
+        padding:
+          20px;
+
+        min-height:
+          140px;
+
+        margin-bottom:
+          22px;
+
+        box-shadow:
+          0 4px 18px
+          rgba(
+            31,
+            50,
+            70,
+            0.06
+          );
+      }
+
+
+      .kpi-blue {
+        border-left-color:
+          #2774C6;
+      }
+
+
+      .kpi-orange {
+        border-left-color:
+          #E67E22;
+      }
+
+
+      .kpi-green {
+        border-left-color:
+          #19947A;
+      }
+
+
+      .kpi-purple {
+        border-left-color:
+          #7657A8;
+      }
+
+
+      .kpi-label {
+
+        color:
+          #718096;
+
+        font-size:
+          11px;
+
+        font-weight:
+          750;
+
+        text-transform:
+          uppercase;
+
+        letter-spacing:
+          0.7px;
+      }
+
+
+      .kpi-value {
+
+        color:
+          #102A43;
+
+        font-size:
+          29px;
+
+        font-weight:
+          750;
+
+        margin-top:
+          8px;
+      }
+
+
+      .kpi-description {
+
+        color:
+          #8A98A8;
+
+        font-size:
+          12px;
+
+        margin-top:
+          5px;
+      }
+
+
+      /* RESEARCH BOX */
+
+      .research-box {
+
+        background:
+          linear-gradient(
+            135deg,
+            #E9F7F8,
+            #F3FAFF
+          );
+
+        border:
+          1px solid #CDE8EB;
+
+        border-left:
+          6px solid #087F8C;
+
+        border-radius:
+          16px;
+
+        padding:
+          25px 28px;
+
+        margin-bottom:
+          25px;
+      }
+
+
+      .research-question {
+
+        color:
+          #102A43;
+
+        font-size:
+          21px;
+
+        font-weight:
+          750;
+
+        line-height:
+          1.45;
+
+        margin-bottom:
+          10px;
+      }
+
+
+      /* METHOD */
+
+      .method-box {
+
+        background:
+          white;
+
+        border:
+          1px solid #E2E9F0;
+
+        border-left:
+          5px solid #2774C6;
+
+        border-radius:
+          12px;
+
+        padding:
+          20px;
+
+        margin-bottom:
+          16px;
+
+        box-shadow:
+          0 2px 9px
+          rgba(
+            31,
+            50,
+            70,
+            0.04
+          );
+      }
+
+
+      .method-box h4 {
+
+        color:
+          #102A43;
+
+        font-weight:
+          750;
+
+        margin-top:
+          0;
+      }
+
+
+      /* SIDEBAR */
+
+      .well {
+
+        background:
+          white;
+
+        border:
+          1px solid #E1E8EF;
+
+        border-radius:
+          15px;
+
+        box-shadow:
+          0 3px 12px
+          rgba(
+            31,
+            50,
+            70,
+            0.05
+          );
+      }
+
+
+      .control-label {
+
+        color:
+          #29445F;
+
+        font-weight:
+          700;
+
+        font-size:
+          13px;
+      }
+
+
+      .form-control {
+
+        border:
+          1px solid #D4DEE8;
+
+        border-radius:
+          8px;
+
+        box-shadow:
+          none;
+      }
+
+
+      .selectize-input {
+
+        border:
+          1px solid #D4DEE8 !important;
+
+        border-radius:
+          8px !important;
+
+        box-shadow:
+          none !important;
+      }
+
+
+      /* BUTTON */
+
+      .btn-primary {
+
+        background:
+          linear-gradient(
+            135deg,
+            #087F8C,
+            #0B9AA5
+          );
+
+        border:
+          none;
+
+        border-radius:
+          8px;
+
+        font-weight:
+          650;
+
+        padding:
+          9px 17px;
+      }
+
+
+      .btn-primary:hover {
+
+        background:
+          linear-gradient(
+            135deg,
+            #066C76,
+            #087F8C
+          );
+      }
+
+
+      /* TABLES */
+
+      table.dataTable thead th {
+
+        background:
+          #EEF6F8 !important;
+
+        color:
+          #12355B !important;
+
+        font-weight:
+          700;
+
+        border-bottom:
+          2px solid #CFE4E7 !important;
+      }
+
+
+      table.dataTable tbody tr:hover {
+
+        background:
+          #F3FAFB !important;
+      }
+
+
+      .dataTables_wrapper {
+
+        color:
+          #425466;
+      }
+
+
+      .dataTables_length select,
+      .dataTables_filter input {
+
+        border:
+          1px solid #CBD7E2;
+
+        border-radius:
+          7px;
+      }
+
+
+      .dataTables_paginate .paginate_button.current {
+
+        background:
+          #087F8C !important;
+
+        color:
+          white !important;
+
+        border:
+          none !important;
+      }
+
+
+      /* FOOTER */
+
+      .dashboard-footer {
+
+        margin-top:
+          35px;
+
+        padding:
+          28px;
+
+        text-align:
+          center;
+
+        color:
+          #718096;
+
+        font-size:
+          12px;
+
+        border-top:
+          1px solid #E2E8F0;
+      }
+
+
+      @media(max-width: 900px) {
 
         .dashboard-header {
-          background:
-            linear-gradient(
-              135deg,
-              #17324D 0%,
-              #176B87 100%
-            );
-
-          color: white;
-          padding: 30px 35px;
-          margin: -15px -15px 25px -15px;
-
-          border-bottom:
-            5px solid #F4A261;
-
-          box-shadow:
-            0 4px 12px rgba(0,0,0,0.12);
+          padding: 25px;
         }
 
-        .dashboard-title {
-          font-size: 30px;
-          font-weight: 700;
-          margin-bottom: 6px;
+        .dashboard-header h1 {
+          font-size: 24px;
         }
-
-        .dashboard-subtitle {
-          font-size: 16px;
-          opacity: 0.92;
-          margin-bottom: 0;
-        }
-
-
-        /* ==================================================
-           RESEARCH QUESTION
-           ================================================== */
-
-        .research-question {
-          background: white;
-
-          border-left:
-            6px solid #E76F51;
-
-          border-radius: 10px;
-
-          padding: 22px 25px;
-          margin-bottom: 25px;
-
-          box-shadow:
-            0 3px 12px rgba(0,0,0,0.07);
-        }
-
-        .research-question-title {
-          color: #17324D;
-          font-weight: 700;
-          font-size: 15px;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-          margin-bottom: 8px;
-        }
-
-        .research-question-text {
-          font-size: 20px;
-          font-weight: 600;
-          color: #243447;
-          line-height: 1.45;
-        }
-
-
-        /* ==================================================
-           KPI CARDS
-           ================================================== */
-
-        .kpi-card {
-          background: white;
-
-          border-radius: 12px;
-
-          padding: 20px;
-
-          min-height: 130px;
-
-          box-shadow:
-            0 3px 12px rgba(0,0,0,0.07);
-
-          border-top: 4px solid #176B87;
-
-          transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease;
-
-          margin-bottom: 20px;
-        }
-
-        .kpi-card:hover {
-          transform: translateY(-3px);
-
-          box-shadow:
-            0 7px 18px rgba(0,0,0,0.11);
-        }
-
-        .kpi-card.orange {
-          border-top-color: #E76F51;
-        }
-
-        .kpi-card.gold {
-          border-top-color: #F4A261;
-        }
-
-        .kpi-card.purple {
-          border-top-color: #7B61A8;
-        }
-
-        .kpi-label {
-          font-size: 13px;
-          color: #6C757D;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          font-weight: 600;
-        }
-
-        .kpi-value {
-          font-size: 28px;
-          font-weight: 750;
-          color: #17324D;
-          margin-top: 5px;
-        }
-
-        .kpi-description {
-          font-size: 12px;
-          color: #6C757D;
-          margin-top: 4px;
-        }
-
-
-        /* ==================================================
-           SECTION CARDS
-           ================================================== */
 
         .section-card {
-          background: white;
-
-          border-radius: 12px;
-
-          padding: 22px;
-
-          margin-bottom: 25px;
-
-          box-shadow:
-            0 3px 12px rgba(0,0,0,0.06);
+          padding: 17px;
         }
 
-        .section-title {
-          color: #17324D;
-          font-size: 20px;
-          font-weight: 700;
-
-          border-bottom:
-            2px solid #EEF3F7;
-
-          padding-bottom: 10px;
-
-          margin-bottom: 18px;
+        .research-question {
+          font-size: 18px;
         }
+      }
 
-
-        /* ==================================================
-           INSIGHT BOX
-           ================================================== */
-
-        .insight-box {
-          background: #F7FAFC;
-
-          border-left:
-            5px solid #176B87;
-
-          border-radius: 8px;
-
-          padding: 17px 20px;
-
-          margin: 15px 0;
-
-          line-height: 1.6;
-        }
-
-        .insight-box.orange {
-          border-left-color: #E76F51;
-        }
-
-        .insight-box.gold {
-          border-left-color: #F4A261;
-        }
-
-
-        /* ==================================================
-           METHODOLOGY
-           ================================================== */
-
-        .method-box {
-          background: #F7FAFC;
-
-          border: 1px solid #DCE5EC;
-
-          border-radius: 10px;
-
-          padding: 20px;
-
-          margin-bottom: 15px;
-        }
-
-        .method-title {
-          color: #176B87;
-          font-weight: 700;
-          margin-bottom: 8px;
-        }
-
-
-        /* ==================================================
-           TABS
-           ================================================== */
-
-        .nav-tabs {
-          border-bottom:
-            2px solid #DCE5EC;
-          margin-bottom: 25px;
-        }
-
-        .nav-tabs > li > a {
-          color: #536777;
-          font-weight: 600;
-          border: none;
-          padding: 13px 17px;
-        }
-
-        .nav-tabs > li > a:hover {
-          background: transparent;
-          color: #176B87;
-        }
-
-        .nav-tabs > li.active > a,
-        .nav-tabs > li.active > a:hover,
-        .nav-tabs > li.active > a:focus {
-          color: #17324D;
-          background: transparent;
-
-          border: none;
-
-          border-bottom:
-            4px solid #E76F51;
-        }
-
-
-        /* ==================================================
-           INPUTS
-           ================================================== */
-
-        .form-control {
-          border:
-            1px solid #CBD5DD;
-
-          border-radius: 7px;
-        }
-
-        .form-control:focus {
-          border-color: #176B87;
-
-          box-shadow:
-            0 0 0 2px rgba(23,107,135,0.12);
-        }
-
-        .selectize-input {
-          border-radius: 7px;
-          border-color: #CBD5DD;
-        }
-
-
-        /* ==================================================
-           BUTTONS
-           ================================================== */
-
-        .btn-primary {
-          background: #176B87;
-          border-color: #176B87;
-          border-radius: 7px;
-        }
-
-        .btn-primary:hover {
-          background: #17324D;
-          border-color: #17324D;
-        }
-
-
-        /* ==================================================
-           DATA TABLE
-           ================================================== */
-
-        table.dataTable thead th {
-          background: #17324D !important;
-          color: white !important;
-          border: none !important;
-        }
-
-        table.dataTable tbody tr:hover {
-          background-color: #EEF7FA !important;
-        }
-
-
-        /* ==================================================
-           FOOTER
-           ================================================== */
-
-        .dashboard-footer {
-          margin-top: 35px;
-          padding: 20px;
-
-          text-align: center;
-
-          color: #6C757D;
-
-          border-top:
-            1px solid #DCE5EC;
-        }
-
-        "
-      )
+      ")
     )
   ),
 
 
-  # ----------------------------------------------------------
+  # ==========================================================
   # HEADER
-  # ----------------------------------------------------------
+  # ==========================================================
 
   div(
+
     class = "dashboard-header",
 
-    div(
-      class = "dashboard-title",
-      "Australia Labour-Market Dashboard"
+    h1(
+      "Australian Labour Market Dashboard"
     ),
 
-    div(
-      class = "dashboard-subtitle",
-      "Labour-market tightness, vacancies, slack and wage pressure"
+    p(
+      "Labour demand, labour-market slack, tightness and wage pressure"
+    ),
+
+    p(
+      "ETC-5543 | Australian Labour Market Project"
     )
   ),
 
 
-  # ----------------------------------------------------------
-  # RESEARCH QUESTION
-  # ----------------------------------------------------------
-
-  div(
-    class = "research-question",
-
-    div(
-      class = "research-question-title",
-      "Research Question"
-    ),
-
-    div(
-      class = "research-question-text",
-      "To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?"
-    )
-  ),
-
-
-  # ----------------------------------------------------------
-  # NAVIGATION
-  # ----------------------------------------------------------
+  # ==========================================================
+  # TABS
+  # ==========================================================
 
   tabsetPanel(
 
@@ -956,50 +1442,57 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Overview",
 
       br(),
 
-      # KPI ROW 1
       fluidRow(
 
         column(
           3,
 
           div(
-            class = "kpi-card",
+            class = "kpi-card kpi-blue",
 
             div(
               class = "kpi-label",
-              "Observations"
+              "Job Vacancies"
             ),
 
             div(
               class = "kpi-value",
-              textOutput("kpi_slack_obs")
+              textOutput(
+                "overview_vacancies",
+                inline = TRUE
+              )
             ),
 
             div(
               class = "kpi-description",
-              "Monthly labour-force observations"
+              "Latest available quarter"
             )
           )
         ),
+
 
         column(
           3,
 
           div(
-            class = "kpi-card orange",
+            class = "kpi-card kpi-green",
 
             div(
               class = "kpi-label",
-              "Median Tightness"
+              "Labour-Market Tightness"
             ),
 
             div(
               class = "kpi-value",
-              textOutput("kpi_tightness")
+              textOutput(
+                "overview_tightness",
+                inline = TRUE
+              )
             ),
 
             div(
@@ -1009,131 +1502,139 @@ ui <- fluidPage(
           )
         ),
 
+
         column(
           3,
 
           div(
-            class = "kpi-card gold",
+            class = "kpi-card kpi-orange",
 
             div(
               class = "kpi-label",
-              "Median Underutilisation"
+              "Unemployment"
             ),
 
             div(
               class = "kpi-value",
-              textOutput("kpi_underutilisation")
+              textOutput(
+                "overview_unemployment",
+                inline = TRUE
+              )
             ),
 
             div(
               class = "kpi-description",
-              "Broader measure of labour-market slack"
+              "Latest available observation"
             )
           )
         ),
 
+
         column(
           3,
 
           div(
-            class = "kpi-card purple",
+            class = "kpi-card kpi-purple",
 
             div(
               class = "kpi-label",
-              "Quarterly Observations"
+              "Underutilisation"
             ),
 
             div(
               class = "kpi-value",
-              textOutput("kpi_quarters")
+              textOutput(
+                "overview_underutilisation",
+                inline = TRUE
+              )
             ),
 
             div(
               class = "kpi-description",
-              "Vacancy / tightness observations"
+              "Primary observable slack measure"
             )
           )
         )
       ),
 
 
-      # SLACK OVERVIEW
       div(
-        class = "section-card",
+
+        class = "research-box",
 
         div(
-          class = "section-title",
-          "Labour-Market Slack Over Time"
+          class = "research-question",
+          "Research Question"
+        ),
+
+        p(
+          "To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?"
+        ),
+
+        p(
+          "The dashboard examines statistical associations between vacancies, labour-market tightness and measures of slack. The relationships should not be interpreted as evidence of causation."
+        )
+      ),
+
+
+      div(
+
+        class = "section-card",
+
+        h3(
+          "Labour-Market Overview"
         ),
 
         plotlyOutput(
-          "overview_slack_plot",
-          height = "450px"
+          "overview_trend",
+          height = "500px"
         )
       ),
 
 
-      # TIGHTNESS RELATIONSHIP
-      fluidRow(
+      div(
 
-        column(
-          7,
+        class = "section-card",
 
-          div(
-            class = "section-card",
-
-            div(
-              class = "section-title",
-              "Tightness and Underutilisation"
-            ),
-
-            plotlyOutput(
-              "overview_relationship_plot",
-              height = "400px"
-            )
-          )
+        h3(
+          "Dashboard Guide"
         ),
 
-        column(
-          5,
+        tags$ul(
 
-          div(
-            class = "section-card",
+          tags$li(
+            strong("Labour Demand: "),
+            "Explore online job advertisements and labour-demand trends."
+          ),
 
-            div(
-              class = "section-title",
-              "What the Dashboard Examines"
-            ),
+          tags$li(
+            strong("Labour-Market Slack: "),
+            "Compare unemployment, underemployment and underutilisation."
+          ),
 
-            div(
-              class = "insight-box",
+          tags$li(
+            strong("Tightness & Slack: "),
+            "Examine associations between vacancies and labour-market slack."
+          ),
 
-              strong("Labour demand"),
+          tags$li(
+            strong("Research Question: "),
+            "Review the main statistical relationships."
+          ),
 
-              br(),
+          tags$li(
+            strong("Wage Pressure: "),
+            "Explore associations with wage growth."
+          ),
 
-              "ABS Job Vacancies and the Internet Vacancy Index provide complementary measures of recruitment activity."
-            ),
+          tags$li(
+            strong("Occupation Demand: "),
+            "Explore vacancy demand across occupations."
+          ),
 
-            div(
-              class = "insight-box",
-
-              strong("Labour-market slack"),
-
-              br(),
-
-              "Unemployment, underemployment and underutilisation are retained as separate measures rather than combined into an additional researcher-weighted index."
-            ),
-
-            div(
-              class = "insight-box orange",
-
-              strong("Core relationship"),
-
-              br(),
-
-              "The main analysis examines whether changes in vacancies are associated with changes in labour-market slack."
-            )
+          tags$li(
+            strong("Data Explorer: "),
+            "Search, filter and download project data."
           )
         )
       )
@@ -1145,74 +1646,77 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Labour Demand",
 
       br(),
 
-      div(
-        class = "section-card",
+      sidebarLayout(
 
-        div(
-          class = "section-title",
-          "ABS Job Vacancies"
+        sidebarPanel(
+
+          h4(
+            "Labour Demand Controls"
+          ),
+
+          selectInput(
+
+            "demand_period",
+
+            "Time period:",
+
+            choices = c(
+              "All available data",
+              "Last 10 years",
+              "Last 5 years",
+              "Last 3 years"
+            ),
+
+            selected =
+              "All available data"
+          ),
+
+          checkboxInput(
+
+            "demand_yoy",
+
+            "Show year-on-year change",
+
+            FALSE
+          ),
+
+          width = 3
         ),
 
-        plotlyOutput(
-          "vacancy_plot",
-          height = "450px"
-        )
-      ),
 
-
-      div(
-        class = "section-card",
-
-        div(
-          class = "section-title",
-          "Internet Vacancy Index"
-        ),
-
-        plotlyOutput(
-          "ivi_plot",
-          height = "450px"
-        )
-      ),
-
-
-      fluidRow(
-
-        column(
-          6,
+        mainPanel(
 
           div(
+
             class = "section-card",
 
-            div(
-              class = "section-title",
-              "Monthly Change in Online Vacancies"
+            h3(
+              "Online Job Advertisements"
             ),
 
             plotlyOutput(
-              "ivi_change_plot",
-              height = "380px"
+              "ivi_national_plot",
+              height = "500px"
             )
-          )
-        ),
+          ),
 
-        column(
-          6,
 
           div(
+
             class = "section-card",
 
-            div(
-              class = "section-title",
-              "Year-on-Year Change in Online Vacancies"
+            h3(
+              "Labour Demand Growth"
             ),
 
             plotlyOutput(
-              "ivi_yoy_plot",
-              height = "380px"
+              "ivi_growth_plot",
+              height = "450px"
             )
           )
         )
@@ -1221,172 +1725,206 @@ ui <- fluidPage(
 
 
     # ========================================================
-    # SLACK
+    # LABOUR-MARKET SLACK
     # ========================================================
 
     tabPanel(
+
       "Labour-Market Slack",
 
       br(),
 
-      div(
-        class = "section-card",
+      sidebarLayout(
 
-        div(
-          class = "section-title",
-          "Explore Labour-Market Slack"
-        ),
+        sidebarPanel(
 
-        fluidRow(
+          h4(
+            "Slack Controls"
+          ),
 
-          column(
-            4,
+          checkboxGroupInput(
 
-            selectInput(
-              "slack_measure",
-              "Measure:",
-              choices = c(
-                "Unemployment" =
-                  "unemployment_rate",
+            "slack_measures",
 
-                "Underemployment" =
-                  "underemployment_rate",
+            "Measures:",
 
-                "Underutilisation" =
-                  "underutilisation_rate"
-              ),
+            choices = c(
+              "Unemployment" =
+                "Unemployment",
 
-              selected =
-                "underutilisation_rate"
+              "Underemployment" =
+                "Underemployment",
+
+              "Underutilisation" =
+                "Underutilisation"
+            ),
+
+            selected = c(
+              "Unemployment",
+              "Underemployment",
+              "Underutilisation"
             )
           ),
 
-          column(
-            8,
 
-            uiOutput(
-              "slack_date_ui"
+          selectInput(
+
+            "slack_period",
+
+            "Historical period:",
+
+            choices = c(
+              "All periods",
+              "1978–1989",
+              "1990–1994",
+              "1995–2007",
+              "2008–2019",
+              "2020–2021",
+              "2022–present"
+            ),
+
+            selected =
+              "All periods"
+          ),
+
+
+          uiOutput(
+            "slack_date_ui"
+          ),
+
+
+          actionButton(
+            "reset_slack",
+            "Reset filters",
+            class = "btn-primary"
+          ),
+
+          br(),
+          br(),
+
+          p(
+            "Underutilisation is used as the primary observable proxy for labour-market slack, while unemployment and underemployment provide complementary measures."
+          ),
+
+          width = 3
+        ),
+
+
+        mainPanel(
+
+          div(
+
+            class = "section-card",
+
+            h3(
+              "Labour-Market Slack Over Time"
+            ),
+
+            plotlyOutput(
+              "slack_trend",
+              height = "550px"
+            )
+          ),
+
+
+          div(
+
+            class = "section-card",
+
+            h3(
+              "Youth vs Overall Slack"
+            ),
+
+            plotlyOutput(
+              "youth_slack_plot",
+              height = "500px"
+            )
+          ),
+
+
+          div(
+
+            class = "section-card",
+
+            h3(
+              "Historical Period Summary"
+            ),
+
+            DTOutput(
+              "slack_period_table"
             )
           )
+        )
+      )
+    ),
+
+
+    # ========================================================
+    # TIGHTNESS & SLACK
+    # ========================================================
+
+    tabPanel(
+
+      "Tightness & Slack",
+
+      br(),
+
+      div(
+
+        class = "section-card",
+
+        h3(
+          "Vacancies and Labour-Market Tightness"
         ),
 
         plotlyOutput(
-          "slack_plot",
+          "tightness_plot",
           height = "500px"
         )
       ),
 
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Historical Period Comparison"
+        h3(
+          "Changes in Vacancies vs Changes in Slack"
+        ),
+
+        selectInput(
+
+          "tightness_slack_measure",
+
+          "Slack measure:",
+
+          choices = c(
+            "Unemployment",
+            "Underemployment",
+            "Underutilisation"
+          ),
+
+          selected =
+            "Underutilisation"
         ),
 
         plotlyOutput(
-          "period_slack_plot",
-          height = "420px"
-        ),
+          "tightness_slack_scatter",
+          height = "500px"
+        )
+      ),
 
-        br(),
+
+      div(
+
+        class = "section-card",
+
+        h3(
+          "Correlation Summary"
+        ),
 
         DTOutput(
-          "period_summary_table"
-        )
-      )
-    ),
-
-
-    # ========================================================
-    # TIGHTNESS
-    # ========================================================
-
-    tabPanel(
-      "Labour-Market Tightness",
-
-      br(),
-
-      div(
-        class = "section-card",
-
-        div(
-          class = "section-title",
-          "Labour-Market Tightness Over Time"
-        ),
-
-        div(
-          class = "insight-box",
-
-          HTML(
-            paste0(
-              "<strong>Definition:</strong> Labour-market tightness is measured as ",
-              "seasonally adjusted job vacancies divided by seasonally adjusted ",
-              "unemployed persons. A higher ratio indicates more vacancies relative ",
-              "to unemployed persons."
-            )
-          )
-        ),
-
-        plotlyOutput(
-          "tightness_plot",
-          height = "450px"
-        )
-      ),
-
-
-      fluidRow(
-
-        column(
-          6,
-
-          div(
-            class = "section-card",
-
-            div(
-              class = "section-title",
-              "Distribution of Tightness"
-            ),
-
-            plotlyOutput(
-              "tightness_histogram",
-              height = "380px"
-            )
-          )
-        ),
-
-        column(
-          6,
-
-          div(
-            class = "section-card",
-
-            div(
-              class = "section-title",
-              "Tightness and Underutilisation"
-            ),
-
-            plotlyOutput(
-              "tightness_slack_scatter",
-              height = "380px"
-            )
-          )
-        )
-      ),
-
-
-      div(
-        class = "section-card",
-
-        div(
-          class = "section-title",
-          "Tightness / Slack Quadrants"
-        ),
-
-        plotlyOutput(
-          "quadrant_plot",
-          height = "430px"
+          "tightness_correlations"
         )
       )
     ),
@@ -1397,81 +1935,56 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Research Question",
 
       br(),
 
       div(
-        class = "section-card",
+
+        class = "research-box",
 
         div(
-          class = "section-title",
-          "Changes in Vacancies vs Changes in Slack"
-        ),
+          class = "research-question",
 
-        selectInput(
-          "rq_measure",
-          "Slack measure:",
-          choices = c(
-            "Unemployment" =
-              "unemployment_change",
-
-            "Underemployment" =
-              "underemployment_change",
-
-            "Underutilisation" =
-              "underutilisation_change"
-          ),
-
-          selected =
-            "underutilisation_change"
-        ),
-
-        plotlyOutput(
-          "rq_change_plot",
-          height = "480px"
+          "To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?"
         )
       ),
 
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Relationship Across Slack Measures"
+        h3(
+          "Main Evidence"
+        ),
+
+        p(
+          "The analysis compares changes in job vacancies with changes in unemployment, underemployment and underutilisation."
+        ),
+
+        p(
+          "Negative correlations indicate that increases in vacancies tend to coincide with reductions in measured labour-market slack. These relationships are statistical associations and do not establish causality."
         ),
 
         plotlyOutput(
-          "all_relationships_plot",
-          height = "500px"
+          "research_scatter",
+          height = "550px"
         )
       ),
 
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Correlation Results"
+        h3(
+          "Correlation by Slack Measure"
         ),
 
         DTOutput(
-          "correlation_table"
-        ),
-
-        br(),
-
-        div(
-          class = "insight-box",
-
-          HTML(
-            paste0(
-              "<strong>Interpretation:</strong> Correlation measures the strength ",
-              "and direction of linear association. It does not establish causation."
-            )
-          )
+          "research_correlation_table"
         )
       )
     ),
@@ -1482,49 +1995,66 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Wage Pressure",
 
       br(),
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Wage Price Index"
+        h3(
+          "Wage Price Index Growth"
         ),
 
         plotlyOutput(
           "wpi_plot",
-          height = "450px"
+          height = "500px"
         )
       ),
 
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Timing Relationships"
+        h3(
+          "Tightness and Wage Growth"
+        ),
+
+        plotlyOutput(
+          "tightness_wpi_scatter",
+          height = "500px"
+        )
+      ),
+
+
+      div(
+
+        class = "section-card",
+
+        h3(
+          "Underutilisation and Wage Growth"
+        ),
+
+        plotlyOutput(
+          "slack_wpi_scatter",
+          height = "500px"
+        )
+      ),
+
+
+      div(
+
+        class = "section-card",
+
+        h3(
+          "Timing of Associations"
         ),
 
         DTOutput(
-          "wpi_correlation_table"
-        ),
-
-        br(),
-
-        div(
-          class = "insight-box gold",
-
-          HTML(
-            paste0(
-              "<strong>Purpose:</strong> The WPI extension examines whether ",
-              "wage growth is associated with labour-market tightness and slack ",
-              "at the same quarter and subsequent quarters."
-            )
-          )
+          "wpi_timing_table"
         )
       )
     ),
@@ -1535,40 +2065,82 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Occupation Demand",
 
       br(),
 
-      div(
-        class = "section-card",
+      sidebarLayout(
 
-        div(
-          class = "section-title",
-          "Internet Vacancy Index by Occupation"
+        sidebarPanel(
+
+          h4(
+            "Occupation Controls"
+          ),
+
+          selectInput(
+
+            "occupation_level",
+
+            "Occupation dataset:",
+
+            choices = c(
+              "Broad occupations",
+              "Detailed occupations"
+            ),
+
+            selected =
+              "Broad occupations"
+          ),
+
+          width = 3
         ),
 
-        uiOutput(
-          "occupation_controls"
-        ),
 
-        plotlyOutput(
-          "occupation_plot",
-          height = "500px"
-        )
-      ),
+        mainPanel(
+
+          div(
+
+            class = "section-card",
+
+            h3(
+              "Occupation Vacancy Trends"
+            ),
+
+            plotlyOutput(
+              "occupation_trend",
+              height = "550px"
+            )
+          ),
 
 
-      div(
-        class = "section-card",
+          div(
 
-        div(
-          class = "section-title",
-          "Skill-Level Vacancy Data"
-        ),
+            class = "section-card",
 
-        plotlyOutput(
-          "skill_plot",
-          height = "450px"
+            h3(
+              "Occupation Vacancy Table"
+            ),
+
+            DTOutput(
+              "occupation_table"
+            )
+          ),
+
+
+          div(
+
+            class = "section-card",
+
+            h3(
+              "Skill-Level Demand"
+            ),
+
+            plotlyOutput(
+              "skill_plot",
+              height = "500px"
+            )
+          )
         )
       )
     ),
@@ -1579,44 +2151,85 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Data Explorer",
 
       br(),
 
-      div(
-        class = "section-card",
+      sidebarLayout(
 
-        div(
-          class = "section-title",
-          "Select Dataset"
+        sidebarPanel(
+
+          h4(
+            "Data Selection"
+          ),
+
+          selectInput(
+
+            "explorer_dataset",
+
+            "Dataset:",
+
+            choices = c(
+              "Labour-market slack",
+              "Vacancy and tightness",
+              "Wage Price Index",
+              "IVI occupation data"
+            ),
+
+            selected =
+              "Labour-market slack"
+          ),
+
+
+          numericInput(
+
+            "explorer_rows",
+
+            "Rows to show:",
+
+            value = 25,
+
+            min = 10,
+
+            max = 500,
+
+            step = 10
+          ),
+
+
+          downloadButton(
+
+            "download_explorer",
+
+            "Download current data"
+          ),
+
+          br(),
+          br(),
+
+          p(
+            "Use the Show entries dropdown and table search tools to explore the selected dataset."
+          ),
+
+          width = 3
         ),
 
-        selectInput(
-          "dataset_choice",
-          "Dataset:",
-          choices = c(
-            "Vacancy / Tightness / Slack" =
-              "combined",
 
-            "Labour-Market Slack" =
-              "slack",
+        mainPanel(
 
-            "National IVI" =
-              "ivi",
+          div(
 
-            "Occupation IVI" =
-              "occupation",
+            class = "section-card",
 
-            "Skill IVI" =
-              "skill",
+            h3(
+              "Interactive Data Explorer"
+            ),
 
-            "WPI" =
-              "wpi"
+            DTOutput(
+              "data_explorer"
+            )
           )
-        ),
-
-        DTOutput(
-          "data_table"
         )
       )
     ),
@@ -1627,529 +2240,129 @@ ui <- fluidPage(
     # ========================================================
 
     tabPanel(
+
       "Methodology",
 
       br(),
 
       div(
+
         class = "section-card",
 
-        div(
-          class = "section-title",
-          "Project Methodology"
+        h3(
+          "Research Design"
         ),
 
-
-        div(
-          class = "method-box",
-
-          div(
-            class = "method-title",
-            "1. Labour-Market Slack"
-          ),
-
-          p(
-            "Labour-market slack is represented using three related but distinct measures: unemployment, underemployment and underutilisation."
-          ),
-
-          p(
-            "Underutilisation is used as the broadest observable proxy for unused labour capacity, while unemployment and underemployment are retained separately to preserve their different information."
-          )
+        p(
+          "The project investigates the association between labour demand and labour-market slack in Australia."
         ),
 
+        p(
+          "The analysis is descriptive and correlational. It does not attempt to identify a causal effect of vacancies on labour-market slack."
+        )
+      ),
 
-        div(
-          class = "method-box",
 
-          div(
-            class = "method-title",
-            "2. Labour Demand"
-          ),
+      div(
 
-          p(
-            "Labour demand is examined using ABS Job Vacancies and the Jobs and Skills Australia Internet Vacancy Index."
-          ),
+        class = "method-box",
 
-          p(
-            "The IVI measures newly lodged online job advertisements and therefore represents a flow of online recruitment activity. ABS Job Vacancies measures vacancies available for immediate filling at the survey reference date."
-          )
+        h4(
+          "Labour-market slack"
         ),
 
+        p(
+          "Unemployment, underemployment and underutilisation are examined using ABS Labour Force data. Underutilisation is treated as the primary observable proxy for labour-market slack because it incorporates both unemployment and underemployment."
+        )
+      ),
 
-        div(
-          class = "method-box",
 
-          div(
-            class = "method-title",
-            "3. Labour-Market Tightness"
-          ),
+      div(
 
-          p(
-            "Tightness is calculated as seasonally adjusted job vacancies divided by seasonally adjusted unemployed persons."
-          ),
+        class = "method-box",
 
-          p(
-            "The measure provides an indicator of the balance between labour demand and the pool of unemployed workers."
-          )
+        h4(
+          "Labour demand"
         ),
 
+        p(
+          "The Jobs and Skills Australia Internet Vacancy Index provides a monthly measure of new online job advertisements. ABS Job Vacancies provide a quarterly measure of vacancies."
+        )
+      ),
 
-        div(
-          class = "method-box",
 
-          div(
-            class = "method-title",
-            "4. Research Question Analysis"
-          ),
+      div(
 
-          p(
-            "The central analysis examines whether changes in job vacancies are associated with changes in unemployment, underemployment and underutilisation."
-          ),
+        class = "method-box",
 
-          p(
-            "The analysis uses correlations and visual comparisons. These results describe associations rather than causal effects."
-          )
+        h4(
+          "Labour-market tightness"
         ),
 
+        p(
+          "Tightness is calculated as ABS Job Vacancies divided by the number of unemployed persons."
+        )
+      ),
 
-        div(
-          class = "method-box",
 
-          div(
-            class = "method-title",
-            "5. Frequency and Matching"
-          ),
+      div(
 
-          p(
-            "Labour Force data are monthly, while the ABS Job Vacancies Survey is quarterly. The tightness analysis therefore uses the Labour Force observations corresponding to the vacancy reference months."
-          )
+        class = "method-box",
+
+        h4(
+          "Wage pressure"
         ),
 
+        p(
+          "The Wage Price Index is used as an outcome/context measure to examine associations between labour-market tightness, slack and wage growth."
+        )
+      ),
 
-        div(
-          class = "method-box",
 
-          div(
-            class = "method-title",
-            "6. Important Limitations"
-          ),
+      div(
 
-          tags$ul(
+        class = "method-box",
 
-            tags$li(
-              "Aggregate data do not identify individual worker-level matching."
-            ),
+        h4(
+          "Historical periods"
+        ),
 
-            tags$li(
-              "Vacancies and unemployed workers may differ in occupation, skills and location."
-            ),
+        p(
+          "The dashboard compares 1978–1989, 1990–1994, 1995–2007, 2008–2019, 2020–2021 and 2022–present."
+        )
+      ),
 
-            tags$li(
-              "The IVI does not capture every vacancy or recruitment channel."
-            ),
 
-            tags$li(
-              "Underutilisation is an observable proxy for slack rather than a complete measure of all unused labour capacity."
-            ),
+      div(
 
-            tags$li(
-              "Correlation does not establish causation."
-            ),
+        class = "method-box",
 
-            tags$li(
-              "Different datasets have different frequencies, definitions and coverage."
-            )
-          )
+        h4(
+          "Interpretation"
+        ),
+
+        p(
+          "Correlation measures the strength and direction of statistical association. A negative correlation between vacancies and slack indicates that higher vacancies tend to occur alongside lower measured slack. This does not establish causation."
         )
       )
     )
   ),
 
 
-  # ----------------------------------------------------------
-  # FOOTER
-  # ----------------------------------------------------------
-
   div(
+
     class = "dashboard-footer",
 
-    "Australia Labour-Market Project | Monash University | Labour-Market Tightness and Slack in Australia"
+    "Australian Labour Market Project | ETC-5543 | Monash University"
   )
 )
 
 
 # ============================================================
-# 16. SERVER
+# 12. SERVER
 # ============================================================
 
 server <- function(input, output, session) {
-
-
-  # ==========================================================
-  # KPI OUTPUTS
-  # ==========================================================
-
-  output$kpi_slack_obs <- renderText({
-
-    if (is.null(slack_data)) {
-      return("—")
-    }
-
-    format(
-      nrow(slack_data),
-      big.mark = ","
-    )
-  })
-
-
-  output$kpi_tightness <- renderText({
-
-    if (is.na(tightness_median)) {
-      return("—")
-    }
-
-    number(
-      tightness_median,
-      accuracy = 0.001
-    )
-  })
-
-
-  output$kpi_underutilisation <- renderText({
-
-    if (is.na(underutilisation_median)) {
-      return("—")
-    }
-
-    paste0(
-      number(
-        underutilisation_median,
-        accuracy = 0.1
-      ),
-      "%"
-    )
-  })
-
-
-  output$kpi_quarters <- renderText({
-
-    if (is.null(combined_data)) {
-      return("—")
-    }
-
-    format(
-      nrow(combined_data),
-      big.mark = ","
-    )
-  })
-
-
-  # ==========================================================
-  # OVERVIEW SLACK
-  # ==========================================================
-
-  output$overview_slack_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(slack_data),
-        "Labour-market slack data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      slack_data,
-      aes(x = date)
-    ) +
-
-      geom_line(
-        aes(
-          y = unemployment_rate,
-          colour = "Unemployment"
-        ),
-        linewidth = 0.8
-      ) +
-
-      geom_line(
-        aes(
-          y = underemployment_rate,
-          colour = "Underemployment"
-        ),
-        linewidth = 0.8
-      ) +
-
-      geom_line(
-        aes(
-          y = underutilisation_rate,
-          colour = "Underutilisation"
-        ),
-        linewidth = 1
-      ) +
-
-      scale_colour_manual(
-        values = c(
-          "Unemployment" =
-            COLORS$unemployment,
-
-          "Underemployment" =
-            COLORS$underemployment,
-
-          "Underutilisation" =
-            COLORS$underutilisation
-        )
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Rate (%)",
-        colour = NULL,
-        title = "Australian Labour-Market Slack",
-        subtitle =
-          "Unemployment, underemployment and underutilisation"
-      ) +
-
-      theme_minimal(base_size = 13) +
-
-      theme(
-        legend.position = "top",
-        plot.title =
-          element_text(
-            face = "bold",
-            colour = COLORS$navy
-          )
-      )
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # OVERVIEW RELATIONSHIP
-  # ==========================================================
-
-  output$overview_relationship_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined vacancy and slack data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      combined_data,
-      aes(
-        x = Tightness,
-        y = underutilisation_rate
-      )
-    ) +
-
-      geom_point(
-        alpha = 0.7,
-        size = 3,
-        colour = COLORS$teal
-      ) +
-
-      geom_smooth(
-        method = "lm",
-        se = TRUE,
-        colour = COLORS$orange,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = "Labour-market tightness",
-        y = "Underutilisation (%)",
-        title =
-          "Tightness and Labour-Market Slack",
-        subtitle =
-          "Quarterly observations"
-      ) +
-
-      theme_minimal(base_size = 12)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # ABS JOB VACANCIES
-  # ==========================================================
-
-  output$vacancy_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Vacancy data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      combined_data,
-      aes(
-        x = Quarter,
-        y = Job_Vacancies
-      )
-    ) +
-
-      geom_line(
-        colour = COLORS$vacancies,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Job vacancies",
-        title =
-          "ABS Job Vacancies in Australia",
-        subtitle =
-          "Seasonally adjusted quarterly series"
-      ) +
-
-      scale_y_continuous(
-        labels = comma
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # NATIONAL IVI
-  # ==========================================================
-
-  output$ivi_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(ivi_australia),
-        "National IVI data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      ivi_australia,
-      aes(
-        x = Month,
-        y = Vacancies
-      )
-    ) +
-
-      geom_line(
-        colour = COLORS$purple,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Online job advertisements",
-        title =
-          "Internet Vacancy Index in Australia",
-        subtitle =
-          "Seasonally adjusted national series"
-      ) +
-
-      scale_y_continuous(
-        labels = comma
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # IVI MONTHLY CHANGE
-  # ==========================================================
-
-  output$ivi_change_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(ivi_australia),
-        "National IVI data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      ivi_australia,
-      aes(
-        x = Month,
-        y = monthly_pct_change
-      )
-    ) +
-
-      geom_hline(
-        yintercept = 0,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
-
-      geom_line(
-        colour = COLORS$orange,
-        linewidth = 0.8
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Monthly change (%)",
-        title =
-          "Monthly Change in Online Vacancies"
-      ) +
-
-      theme_minimal(base_size = 12)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # IVI YEAR-ON-YEAR
-  # ==========================================================
-
-  output$ivi_yoy_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(ivi_australia),
-        "National IVI data could not be loaded."
-      )
-    )
-
-    p <- ggplot(
-      ivi_australia,
-      aes(
-        x = Month,
-        y = yoy_pct_change
-      )
-    ) +
-
-      geom_hline(
-        yintercept = 0,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
-
-      geom_line(
-        colour = COLORS$teal,
-        linewidth = 0.8
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Year-on-year change (%)",
-        title =
-          "Year-on-Year Change in Online Vacancies"
-      ) +
-
-      theme_minimal(base_size = 12)
-
-    plotly_clean(p)
-  })
 
 
   # ==========================================================
@@ -2158,1008 +2371,2502 @@ server <- function(input, output, session) {
 
   output$slack_date_ui <- renderUI({
 
-    validate(
-      need(
-        !is.null(slack_data),
-        "Slack data unavailable."
+    if (
+      nrow(labour_market_slack) == 0 ||
+      !"date" %in% names(labour_market_slack)
+    ) {
+
+      return(
+        p(
+          "Date filter unavailable."
+        )
       )
-    )
+    }
+
+
+    valid_dates <-
+      labour_market_slack$date[
+        !is.na(
+          labour_market_slack$date
+        )
+      ]
+
+
+    if (length(valid_dates) == 0) {
+
+      return(
+        p(
+          "Date filter unavailable."
+        )
+      )
+    }
+
 
     dateRangeInput(
-      "slack_date_range",
+
+      "slack_dates",
+
       "Date range:",
-      start = min(
-        slack_data$date,
-        na.rm = TRUE
-      ),
-      end = max(
-        slack_data$date,
-        na.rm = TRUE
-      ),
 
-      min = min(
-        slack_data$date,
-        na.rm = TRUE
-      ),
+      start =
+        min(
+          valid_dates
+        ),
 
-      max = max(
-        slack_data$date,
-        na.rm = TRUE
-      )
+      end =
+        max(
+          valid_dates
+        )
     )
   })
 
 
   # ==========================================================
-  # SLACK PLOT
+  # OVERVIEW VACANCIES
   # ==========================================================
 
-  output$slack_plot <- renderPlotly({
+  output$overview_vacancies <-
+    renderText({
 
-    validate(
-      need(
-        !is.null(slack_data),
-        "Slack data unavailable."
-      ),
+      if (
+        nrow(combined_data) == 0
+      ) {
+        return("N/A")
+      }
 
-      need(
-        !is.null(input$slack_date_range),
-        "Select a date range."
+
+      data <-
+        combined_data %>%
+
+        filter(
+          !is.na(Job_Vacancies),
+          !is.na(Quarter)
+        )
+
+
+      if (
+        nrow(data) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      latest <-
+        data |> 
+        slice_max(
+          Quarter,
+          n = 1,
+          with_ties = FALSE
+        )
+
+
+      format_number(
+        latest$Job_Vacancies[1],
+        0
       )
-    )
+    })
 
-    selected_data <- slack_data |>
+
+  # ==========================================================
+  # OVERVIEW TIGHTNESS
+  # ==========================================================
+
+  output$overview_tightness <-
+    renderText({
+
+      if (
+        nrow(combined_data) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      data <-
+        combined_data |> 
+
+        filter(
+          !is.na(Tightness),
+          !is.na(Quarter)
+        )
+
+
+      if (
+        nrow(data) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      latest <-
+        data |> 
+        slice_max(
+          Quarter,
+          n = 1,
+          with_ties = FALSE
+        )
+
+
+      format_number(
+        latest$Tightness[1],
+        2
+      )
+    })
+
+
+  # ==========================================================
+  # OVERVIEW UNEMPLOYMENT
+  # ==========================================================
+
+  output$overview_unemployment <-
+    renderText({
+
+      if (
+        nrow(labour_market_slack) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      data <-
+        labour_market_slack |> 
+
+        filter(
+          !is.na(unemployment_rate),
+          !is.na(date)
+        )
+
+
+      if (
+        nrow(data) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      latest <-
+        data |> 
+        slice_max(
+          date,
+          n = 1,
+          with_ties = FALSE
+        )
+
+
+      format_percent(
+        latest$unemployment_rate[1]
+      )
+    })
+
+
+  # ==========================================================
+  # OVERVIEW UNDERUTILISATION
+  # ==========================================================
+
+  output$overview_underutilisation <-
+    renderText({
+
+      if (
+        nrow(labour_market_slack) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      data <-
+        labour_market_slack |> 
+
+        filter(
+          !is.na(underutilisation_rate),
+          !is.na(date)
+        )
+
+
+      if (
+        nrow(data) == 0
+      ) {
+        return("N/A")
+      }
+
+
+      latest <-
+        data |> 
+        slice_max(
+          date,
+          n = 1,
+          with_ties = FALSE
+        )
+
+
+      format_percent(
+        latest$underutilisation_rate[1]
+      )
+    })
+
+
+  # ==========================================================
+  # OVERVIEW CHART
+  # ==========================================================
+
+  output$overview_trend <-
+    renderPlotly({
+
+      if (
+        nrow(labour_market_slack) == 0
+      ) {
+        return(
+          empty_plot(
+            "Labour-market slack data are unavailable."
+          )
+        )
+      }
+
+
+      data <-
+        labour_market_slack |> 
+
+        select(
+          date,
+          unemployment_rate,
+          underemployment_rate,
+          underutilisation_rate
+        ) |> 
+
+        pivot_longer(
+
+          cols = c(
+            unemployment_rate,
+            underemployment_rate,
+            underutilisation_rate
+          ),
+
+          names_to = "measure",
+
+          values_to = "rate"
+        ) |> 
+
+        mutate(
+
+          measure =
+            case_when(
+
+              measure ==
+                "unemployment_rate" ~
+                "Unemployment",
+
+              measure ==
+                "underemployment_rate" ~
+                "Underemployment",
+
+              measure ==
+                "underutilisation_rate" ~
+                "Underutilisation",
+
+              TRUE ~ measure
+            )
+        )
+
+
+      p <-
+        ggplot(
+          data,
+          aes(
+            x = date,
+            y = rate,
+            colour = measure
+          )
+        ) +
+
+        geom_line(
+          linewidth = 1
+        ) +
+
+        scale_colour_manual(
+          values = dashboard_palette
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Rate (%)",
+          colour = "Measure"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        ) +
+
+        theme(
+          legend.position = "top",
+          panel.grid.minor =
+            element_blank()
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # DEMAND DATA
+  # ==========================================================
+
+  demand_data <- reactive({
+
+    if (
+      nrow(national_ivi) == 0
+    ) {
+      return(tibble())
+    }
+
+
+    data <-
+      national_ivi |> 
+
       filter(
-        date >= input$slack_date_range[1],
-        date <= input$slack_date_range[2]
+        !is.na(Month),
+        !is.na(Vacancies)
+      ) |> 
+
+      arrange(Month)
+
+
+    if (
+      input$demand_period ==
+      "Last 10 years"
+    ) {
+
+      max_date <-
+        max(
+          data$Month,
+          na.rm = TRUE
+        )
+
+      data <-
+        data |> 
+        filter(
+          Month >=
+            max_date -
+            years(10)
+        )
+    }
+
+
+    if (
+      input$demand_period ==
+      "Last 5 years"
+    ) {
+
+      max_date <-
+        max(
+          data$Month,
+          na.rm = TRUE
+        )
+
+      data <-
+        data |> 
+        filter(
+          Month >=
+            max_date -
+            years(5)
+        )
+    }
+
+
+    if (
+      input$demand_period ==
+      "Last 3 years"
+    ) {
+
+      max_date <-
+        max(
+          data$Month,
+          na.rm = TRUE
+        )
+
+      data <-
+        data |> 
+        filter(
+          Month >=
+            max_date -
+            years(3)
+        )
+    }
+
+
+    data |> 
+
+      mutate(
+
+        yoy_change =
+          (
+            Vacancies /
+              lag(
+                Vacancies,
+                12
+              ) -
+              1
+          ) * 100
       )
-
-    measure <- input$slack_measure
-
-    label <- c(
-      unemployment_rate =
-        "Unemployment",
-
-      underemployment_rate =
-        "Underemployment",
-
-      underutilisation_rate =
-        "Underutilisation"
-    )[[measure]]
-
-    colour <- c(
-      unemployment_rate =
-        COLORS$unemployment,
-
-      underemployment_rate =
-        COLORS$underemployment,
-
-      underutilisation_rate =
-        COLORS$underutilisation
-    )[[measure]]
-
-    p <- ggplot(
-      selected_data,
-      aes(
-        x = date,
-        y = .data[[measure]]
-      )
-    ) +
-
-      geom_line(
-        colour = colour,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Rate (%)",
-        title =
-          paste(
-            label,
-            "over time"
-          )
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
   })
 
 
   # ==========================================================
-  # PERIOD SLACK PLOT
+  # IVI NATIONAL
   # ==========================================================
 
-  output$period_slack_plot <- renderPlotly({
+  output$ivi_national_plot <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(period_summary),
-        "Period summary unavailable."
-      )
-    )
+      data <-
+        demand_data()
 
-    plot_data <- period_summary |>
-      pivot_longer(
-        cols = c(
-          unemployment,
-          underemployment,
-          underutilisation
-        ),
-        names_to = "measure",
-        values_to = "rate"
-      ) |>
-      mutate(
 
-        measure = recode(
-          measure,
+      if (
+        nrow(data) == 0
+      ) {
 
-          unemployment =
-            "Unemployment",
-
-          underemployment =
-            "Underemployment",
-
-          underutilisation =
-            "Underutilisation"
-        )
-      )
-
-    p <- ggplot(
-      plot_data,
-      aes(
-        x = period,
-        y = rate,
-        fill = measure
-      )
-    ) +
-
-      geom_col(
-        position = "dodge"
-      ) +
-
-      scale_fill_manual(
-        values = c(
-          "Unemployment" =
-            COLORS$unemployment,
-
-          "Underemployment" =
-            COLORS$underemployment,
-
-          "Underutilisation" =
-            COLORS$underutilisation
-        )
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Average rate (%)",
-        fill = NULL,
-        title =
-          "Average Labour-Market Slack by Historical Period"
-      ) +
-
-      theme_minimal(base_size = 12) +
-
-      theme(
-        legend.position = "top",
-        axis.text.x =
-          element_text(
-            angle = 30,
-            hjust = 1
+        return(
+          empty_plot(
+            "IVI data are unavailable."
           )
-      )
+        )
+      }
 
-    plotly_clean(p)
+
+      p <-
+        ggplot(
+
+          data,
+
+          aes(
+            x = Month,
+            y = Vacancies
+          )
+        ) +
+
+        geom_area(
+          fill = "#2774C6",
+          alpha = 0.12
+        ) +
+
+        geom_line(
+          colour = "#2774C6",
+          linewidth = 1.1
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Online job advertisements"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        ) +
+
+        theme(
+          panel.grid.minor =
+            element_blank()
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # IVI GROWTH
+  # ==========================================================
+
+  output$ivi_growth_plot <-
+    renderPlotly({
+
+      data <-
+        demand_data()
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "IVI data are unavailable."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          data,
+
+          aes(
+            x = Month,
+            y = yoy_change
+          )
+        ) +
+
+        geom_hline(
+          yintercept = 0,
+          linetype = "dashed",
+          colour = "#9AA5B1"
+        ) +
+
+        geom_line(
+          colour = "#087F8C",
+          linewidth = 1
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Year-on-year change (%)"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # FILTERED SLACK
+  # ==========================================================
+
+  filtered_slack <- reactive({
+
+    if (
+      nrow(labour_market_slack) == 0
+    ) {
+      return(tibble())
+    }
+
+
+    data <-
+      labour_market_slack
+
+
+    if (
+      !is.null(input$slack_dates) &&
+      length(input$slack_dates) == 2
+    ) {
+
+      data <-
+        data |> 
+
+        filter(
+
+          date >=
+            input$slack_dates[1],
+
+          date <=
+            input$slack_dates[2]
+        )
+    }
+
+
+    if (
+      input$slack_period !=
+      "All periods"
+    ) {
+
+      data <-
+        data %>%
+
+        filter(
+          period ==
+            input$slack_period
+        )
+    }
+
+
+    data
   })
 
 
   # ==========================================================
-  # PERIOD TABLE
+  # RESET SLACK
   # ==========================================================
 
-  output$period_summary_table <- renderDT({
+  observeEvent(
 
-    validate(
-      need(
-        !is.null(period_summary),
-        "Period summary unavailable."
-      )
-    )
+    input$reset_slack,
 
-    period_summary |>
-      rename(
-        Period = period,
-        Unemployment = unemployment,
-        Underemployment = underemployment,
-        Underutilisation = underutilisation
-      ) |>
-      mutate(
-        across(
-          where(is.numeric),
-          ~ round(.x, 2)
+    {
+
+      updateCheckboxGroupInput(
+
+        session,
+
+        "slack_measures",
+
+        selected = c(
+          "Unemployment",
+          "Underemployment",
+          "Underutilisation"
         )
-      ) |>
+      )
+
+
+      updateSelectInput(
+
+        session,
+
+        "slack_period",
+
+        selected =
+          "All periods"
+      )
+
+
+      if (
+        nrow(labour_market_slack) > 0
+      ) {
+
+        valid_dates <-
+          labour_market_slack$date[
+            !is.na(
+              labour_market_slack$date
+            )
+          ]
+
+
+        if (
+          length(valid_dates) > 0
+        ) {
+
+          updateDateRangeInput(
+
+            session,
+
+            "slack_dates",
+
+            start =
+              min(valid_dates),
+
+            end =
+              max(valid_dates)
+          )
+        }
+      }
+    }
+  )
+
+
+  # ==========================================================
+  # SLACK TREND
+  # ==========================================================
+
+  output$slack_trend <-
+    renderPlotly({
+
+      data <-
+        filtered_slack()
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "No slack data match the selected filters."
+          )
+        )
+      }
+
+
+      if (
+        length(input$slack_measures) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "Please select at least one measure."
+          )
+        )
+      }
+
+
+      plot_data <-
+        data |> 
+
+        select(
+          date,
+          unemployment_rate,
+          underemployment_rate,
+          underutilisation_rate
+        ) |> 
+
+        pivot_longer(
+
+          cols = c(
+            unemployment_rate,
+            underemployment_rate,
+            underutilisation_rate
+          ),
+
+          names_to = "measure",
+
+          values_to = "rate"
+        ) |> 
+
+        mutate(
+
+          measure =
+            case_when(
+
+              measure ==
+                "unemployment_rate" ~
+                "Unemployment",
+
+              measure ==
+                "underemployment_rate" ~
+                "Underemployment",
+
+              measure ==
+                "underutilisation_rate" ~
+                "Underutilisation",
+
+              TRUE ~ measure
+            )
+        ) |> 
+
+        filter(
+          measure %in%
+            input$slack_measures
+        )
+
+
+      p <-
+        ggplot(
+
+          plot_data,
+
+          aes(
+            x = date,
+            y = rate,
+            colour = measure
+          )
+        ) +
+
+        geom_line(
+          linewidth = 1
+        ) +
+
+        scale_colour_manual(
+          values = dashboard_palette
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Rate (%)",
+          colour = "Measure"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        ) +
+
+        theme(
+          legend.position = "top",
+          panel.grid.minor =
+            element_blank()
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # YOUTH SLACK
+  # ==========================================================
+
+  output$youth_slack_plot <-
+    renderPlotly({
+
+      if (
+        nrow(labour_market_slack) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "Youth data are unavailable."
+          )
+        )
+      }
+
+
+      required_columns <- c(
+        "date",
+        "unemployment_rate",
+        "youth_unemployment_rate",
+        "underutilisation_rate",
+        "youth_underutilisation_rate"
+      )
+
+
+      if (
+        !all(
+          required_columns %in%
+            names(labour_market_slack)
+        )
+      ) {
+
+        return(
+          empty_plot(
+            "Youth measures are unavailable."
+          )
+        )
+      }
+
+
+      data <-
+        labour_market_slack |> 
+
+        select(
+          date,
+          unemployment_rate,
+          youth_unemployment_rate,
+          underutilisation_rate,
+          youth_underutilisation_rate
+        ) |> 
+
+        pivot_longer(
+
+          cols = -date,
+
+          names_to = "measure",
+
+          values_to = "rate"
+        ) |> 
+
+        mutate(
+
+          category =
+            case_when(
+
+              grepl(
+                "underutilisation",
+                measure
+              ) ~
+                "Underutilisation",
+
+              TRUE ~
+                "Unemployment"
+            ),
+
+          group =
+            case_when(
+
+              grepl(
+                "youth",
+                measure
+              ) ~
+                "Youth",
+
+              TRUE ~
+                "Overall"
+            )
+        )
+
+
+      p <-
+        ggplot(
+
+          data,
+
+          aes(
+            x = date,
+            y = rate,
+            colour = group
+          )
+        ) +
+
+        geom_line(
+          linewidth = 0.9
+        ) +
+
+        facet_wrap(
+          ~category,
+          scales = "free_y"
+        ) +
+
+        scale_colour_manual(
+
+          values = c(
+            "Overall" =
+              dashboard_palette[
+                "Overall"
+              ],
+
+            "Youth" =
+              dashboard_palette[
+                "Youth"
+              ]
+          )
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Rate (%)",
+          colour = NULL
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        ) +
+
+        theme(
+          legend.position = "top"
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # SLACK PERIOD TABLE
+  # ==========================================================
+
+  output$slack_period_table <-
+    renderDT({
+
+      if (
+        nrow(labour_market_slack) == 0
+      ) {
+
+        return(
+          datatable(
+            tibble(
+              Message =
+                "Slack data are unavailable."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
+
+
+      table_data <-
+        labour_market_slack |> 
+
+        group_by(period) |> 
+
+        summarise(
+
+          Observations =
+            n(),
+
+          Unemployment =
+            mean(
+              unemployment_rate,
+              na.rm = TRUE
+            ),
+
+          Underemployment =
+            mean(
+              underemployment_rate,
+              na.rm = TRUE
+            ),
+
+          Underutilisation =
+            mean(
+              underutilisation_rate,
+              na.rm = TRUE
+            ),
+
+          .groups = "drop"
+        ) |> 
+
+        mutate(
+
+          Unemployment =
+            round(
+              Unemployment,
+              2
+            ),
+
+          Underemployment =
+            round(
+              Underemployment,
+              2
+            ),
+
+          Underutilisation =
+            round(
+              Underutilisation,
+              2
+            )
+        )
+
+
       datatable(
-        options = list(
-          pageLength = 10,
-          scrollX = TRUE
-        ),
-        rownames = FALSE
+
+        table_data,
+
+        rownames = FALSE,
+
+        options =
+          datatable_options(
+            10
+          )
       )
-  })
+    })
 
 
   # ==========================================================
   # TIGHTNESS PLOT
   # ==========================================================
 
-  output$tightness_plot <- renderPlotly({
+  output$tightness_plot <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(combined_data),
-        "Tightness data unavailable."
-      )
-    )
+      if (
+        nrow(combined_data) == 0
+      ) {
 
-    p <- ggplot(
-      combined_data,
-      aes(
-        x = Quarter,
-        y = Tightness
-      )
-    ) +
-
-      geom_line(
-        colour = COLORS$tightness,
-        linewidth = 1
-      ) +
-
-      geom_hline(
-        yintercept = tightness_median,
-        linetype = "dashed",
-        colour = COLORS$orange
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Vacancies / unemployed persons",
-        title =
-          "Labour-Market Tightness",
-        subtitle =
-          "Dashed line indicates the sample median"
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # TIGHTNESS HISTOGRAM
-  # ==========================================================
-
-  output$tightness_histogram <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Tightness data unavailable."
-      )
-    )
-
-    p <- ggplot(
-      combined_data,
-      aes(x = Tightness)
-    ) +
-
-      geom_histogram(
-        bins = 18,
-        fill = COLORS$teal,
-        colour = "white"
-      ) +
-
-      geom_vline(
-        xintercept = tightness_median,
-        linetype = "dashed",
-        colour = COLORS$orange,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = "Tightness",
-        y = "Number of observations",
-        title =
-          "Distribution of Labour-Market Tightness"
-      ) +
-
-      theme_minimal(base_size = 12)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # TIGHTNESS / SLACK SCATTER
-  # ==========================================================
-
-  output$tightness_slack_scatter <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined data unavailable."
-      )
-    )
-
-    p <- ggplot(
-      combined_data,
-      aes(
-        x = Tightness,
-        y = underutilisation_rate
-      )
-    ) +
-
-      geom_point(
-        colour = COLORS$teal,
-        alpha = 0.75,
-        size = 3
-      ) +
-
-      geom_smooth(
-        method = "lm",
-        se = FALSE,
-        colour = COLORS$orange
-      ) +
-
-      labs(
-        x = "Labour-market tightness",
-        y = "Underutilisation (%)",
-        title =
-          "Tightness vs Underutilisation"
-      ) +
-
-      theme_minimal(base_size = 12)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # QUADRANT PLOT
-  # ==========================================================
-
-  output$quadrant_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined data unavailable."
-      )
-    )
-
-    p <- ggplot(
-      combined_data,
-      aes(
-        x = Tightness,
-        y = underutilisation_rate,
-        colour = quadrant,
-        text =
-          paste0(
-            "Quarter: ",
-            format(Quarter, "%b %Y"),
-            "<br>Tightness: ",
-            round(Tightness, 3),
-            "<br>Underutilisation: ",
-            round(
-              underutilisation_rate,
-              2
-            ),
-            "%"
+        return(
+          empty_plot(
+            "Vacancy and tightness data are unavailable."
           )
-      )
-    ) +
+        )
+      }
 
-      geom_point(
-        size = 3,
-        alpha = 0.8
-      ) +
 
-      geom_vline(
-        xintercept = tightness_median,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
+      p1 <-
+        ggplot(
 
-      geom_hline(
-        yintercept = underutilisation_median,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
+          combined_data,
 
-      labs(
-        x = "Labour-market tightness",
-        y = "Underutilisation (%)",
-        colour = "Quadrant",
-        title =
-          "High / Low Tightness and Slack"
-      ) +
+          aes(
+            x = Quarter,
+            y = Job_Vacancies
+          )
+        ) +
 
-      theme_minimal(base_size = 12) +
+        geom_line(
+          colour = "#2774C6",
+          linewidth = 1.1
+        ) +
 
-      theme(
-        legend.position = "top"
-      )
+        labs(
+          x = NULL,
+          y = "Job vacancies"
+        ) +
 
-    ggplotly(
-      p,
-      tooltip = "text"
-    ) |>
-      config(
-        displaylogo = FALSE,
-        responsive = TRUE
-      )
-  })
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      p2 <-
+        ggplot(
+
+          combined_data,
+
+          aes(
+            x = Quarter,
+            y = Tightness
+          )
+        ) +
+
+        geom_line(
+          colour = "#087F8C",
+          linewidth = 1.1
+        ) +
+
+        labs(
+          x = NULL,
+          y = "Tightness"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      plot_ly() |> 
+
+        add_trace(
+          x = combined_data$Quarter,
+          y = combined_data$Job_Vacancies,
+          type = "scatter",
+          mode = "lines",
+          name = "Job Vacancies",
+          line = list(
+            color = "#2774C6",
+            width = 2
+          ),
+          yaxis = "y"
+        ) |> 
+
+        add_trace(
+          x = combined_data$Quarter,
+          y = combined_data$Tightness,
+          type = "scatter",
+          mode = "lines",
+          name = "Tightness",
+          line = list(
+            color = "#087F8C",
+            width = 2
+          ),
+          yaxis = "y2"
+        ) |> 
+
+        layout(
+
+          xaxis = list(
+            title = ""
+          ),
+
+          yaxis = list(
+            title = "Job vacancies"
+          ),
+
+          yaxis2 = list(
+            title = "Tightness",
+            overlaying = "y",
+            side = "right"
+          ),
+
+          legend = list(
+            orientation = "h",
+            x = 0,
+            y = 1.1
+          )
+        ) |> 
+
+        clean_plotly()
+    })
 
 
   # ==========================================================
-  # RESEARCH QUESTION CHANGE PLOT
+  # TIGHTNESS VS SLACK SCATTER
   # ==========================================================
 
-  output$rq_change_plot <- renderPlotly({
+  output$tightness_slack_scatter <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined data unavailable."
+      if (
+        nrow(combined_data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "Combined data are unavailable."
+          )
+        )
+      }
+
+
+      y_column <-
+        case_when(
+
+          input$tightness_slack_measure ==
+            "Unemployment" ~
+            "change_unemployment",
+
+          input$tightness_slack_measure ==
+            "Underemployment" ~
+            "change_underemployment",
+
+          TRUE ~
+            "change_underutilisation"
+        )
+
+
+      plot_data <-
+        combined_data |> 
+
+        filter(
+
+          !is.na(change_vacancies),
+
+          !is.na(
+            .data[[y_column]]
+          )
+        )
+
+
+      if (
+        nrow(plot_data) < 3
+      ) {
+
+        return(
+          empty_plot(
+            "Not enough observations."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          plot_data,
+
+          aes(
+            x = change_vacancies,
+            y = .data[[y_column]]
+          )
+        ) +
+
+        geom_point(
+          colour = "#2774C6",
+          alpha = 0.7,
+          size = 2.7
+        ) +
+
+        geom_smooth(
+          method = "lm",
+          se = TRUE,
+          colour = "#E67E22"
+        ) +
+
+        labs(
+
+          x =
+            "Change in job vacancies",
+
+          y =
+            paste(
+              "Change in",
+              input$tightness_slack_measure
+            )
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
       )
-    )
+    })
 
-    measure <- input$rq_measure
 
-    label <- c(
+  # ==========================================================
+  # TIGHTNESS CORRELATIONS
+  # ==========================================================
 
-      unemployment_change =
-        "Change in unemployment",
+  output$tightness_correlations <-
+    renderDT({
 
-      underemployment_change =
-        "Change in underemployment",
+      if (
+        nrow(combined_data) == 0
+      ) {
 
-      underutilisation_change =
-        "Change in underutilisation"
+        return(
+          datatable(
+            tibble(
+              Message =
+                "Data unavailable."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
 
-    )[[measure]]
 
-    plot_data <- combined_data |>
-      filter(
-        !is.na(vacancy_change),
-        !is.na(.data[[measure]])
-      )
+      result <-
+        tibble(
 
-    correlation <- safe_cor(
-      plot_data$vacancy_change,
-      plot_data[[measure]]
-    )
+          Measure = c(
+            "Unemployment",
+            "Underemployment",
+            "Underutilisation"
+          ),
 
-    p <- ggplot(
-      plot_data,
-      aes(
-        x = vacancy_change,
-        y = .data[[measure]]
-      )
-    ) +
+          Correlation =
+            c(
 
-      geom_hline(
-        yintercept = 0,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_unemployment
+              ),
 
-      geom_vline(
-        xintercept = 0,
-        linetype = "dashed",
-        colour = COLORS$grey
-      ) +
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_underemployment
+              ),
 
-      geom_point(
-        colour = COLORS$orange,
-        alpha = 0.8,
-        size = 3
-      ) +
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_underutilisation
+              )
+            )
+        ) |> 
 
-      geom_smooth(
-        method = "lm",
-        se = TRUE,
-        colour = COLORS$teal,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = "Change in job vacancies",
-        y = label,
-        title =
-          "Changes in Job Vacancies and Labour-Market Slack",
-        subtitle =
-          paste(
-            "Correlation:",
+        mutate(
+          Correlation =
             round(
-              correlation,
+              Correlation,
               3
             )
-          )
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # ALL RELATIONSHIPS
-  # ==========================================================
-
-  output$all_relationships_plot <- renderPlotly({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined data unavailable."
-      )
-    )
-
-    plot_data <- combined_data |>
-      select(
-        Quarter,
-        Tightness,
-        unemployment_rate,
-        underemployment_rate,
-        underutilisation_rate
-      ) |>
-      pivot_longer(
-        cols = c(
-          unemployment_rate,
-          underemployment_rate,
-          underutilisation_rate
-        ),
-        names_to = "measure",
-        values_to = "rate"
-      ) |>
-      mutate(
-
-        measure = recode(
-
-          measure,
-
-          unemployment_rate =
-            "Unemployment",
-
-          underemployment_rate =
-            "Underemployment",
-
-          underutilisation_rate =
-            "Underutilisation"
         )
-      )
 
-    p <- ggplot(
-      plot_data,
-      aes(
-        x = Tightness,
-        y = rate,
-        colour = measure
-      )
-    ) +
-
-      geom_point(
-        alpha = 0.65
-      ) +
-
-      geom_smooth(
-        method = "lm",
-        se = FALSE
-      ) +
-
-      scale_colour_manual(
-        values = c(
-
-          "Unemployment" =
-            COLORS$unemployment,
-
-          "Underemployment" =
-            COLORS$underemployment,
-
-          "Underutilisation" =
-            COLORS$underutilisation
-        )
-      ) +
-
-      labs(
-        x = "Labour-market tightness",
-        y = "Slack measure (%)",
-        colour = NULL,
-        title =
-          "Tightness and Alternative Measures of Slack"
-      ) +
-
-      theme_minimal(base_size = 12) +
-
-      theme(
-        legend.position = "top"
-      )
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # CORRELATION TABLE
-  # ==========================================================
-
-  output$correlation_table <- renderDT({
-
-    validate(
-      need(
-        !is.null(combined_data),
-        "Combined data unavailable."
-      )
-    )
-
-    tibble(
-
-      Relationship = c(
-        "Tightness vs unemployment",
-        "Tightness vs underemployment",
-        "Tightness vs underutilisation",
-        "Vacancy change vs unemployment change",
-        "Vacancy change vs underemployment change",
-        "Vacancy change vs underutilisation change"
-      ),
-
-      Correlation = c(
-
-        safe_cor(
-          combined_data$Tightness,
-          combined_data$unemployment_rate
-        ),
-
-        safe_cor(
-          combined_data$Tightness,
-          combined_data$underemployment_rate
-        ),
-
-        safe_cor(
-          combined_data$Tightness,
-          combined_data$underutilisation_rate
-        ),
-
-        safe_cor(
-          combined_data$vacancy_change,
-          combined_data$unemployment_change
-        ),
-
-        safe_cor(
-          combined_data$vacancy_change,
-          combined_data$underemployment_change
-        ),
-
-        safe_cor(
-          combined_data$vacancy_change,
-          combined_data$underutilisation_change
-        )
-      )
-    ) |>
-
-      mutate(
-        Correlation =
-          round(
-            Correlation,
-            3
-          )
-      ) |>
 
       datatable(
-        options = list(
-          pageLength = 10,
-          searching = FALSE,
-          lengthChange = FALSE
-        ),
-        rownames = FALSE
+
+        result,
+
+        rownames = FALSE,
+
+        options =
+          datatable_options(
+            10
+          )
       )
-  })
+    })
+
+
+  # ==========================================================
+  # RESEARCH SCATTER
+  # ==========================================================
+
+  output$research_scatter <-
+    renderPlotly({
+
+      if (
+        nrow(combined_data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "Combined data are unavailable."
+          )
+        )
+      }
+
+
+      plot_data <-
+        combined_data |> 
+
+        select(
+
+          Quarter,
+
+          change_vacancies,
+
+          change_unemployment,
+
+          change_underemployment,
+
+          change_underutilisation
+
+        ) |> 
+
+        pivot_longer(
+
+          cols = c(
+            change_unemployment,
+            change_underemployment,
+            change_underutilisation
+          ),
+
+          names_to =
+            "measure",
+
+          values_to =
+            "change_slack"
+        ) |> 
+
+        mutate(
+
+          measure =
+            case_when(
+
+              measure ==
+                "change_unemployment" ~
+                "Unemployment",
+
+              measure ==
+                "change_underemployment" ~
+                "Underemployment",
+
+              measure ==
+                "change_underutilisation" ~
+                "Underutilisation",
+
+              TRUE ~ measure
+            )
+        ) |> 
+
+        filter(
+          !is.na(change_vacancies),
+          !is.na(change_slack)
+        )
+
+
+      if (
+        nrow(plot_data) < 3
+      ) {
+
+        return(
+          empty_plot(
+            "Not enough observations."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          plot_data,
+
+          aes(
+            x = change_vacancies,
+            y = change_slack
+          )
+        ) +
+
+        geom_point(
+          colour = "#2774C6",
+          alpha = 0.65,
+          size = 2.5
+        ) +
+
+        geom_smooth(
+          method = "lm",
+          se = TRUE,
+          colour = "#E67E22"
+        ) +
+
+        facet_wrap(
+          ~measure,
+          scales = "free_y"
+        ) +
+
+        labs(
+          x = "Change in job vacancies",
+          y = "Change in labour-market slack"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # RESEARCH CORRELATIONS
+  # ==========================================================
+
+  output$research_correlation_table <-
+    renderDT({
+
+      if (
+        nrow(combined_data) == 0
+      ) {
+
+        return(
+          datatable(
+            tibble(
+              Message =
+                "Data unavailable."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
+
+
+      result <-
+        tibble(
+
+          Measure = c(
+            "Unemployment",
+            "Underemployment",
+            "Underutilisation"
+          ),
+
+          `Correlation with vacancy changes` =
+            c(
+
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_unemployment
+              ),
+
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_underemployment
+              ),
+
+              safe_cor(
+                combined_data$change_vacancies,
+                combined_data$change_underutilisation
+              )
+            )
+        ) |> 
+
+        mutate(
+
+          `Correlation with vacancy changes` =
+            round(
+              `Correlation with vacancy changes`,
+              3
+            )
+        )
+
+
+      datatable(
+
+        result,
+
+        rownames = FALSE,
+
+        options =
+          datatable_options(
+            10
+          )
+      )
+    })
 
 
   # ==========================================================
   # WPI PLOT
   # ==========================================================
 
-  output$wpi_plot <- renderPlotly({
+  output$wpi_plot <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(wpi_plot_data),
-        "WPI data could not be loaded."
-      )
-    )
+      if (
+        nrow(wpi_data) == 0
+      ) {
 
-    p <- ggplot(
-      wpi_plot_data,
-      aes(
-        x = date,
-        y = wpi
-      )
-    ) +
-
-      geom_line(
-        colour = COLORS$purple,
-        linewidth = 1
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Wage Price Index",
-        title =
-          "Australian Wage Price Index",
-        subtitle =
-          "Seasonally adjusted series"
-      ) +
-
-      theme_minimal(base_size = 13)
-
-    plotly_clean(p)
-  })
-
-
-  # ==========================================================
-  # WPI CORRELATION TABLE
-  # ==========================================================
-
-  output$wpi_correlation_table <- renderDT({
-
-    # These are the project's previously calculated
-    # timing correlations.
-
-    tibble(
-
-      Relationship =
-        c(
-          "WPI growth vs Tightness — same quarter",
-          "WPI growth vs Tightness — 1 quarter ahead",
-          "WPI growth vs Tightness — 2 quarters ahead",
-          "WPI growth vs Underutilisation — same quarter",
-          "WPI growth vs Underutilisation — 1 quarter ahead",
-          "WPI growth vs Underutilisation — 2 quarters ahead"
-        ),
-
-      Correlation =
-        c(
-          0.403,
-          0.422,
-          0.438,
-          -0.774,
-          -0.751,
-          -0.649
+        return(
+          empty_plot(
+            "WPI data are unavailable."
+          )
         )
-    ) |>
-
-      datatable(
-        options = list(
-          searching = FALSE,
-          lengthChange = FALSE,
-          pageLength = 10
-        ),
-        rownames = FALSE
-      ) |>
-
-      formatRound(
-        "Correlation",
-        3
-      )
-  })
+      }
 
 
-  # ==========================================================
-  # OCCUPATION CONTROLS
-  # ==========================================================
+      p <-
+        ggplot(
 
-  output$occupation_controls <- renderUI({
+          wpi_data,
 
-    validate(
-      need(
-        !is.null(ivi_occupation),
-        "Occupation IVI data unavailable."
-      )
-    )
+          aes(
+            x = wpi_date,
+            y = WPI_growth
+          )
+        ) +
 
-    if (!"ANZSCO_CODE" %in% names(ivi_occupation)) {
+        geom_hline(
 
-      return(
-        helpText(
-          "Occupation code information is not available."
+          yintercept = 0,
+
+          linetype =
+            "dashed",
+
+          colour =
+            "#9AA5B1"
+        ) +
+
+        geom_line(
+
+          colour =
+            "#E67E22",
+
+          linewidth =
+            1.1
+        ) +
+
+        labs(
+
+          x = NULL,
+
+          y =
+            "WPI growth (%)"
+        ) +
+
+        theme_minimal(
+          base_size = 13
         )
+
+
+      clean_plotly(
+        ggplotly(p)
       )
+    })
+
+
+  # ==========================================================
+  # PREPARE WPI / COMBINED JOIN
+  # ==========================================================
+
+  wpi_combined_data <- reactive({
+
+    if (
+      nrow(combined_data) == 0 ||
+      nrow(wpi_data) == 0
+    ) {
+
+      return(tibble())
     }
 
-    choices <- sort(
-      unique(
-        ivi_occupation$ANZSCO_CODE
-      )
-    )
 
-    selectInput(
-      "occupation_code",
-      "Occupation:",
-      choices = choices,
-      selected = choices[1]
-    )
+    combined_data |> 
+
+      mutate(
+
+        year =
+          year(Quarter),
+
+        quarter =
+          quarter(Quarter)
+      ) |> 
+
+      left_join(
+
+        wpi_data |> 
+
+          mutate(
+
+            year =
+              year(wpi_date),
+
+            quarter =
+              quarter(wpi_date)
+          ) |> 
+
+          select(
+            year,
+            quarter,
+            WPI_growth
+          ),
+
+        by = c(
+          "year",
+          "quarter"
+        )
+      ) |> 
+
+      arrange(Quarter)
   })
 
 
   # ==========================================================
-  # OCCUPATION PLOT
+  # TIGHTNESS VS WPI
   # ==========================================================
 
-  output$occupation_plot <- renderPlotly({
+  output$tightness_wpi_scatter <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(ivi_occupation),
-        "Occupation IVI data unavailable."
-      ),
+      data <-
+        wpi_combined_data()
 
-      need(
-        !is.null(input$occupation_code),
-        "Select an occupation."
-      )
-    )
 
-    plot_data <- ivi_occupation |>
-      filter(
-        ANZSCO_CODE ==
-          input$occupation_code
-      )
+      if (
+        nrow(data) == 0
+      ) {
 
-    validate(
-      need(
-        nrow(plot_data) > 0,
-        "No observations available for this occupation."
-      )
-    )
-
-    p <- ggplot(
-      plot_data,
-      aes(
-        x = Month,
-        y = Vacancies
-      )
-    ) +
-
-      geom_line(
-        colour = COLORS$teal,
-        linewidth = 0.9
-      ) +
-
-      labs(
-        x = NULL,
-        y = "Online vacancies",
-        title =
-          paste(
-            "Internet Vacancy Index:",
-            input$occupation_code
+        return(
+          empty_plot(
+            "WPI and tightness data are unavailable."
           )
-      ) +
+        )
+      }
 
-      scale_y_continuous(
-        labels = comma
-      ) +
 
-      theme_minimal(base_size = 13)
+      data <-
+        data |> 
 
-    plotly_clean(p)
+        filter(
+
+          !is.na(Tightness),
+
+          !is.na(WPI_growth)
+        )
+
+
+      if (
+        nrow(data) < 3
+      ) {
+
+        return(
+          empty_plot(
+            "Not enough matched observations."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          data,
+
+          aes(
+            x = Tightness,
+            y = WPI_growth
+          )
+        ) +
+
+        geom_point(
+
+          colour =
+            "#087F8C",
+
+          alpha =
+            0.7,
+
+          size =
+            2.5
+        ) +
+
+        geom_smooth(
+
+          method =
+            "lm",
+
+          se =
+            TRUE,
+
+          colour =
+            "#E67E22"
+        ) +
+
+        labs(
+
+          x =
+            "Labour-market tightness",
+
+          y =
+            "WPI growth (%)"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # UNDERUTILISATION VS WPI
+  # ==========================================================
+
+  output$slack_wpi_scatter <-
+    renderPlotly({
+
+      data <-
+        wpi_combined_data()
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "WPI and slack data are unavailable."
+          )
+        )
+      }
+
+
+      data <-
+        data |> 
+
+        filter(
+
+          !is.na(
+            underutilisation_rate
+          ),
+
+          !is.na(
+            WPI_growth
+          )
+        )
+
+
+      if (
+        nrow(data) < 3
+      ) {
+
+        return(
+          empty_plot(
+            "Not enough matched observations."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          data,
+
+          aes(
+
+            x =
+              underutilisation_rate,
+
+            y =
+              WPI_growth
+          )
+        ) +
+
+        geom_point(
+
+          colour =
+            "#7657A8",
+
+          alpha =
+            0.7,
+
+          size =
+            2.5
+        ) +
+
+        geom_smooth(
+
+          method =
+            "lm",
+
+          se =
+            TRUE,
+
+          colour =
+            "#E67E22"
+        ) +
+
+        labs(
+
+          x =
+            "Underutilisation (%)",
+
+          y =
+            "WPI growth (%)"
+        ) +
+
+        theme_minimal(
+          base_size = 13
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # WPI TIMING
+  # ==========================================================
+
+  output$wpi_timing_table <-
+    renderDT({
+
+      data <-
+        wpi_combined_data()
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          datatable(
+            tibble(
+              Message =
+                "WPI timing analysis is unavailable."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
+
+
+      data <-
+        data |> 
+
+        arrange(Quarter) |> 
+
+        mutate(
+
+          WPI_growth_lead1 =
+            lead(
+              WPI_growth,
+              1
+            ),
+
+          WPI_growth_lead2 =
+            lead(
+              WPI_growth,
+              2
+            )
+        )
+
+
+      result <-
+        tibble(
+
+          Measure = c(
+            "Tightness",
+            "Underutilisation"
+          ),
+
+          `Same quarter` = c(
+
+            safe_cor(
+              data$Tightness,
+              data$WPI_growth
+            ),
+
+            safe_cor(
+              data$underutilisation_rate,
+              data$WPI_growth
+            )
+          ),
+
+          `One quarter ahead` = c(
+
+            safe_cor(
+              data$Tightness,
+              data$WPI_growth_lead1
+            ),
+
+            safe_cor(
+              data$underutilisation_rate,
+              data$WPI_growth_lead1
+            )
+          ),
+
+          `Two quarters ahead` = c(
+
+            safe_cor(
+              data$Tightness,
+              data$WPI_growth_lead2
+            ),
+
+            safe_cor(
+              data$underutilisation_rate,
+              data$WPI_growth_lead2
+            )
+          )
+        ) |> 
+
+        mutate(
+
+          across(
+            where(is.numeric),
+            ~ round(.x, 3)
+          )
+        )
+
+
+      datatable(
+
+        result,
+
+        rownames = FALSE,
+
+        options =
+          datatable_options(
+            10
+          )
+      )
+    })
+
+
+  # ==========================================================
+  # OCCUPATION DATA REACTIVE
+  # ==========================================================
+
+  selected_occupation_data <- reactive({
+
+    if (
+      input$occupation_level ==
+      "Detailed occupations"
+    ) {
+
+      if (
+        nrow(ivi_anzsco4) > 0
+      ) {
+
+        return(
+          ivi_anzsco4
+        )
+      }
+    }
+
+
+    occupation_data
   })
+
+
+  # ==========================================================
+  # OCCUPATION TREND
+  # ==========================================================
+
+  output$occupation_trend <-
+    renderPlotly({
+
+      data <-
+        selected_occupation_data()
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "Occupation data are unavailable."
+          )
+        )
+      }
+
+
+      if (
+        !"Title" %in%
+        names(data)
+      ) {
+
+        return(
+          empty_plot(
+            "Occupation title information is unavailable."
+          )
+        )
+      }
+
+
+      data <-
+        data |> 
+
+        filter(
+          !is.na(Month),
+          !is.na(Vacancies),
+          !is.na(Title)
+        ) |> 
+
+        group_by(
+          Month,
+          Title
+        ) |> 
+
+        summarise(
+
+          Vacancies =
+            sum(
+              Vacancies,
+              na.rm = TRUE
+            ),
+
+          .groups = "drop"
+        )
+
+
+      if (
+        nrow(data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "No occupation observations available."
+          )
+        )
+      }
+
+
+      top_titles <-
+        data |> 
+
+        group_by(Title) |> 
+
+        summarise(
+
+          total =
+            sum(
+              Vacancies,
+              na.rm = TRUE
+            ),
+
+          .groups = "drop"
+        ) |> 
+
+        slice_max(
+          total,
+          n = 10,
+          with_ties = FALSE
+        ) |> 
+
+        pull(Title)
+
+
+      plot_data <-
+        data |> 
+
+        filter(
+          Title %in%
+            top_titles
+        )
+
+
+      p <-
+        ggplot(
+
+          plot_data,
+
+          aes(
+
+            x = Month,
+
+            y = Vacancies,
+
+            colour = Title
+          )
+        ) +
+
+        geom_line(
+          linewidth = 0.9
+        ) +
+
+        scale_colour_manual(
+          values =
+            rep(
+              occupation_palette,
+              length.out =
+                length(
+                  unique(
+                    plot_data$Title
+                  )
+                )
+            )
+        ) +
+
+        labs(
+
+          x = NULL,
+
+          y = "Vacancies",
+
+          colour = "Occupation"
+        ) +
+
+        theme_minimal(
+          base_size = 12
+        ) +
+
+        theme(
+          legend.position =
+            "right"
+        )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # OCCUPATION TABLE
+  # ==========================================================
+
+  output$occupation_table <-
+    renderDT({
+
+      data <-
+        selected_occupation_data()
+
+
+      if (
+        nrow(data) == 0 ||
+        !"Title" %in%
+        names(data)
+      ) {
+
+        return(
+          datatable(
+            tibble(
+              Message =
+                "Occupation data are unavailable."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
+
+
+      result <-
+        data |> 
+
+        filter(
+          !is.na(Title)
+        ) |> 
+
+        group_by(
+          Title
+        ) |> 
+
+        summarise(
+
+          `Total vacancies` =
+            sum(
+              Vacancies,
+              na.rm = TRUE
+            ),
+
+          `Average monthly vacancies` =
+            mean(
+              Vacancies,
+              na.rm = TRUE
+            ),
+
+          .groups = "drop"
+        ) |> 
+
+        arrange(
+          desc(
+            `Total vacancies`
+          )
+        ) |> 
+
+        mutate(
+
+          `Total vacancies` =
+            round(
+              `Total vacancies`,
+              0
+            ),
+
+          `Average monthly vacancies` =
+            round(
+              `Average monthly vacancies`,
+              1
+            )
+        )
+
+
+      datatable(
+
+        result,
+
+        rownames = FALSE,
+
+        options =
+          datatable_options(
+            10
+          )
+      )
+    })
 
 
   # ==========================================================
   # SKILL PLOT
   # ==========================================================
 
-  output$skill_plot <- renderPlotly({
+  output$skill_plot <-
+    renderPlotly({
 
-    validate(
-      need(
-        !is.null(ivi_skill),
-        "Skill-level IVI data unavailable."
-      )
-    )
+      if (
+        nrow(ivi_skill) == 0
+      ) {
 
-    required <- c(
-      "Month",
-      "Vacancies"
-    )
-
-    validate(
-      need(
-        all(
-          required %in%
-            names(ivi_skill)
-        ),
-        "The skill-level IVI file does not contain the expected columns."
-      )
-    )
-
-    # Try to identify a skill column
-    possible_skill_cols <- c(
-      "Skill_Level",
-      "Skill",
-      "skill_level",
-      "skill"
-    )
-
-    skill_col <- possible_skill_cols[
-      possible_skill_cols %in%
-        names(ivi_skill)
-    ][1]
-
-    if (is.na(skill_col)) {
-
-      p <- ggplot(
-        ivi_skill,
-        aes(
-          x = Month,
-          y = Vacancies
-        )
-      ) +
-
-        geom_line(
-          colour = COLORS$purple,
-          linewidth = 0.8
-        ) +
-
-        labs(
-          x = NULL,
-          y = "Online vacancies",
-          title =
-            "Internet Vacancy Index by Skill Data"
-        ) +
-
-        theme_minimal(base_size = 12)
-
-    } else {
-
-      p <- ggplot(
-        ivi_skill,
-        aes(
-          x = Month,
-          y = Vacancies,
-          colour = as.factor(
-            .data[[skill_col]]
+        return(
+          empty_plot(
+            "Skill-level IVI data are unavailable."
           )
         )
-      ) +
+      }
+
+
+      # Find a likely skill column
+
+      skill_candidates <-
+        names(ivi_skill)[
+
+          grepl(
+            "skill",
+            names(ivi_skill),
+            ignore.case = TRUE
+          )
+        ]
+
+
+      if (
+        length(skill_candidates) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "No skill category column was found."
+          )
+        )
+      }
+
+
+      skill_col <-
+        skill_candidates[1]
+
+
+      plot_data <-
+        ivi_skill |> 
+
+        filter(
+          !is.na(Month),
+          !is.na(Vacancies),
+          !is.na(.data[[skill_col]])
+        ) |> 
+
+        group_by(
+
+          Month,
+
+          Skill =
+            .data[[skill_col]]
+        ) |> 
+
+        summarise(
+
+          Vacancies =
+            sum(
+              Vacancies,
+              na.rm = TRUE
+            ),
+
+          .groups = "drop"
+        )
+
+
+      if (
+        nrow(plot_data) == 0
+      ) {
+
+        return(
+          empty_plot(
+            "No skill-level observations available."
+          )
+        )
+      }
+
+
+      p <-
+        ggplot(
+
+          plot_data,
+
+          aes(
+
+            x = Month,
+
+            y = Vacancies,
+
+            colour = Skill
+          )
+        ) +
 
         geom_line(
-          linewidth = 0.8
+          linewidth = 0.9
         ) +
 
         labs(
+
           x = NULL,
-          y = "Online vacancies",
-          colour = "Skill level",
-          title =
-            "Internet Vacancy Index by Skill Level"
+
+          y = "Vacancies",
+
+          colour = "Skill"
         ) +
 
-        theme_minimal(base_size = 12) +
-
-        theme(
-          legend.position = "top"
+        theme_minimal(
+          base_size = 13
         )
+
+
+      clean_plotly(
+        ggplotly(p)
+      )
+    })
+
+
+  # ==========================================================
+  # DATA EXPLORER
+  # ==========================================================
+
+  explorer_data <- reactive({
+
+    if (
+      input$explorer_dataset ==
+      "Labour-market slack"
+    ) {
+
+      return(
+        labour_market_slack
+      )
     }
 
-    plotly_clean(p)
+
+    if (
+      input$explorer_dataset ==
+      "Vacancy and tightness"
+    ) {
+
+      return(
+        combined_data
+      )
+    }
+
+
+    if (
+      input$explorer_dataset ==
+      "Wage Price Index"
+    ) {
+
+      return(
+        wpi_data
+      )
+    }
+
+
+    if (
+      input$explorer_dataset ==
+      "IVI occupation data"
+    ) {
+
+      return(
+        occupation_data
+      )
+    }
+
+
+    labour_market_slack
   })
 
 
@@ -3167,58 +4874,141 @@ server <- function(input, output, session) {
   # DATA EXPLORER
   # ==========================================================
 
-  output$data_table <- renderDT({
+  output$data_explorer <-
+    renderDT({
 
-    selected <- input$dataset_choice
+      data <-
+        explorer_data()
 
-    data_to_show <- switch(
 
-      selected,
+      if (
+        nrow(data) == 0
+      ) {
 
-      combined =
-        combined_data,
+        return(
+          datatable(
+            tibble(
+              Message =
+                "No data available for this dataset."
+            ),
+            options =
+              datatable_options()
+          )
+        )
+      }
 
-      slack =
-        slack_data,
 
-      ivi =
-        ivi_australia,
+      datatable(
 
-      occupation =
-        ivi_occupation,
+        data,
 
-      skill =
-        ivi_skill,
+        filter = "top",
 
-      wpi =
-        wpi_data,
+        rownames = FALSE,
 
-      NULL
-    )
+        options = list(
 
-    validate(
-      need(
-        !is.null(data_to_show),
-        "This dataset is not available."
+          pageLength =
+            input$explorer_rows,
+
+          lengthMenu = list(
+
+            c(
+              10,
+              25,
+              50,
+              100,
+              250,
+              500,
+              -1
+            ),
+
+            c(
+              "10",
+              "25",
+              "50",
+              "100",
+              "250",
+              "500",
+              "All"
+            )
+          ),
+
+          lengthChange = TRUE,
+
+          searching = TRUE,
+
+          ordering = TRUE,
+
+          paging = TRUE,
+
+          info = TRUE,
+
+          scrollX = TRUE,
+
+          autoWidth = TRUE,
+
+          language = list(
+
+            lengthMenu =
+              "Show _MENU_ entries",
+
+            search =
+              "Search:",
+
+            info =
+              "Showing _START_ to _END_ of _TOTAL_ entries",
+
+            infoEmpty =
+              "Showing 0 to 0 of 0 entries",
+
+            infoFiltered =
+              "(filtered from _MAX_ total entries)"
+          )
+        )
       )
-    )
+    })
 
-    datatable(
-      data_to_show,
-      filter = "top",
-      options = list(
-        pageLength = 15,
-        scrollX = TRUE,
-        autoWidth = TRUE
-      ),
-      rownames = FALSE
+
+  # ==========================================================
+  # DOWNLOAD
+  # ==========================================================
+
+  output$download_explorer <-
+    downloadHandler(
+
+      filename = function() {
+
+        paste0(
+
+          "australian_labour_market_",
+
+          gsub(
+            " ",
+            "_",
+            tolower(
+              input$explorer_dataset
+            )
+          ),
+
+          ".csv"
+        )
+      },
+
+
+      content = function(file) {
+
+        write_csv(
+          explorer_data(),
+          file
+        )
+      }
     )
-  })
 }
 
 
 # ============================================================
-# 17. RUN APPLICATION
+# 13. RUN APPLICATION
 # ============================================================
 
 shinyApp(
