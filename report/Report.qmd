@@ -757,63 +757,63 @@ The analysis subsequently compares the number and characteristics of observation
 
 This section presents the empirical results of the analysis. The results first examine the relationship between labour-market tightness and the three measures of labour-market slack. The subsequent analyses consider quarter-to-quarter changes and explore periods in which relatively high tightness and high slack occur simultaneously. The relationship between labour-market conditions and wage growth is considered as an extension.
 
-## 6.1 Labour-Market Tightness and Labour-Market Slack
+## 6.1 Changes in Job Vacancies and Labour-Market Slack
 
-Figure @fig-tightness-slack compares labour-market tightness with unemployment, underemployment and underutilisation. Across the three measures, the fitted lines show a negative relationship between labour-market tightness and labour-market slack. Higher values of the vacancy-to-unemployment ratio therefore tend to occur alongside lower levels of unemployment, underemployment and underutilisation.
+To address the research question directly, quarter-to-quarter changes in job vacancies were compared with changes in unemployment, underemployment and underutilisation. Focusing on changes allows the analysis to examine whether short-run movements in labour demand are associated with short-run movements in labour-market slack.
 
 ```{r}
-#| label: fig-result-tightness-slack
-#| fig-cap: "Labour-Market Tightness and Labour-Market Slack"
+#| label: tbl-vacancy-change-correlations
+#| tbl-cap: "Correlation between quarterly changes in job vacancies and labour-market slack"
 #| warning: false
 #| message: false
 
 library(tidyverse)
 
-tightness_long <- combined |>
-  select(
-    Tightness,
-    unemployment_rate,
-    underemployment_rate,
-    underutilisation_rate
-  ) |>
-  pivot_longer(
-    cols = c(
-      unemployment_rate,
-      underemployment_rate,
-      underutilisation_rate
-    ),
-    names_to = "measure",
-    values_to = "rate"
-  ) |>
+changes <- combined |>
+  arrange(Quarter) |>
   mutate(
-    measure = recode(
-      measure,
-      unemployment_rate = "Unemployment",
-      underemployment_rate = "Underemployment",
-      underutilisation_rate = "Underutilisation"
-    )
+    delta_vacancies = Job_Vacancies - lag(Job_Vacancies),
+    delta_unemployment = unemployment_rate - lag(unemployment_rate),
+    delta_underemployment = underemployment_rate - lag(underemployment_rate),
+    delta_underutilisation = underutilisation_rate - lag(underutilisation_rate)
   )
 
-ggplot(
-  tightness_long,
-  aes(x = Tightness, y = rate)
-) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~ measure, scales = "free_y") +
-  labs(
-    x = "Labour-Market Tightness",
-    y = "Rate (%)",
-    title = "Labour-Market Tightness and Labour-Market Slack"
-  ) +
-  theme_minimal()
+vacancy_change_correlations <- tibble(
+  `Slack measure` = c(
+    "Unemployment",
+    "Underemployment",
+    "Underutilisation"
+  ),
+  `Correlation` = c(
+    cor(
+      changes$delta_vacancies,
+      changes$delta_unemployment,
+      use = "complete.obs"
+    ),
+    cor(
+      changes$delta_vacancies,
+      changes$delta_underemployment,
+      use = "complete.obs"
+    ),
+    cor(
+      changes$delta_vacancies,
+      changes$delta_underutilisation,
+      use = "complete.obs"
+    )
+  )
+)
+
+knitr::kable(
+  vacancy_change_correlations,
+  digits = 2
+)
 ```
 
-The negative patterns are consistent with the general expectation that tighter labour-market conditions coincide with lower levels of unused labour capacity. However, the three relationships should not be interpreted in exactly the same way. In particular, unemployed persons are included in the denominator of the tightness ratio. The negative relationship between tightness and unemployment is therefore partly influenced by the construction of the tightness measure itself.
+Table @tbl-vacancy-change-correlations shows negative correlations between changes in job vacancies and all three measures of labour-market slack. The correlation is approximately **-0.54** for unemployment, **-0.81** for underemployment and **-0.80** for underutilisation.
 
-The relationships with underemployment and underutilisation provide complementary evidence because these measures are not directly used to construct the vacancy-to-unemployment ratio. Their negative relationships with tightness suggest that periods with more vacancies relative to unemployed persons also tend to coincide with lower broader labour-market slack.
+The negative relationships indicate that quarters with increasing job vacancies tended to coincide with reductions in labour-market slack. The association is larger for underemployment and underutilisation than for unemployment. This suggests that changes in vacancies may be more closely associated with broader measures of unused labour capacity than with unemployment alone.
 
-These results describe contemporaneous associations between the variables and do not establish a causal relationship. The analysis of quarter-to-quarter changes in the following section provides a closer examination of the short-run movements that are central to the research question.
+Overall, these findings are consistent with the expected inverse relationship between labour demand and labour-market slack. However, the correlations describe contemporaneous associations and do not establish that changes in job vacancies cause changes in labour-market slack.
 
 ## 6.2 Changes in Labour-Market Conditions
 
