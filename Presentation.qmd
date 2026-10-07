@@ -1,0 +1,49 @@
+---
+title: "Job Vacancies and Labour-Market Slack in Australia"
+subtitle: "Examining the short-run relationship between labour demand and labour-market slack"
+author:
+  - "Trisha Andrea"
+  - "Rimlan Alva"
+format:
+  revealjs:
+    theme: dark
+    slide-number: true
+    transition: fade
+---
+## Why does this matter?
+
+::: columns
+
+::: {.column width="55%"}
+
+### Job vacancies signal labour demand
+
+- More vacancies generally indicate stronger demand for workers.
+- Labour-market slack shows how much available labour is not being fully used.
+- Understanding how these move together can provide insight into changing labour-market conditions.
+
+:::
+
+::: {.column width="45%"}
+
+### The key idea
+
+**Higher labour demand**
+
+⬇
+
+**More job vacancies**
+
+⬇
+
+**Potentially less labour-market slack**
+
+:::
+
+:::
+
+## Research Question
+
+<br><br>
+
+### To what extent are changes in **job vacancies** associated with short-run changes in **labour-market slack** in Australia?
