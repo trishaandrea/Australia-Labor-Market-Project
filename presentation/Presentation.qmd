@@ -47,3 +47,39 @@ format:
 <br><br>
 
 ### To what extent are changes in **job vacancies** associated with short-run changes in **labour-market slack** in Australia?
+
+## Data
+
+We combine two main sources of Australian labour-market data.
+
+::: columns
+
+::: {.column width="48%"}
+
+### Job Vacancies
+
+**Internet Vacancy Index (IVI)**  
+Jobs and Skills Australia
+
+- Measures online job advertisements
+- Used as our measure of labour demand
+
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+
+### Labour-Market Slack
+
+**Labour Force data**  
+Australian Bureau of Statistics (ABS)
+
+- Unemployment
+- Underemployment
+- Labour underutilisation
+
+:::
+
+:::
