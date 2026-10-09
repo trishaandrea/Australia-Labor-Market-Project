@@ -4,11 +4,20 @@ subtitle: "Examining the short-run relationship between labour demand and labour
 author:
   - "Trisha Andrea"
   - "Rimlan Alva"
+date: today
+toc: false
 format:
-  revealjs:
-    theme: dark
-    slide-number: true
-    transition: fade
+  presentation-revealjs+letterbox: default
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+library(knitr)
+library(ggplot2)
+library(dplyr)
+options(width = 70)
+```
 ---
 ## Why does this matter?
 
