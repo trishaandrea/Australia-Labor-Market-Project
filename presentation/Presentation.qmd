@@ -16,7 +16,17 @@ format:
 library(knitr)
 library(ggplot2)
 library(dplyr)
+library(readr)
+library(tidyr)
 options(width = 70)
+
+combined <- read_csv(
+  "../data/processed/combined_tightness_slack.csv",
+  show_col_types = FALSE
+)
+
+combined <- combined |>
+  mutate(Quarter = as.Date(Quarter))
 ```
 ---
 ## Why does this matter?
@@ -92,3 +102,283 @@ Australian Bureau of Statistics (ABS)
 :::
 
 :::
+
+## Methodology
+
+### 1. Calculate short-run changes
+
+**Quarter-to-quarter:**
+
+Δ Job Vacancies  
+Δ Unemployment · Δ Underemployment · Δ Underutilisation
+
+<br>
+
+### 2. Compare vacancy and slack changes
+
+**Δ Vacancies ↔ Δ Slack**
+
+<br>
+
+### 3. Examine the relationship
+
+**Scatter plots · Linear trends · Correlations**
+
+## Labour-Market Tightness Over Time
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 5
+
+ggplot(
+  combined,
+  aes(
+    x = Quarter,
+    y = Tightness
+  )
+) +
+geom_line(
+  linewidth = 0.9,
+  na.rm = TRUE
+) +
+
+annotate(
+  "text",
+  x = as.Date("2009-03-01"),
+  y = 0.43,
+  label = "Job vacancy data\nunavailable",
+  size = 3.5,
+  fontface = "italic"
+) +
+
+labs(
+  subtitle = "Job vacancies per unemployed person",
+  x = NULL,
+  y = "Vacancies per unemployed person",
+  caption = "Source: Australian Bureau of Statistics"
+) +
+  scale_x_date(
+    date_breaks = "2 years",
+    date_labels = "%Y"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## Tightness and Labour-Market Slack
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 11
+#| fig-height: 5
+
+combined_long <- combined |>
+  select(
+    Quarter,
+    Tightness,
+    unemployment_rate,
+    underemployment_rate,
+    underutilisation_rate
+  ) |>
+  pivot_longer(
+    cols = c(
+      unemployment_rate,
+      underemployment_rate,
+      underutilisation_rate
+    ),
+    names_to = "measure",
+    values_to = "slack_rate"
+  ) |>
+  mutate(
+    measure = recode(
+      measure,
+      unemployment_rate = "Unemployment",
+      underemployment_rate = "Underemployment",
+      underutilisation_rate = "Underutilisation"
+    )
+  )
+
+ggplot(
+  combined_long,
+  aes(
+    x = Tightness,
+    y = slack_rate
+  )
+) +
+  geom_point(
+    alpha = 0.6,
+    na.rm = TRUE
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    na.rm = TRUE
+  ) +
+  facet_wrap(
+    ~ measure,
+    scales = "free_y"
+  ) +
+  labs(
+    x = "Vacancies per unemployed person",
+    y = "Slack rate (%)",
+    caption = "Source: Australian Bureau of Statistics"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    strip.text = element_text(
+      face = "bold"
+    ),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## Interactive Labour-Market Dashboard
+
+We developed a **Shiny dashboard** to make the analysis interactive and easier to explore.
+
+::: columns
+
+::: {.column width="50%"}
+
+### Explore
+
+- Labour demand and job vacancies
+- Labour-market slack and tightness
+- Vacancy–slack relationships
+- Wage and occupation patterns
+
+:::
+
+::: {.column width="50%"}
+
+### Interact
+
+- Filter time periods and indicators
+- Compare different slack measures
+- Explore interactive plots and tables
+- Search and download project data
+
+:::
+
+:::
+
+## Main Results
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 11
+#| fig-height: 5
+
+changes_long <- combined |>
+  arrange(Quarter) |>
+  mutate(
+    change_vacancies = Job_Vacancies - lag(Job_Vacancies),
+    change_unemployment = unemployment_rate - lag(unemployment_rate),
+    change_underemployment = underemployment_rate - lag(underemployment_rate),
+    change_underutilisation = underutilisation_rate - lag(underutilisation_rate)
+  ) |>
+  select(
+    Quarter,
+    change_vacancies,
+    change_unemployment,
+    change_underemployment,
+    change_underutilisation
+  ) |>
+  pivot_longer(
+    cols = c(
+      change_unemployment,
+      change_underemployment,
+      change_underutilisation
+    ),
+    names_to = "measure",
+    values_to = "change_slack"
+  ) |>
+  mutate(
+    measure = recode(
+      measure,
+      change_unemployment = "Unemployment",
+      change_underemployment = "Underemployment",
+      change_underutilisation = "Underutilisation"
+    )
+  ) |>
+  filter(
+    !is.na(change_vacancies),
+    !is.na(change_slack)
+  )
+
+ggplot(
+  changes_long,
+  aes(
+    x = change_vacancies,
+    y = change_slack
+  )
+) +
+  geom_point(
+    alpha = 0.6
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE
+  ) +
+  facet_wrap(
+    ~ measure,
+    scales = "free_y"
+  ) +
+  labs(
+    x = "Change in job vacancies",
+    y = "Change in labour-market slack",
+    caption = "Source: Australian Bureau of Statistics"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+## Interpretation & Limitations
+
+### Interpretation
+
+**↑ Job vacancies → ↓ Labour-market slack**
+
+The negative association appears across all three slack measures.
+
+<br>
+
+### Limitations
+
+- **Association does not imply causation**
+- Economic shocks may affect both vacancies and slack
+- Some periods have missing job-vacancy data
+
+## Conclusion
+
+### What did we find?
+
+Changes in job vacancies are **negatively associated** with short-run changes in labour-market slack.
+
+The pattern is observed across:
+
+**Unemployment · Underemployment · Underutilisation**
+
+<br>
+
+### Key takeaway
+
+**Stronger labour demand tends to coincide with lower labour-market slack.**
+
+## Thank You {.center}
+### Any questions?
