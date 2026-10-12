@@ -69,19 +69,25 @@ combined <- combined |>
 
 ## Data
 
-We combine two main sources of Australian labour-market data.
+We use Australian labour-market data from **ABS** and **Jobs and Skills Australia**.
 
 ::: columns
 
 ::: {.column width="48%"}
 
-### Job Vacancies
+### Labour Demand
 
-**Internet Vacancy Index (IVI)**  
-Jobs and Skills Australia
+**ABS Job Vacancies**
 
-- Measures online job advertisements
-- Used as our measure of labour demand
+Quarterly vacancies  
+*Main analysis*
+
+<br>
+
+**Internet Vacancy Index (JSA)**
+
+Monthly online job advertisements  
+*Additional exploration*
 
 :::
 
@@ -92,12 +98,11 @@ Jobs and Skills Australia
 
 ### Labour-Market Slack
 
-**Labour Force data**  
-Australian Bureau of Statistics (ABS)
+**ABS Labour Force**
 
 - Unemployment
 - Underemployment
-- Labour underutilisation
+- Underutilisation
 
 :::
 
