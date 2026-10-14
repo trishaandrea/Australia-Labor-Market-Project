@@ -123,13 +123,27 @@ safe_date <- function(x) {
 
   if (inherits(x, "Date")) return(x)
 
+  x_chr <- trimws(as.character(x))
+
   result <- suppressWarnings(
     parse_date_time(
-      as.character(x),
+      x_chr,
       orders = c("Y-m-d", "d/m/Y", "m/d/Y", "Y/m/d",
-                 "Y-m", "m-Y", "b Y", "B Y", "Y")
+                 "Y-m", "m-Y", "b Y", "B Y", "Y", "Y q", "Y-Q")
     )
   )
+
+  missing <- is.na(result)
+  if (any(missing)) {
+    parsed_month <- suppressWarnings(as.Date(paste("01", x_chr[missing]), format = "%d %B %Y"))
+    still_missing <- is.na(parsed_month)
+    if (any(still_missing)) {
+      parsed_month[still_missing] <- suppressWarnings(
+        as.Date(paste("01", x_chr[missing][still_missing]), format = "%d %b %Y")
+      )
+    }
+    result[missing] <- as.POSIXct(parsed_month)
+  }
 
   as.Date(result)
 }
@@ -379,7 +393,19 @@ section_card <- function(title, ...) {
 }
 
 plot_card <- function(title, output_id, height = "500px", ...) {
-  section_card(title, ..., plotlyOutput(output_id, height = height))
+  section_card(
+    title,
+    ...,
+    div(
+      class = "plotly-frame",
+      style = "width: 100%; min-width: 0; display: block;",
+      plotlyOutput(
+        outputId = output_id,
+        height = height,
+        width = "100%"
+      )
+    )
+  )
 }
 
 table_card <- function(title, output_id, ...) {
@@ -449,40 +475,62 @@ empty_plot <- function(message = "No data available") {
 
   plot_ly() |>
     layout(
-      xaxis = list(visible = FALSE),
-      yaxis = list(visible = FALSE),
+      autosize = TRUE,
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      xaxis = list(visible = FALSE, fixedrange = TRUE),
+      yaxis = list(visible = FALSE, fixedrange = TRUE),
       annotations = list(
         list(
           text = message, x = 0.5, y = 0.5,
           xref = "paper", yref = "paper", showarrow = FALSE,
-          font = list(size = 16, color = "#718096")
+          font = list(size = 16, color = "#718096"),
+          align = "center"
         )
-      )
-    )
+      ),
+      margin = list(l = 20, r = 20, t = 20, b = 20)
+    ) |>
+    config(displaylogo = FALSE, responsive = TRUE)
 }
 
 
 clean_plotly <- function(plot, legend_top = TRUE, right = 30) {
 
-  plot <- plot |>
-    layout(
-      font = list(family = "Arial", size = 13, color = "#263648"),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      hoverlabel = list(
-        bgcolor = "white",
-        bordercolor = "#D9E2EC",
-        font = list(color = "#263648")
-      ),
-      margin = list(l = 65, r = right, t = 30, b = 60)
-    )
+  plot <- plotly::layout(
+    plot,
+    autosize = TRUE,
+    font = list(family = "Arial, sans-serif", size = 13, color = "#263648"),
+    paper_bgcolor = "#FFFFFF",
+    plot_bgcolor = "#FFFFFF",
+    hoverlabel = list(
+      bgcolor = "#FFFFFF",
+      bordercolor = "#D9E2EC",
+      font = list(color = "#263648", size = 12)
+    ),
+    margin = list(l = 70, r = right, t = if (legend_top) 75 else 40, b = 65)
+  )
 
   if (legend_top) {
-    plot <- plot |>
-      layout(legend = list(orientation = "h", x = 0, y = 1.12))
+    plot <- plotly::layout(
+      plot,
+      legend = list(
+        orientation = "h",
+        x = 0,
+        xanchor = "left",
+        y = 1.16,
+        yanchor = "top",
+        bgcolor = "rgba(255,255,255,0.85)"
+      )
+    )
   }
 
-  plot |> config(displaylogo = FALSE, responsive = TRUE)
+  plotly::config(
+    plot,
+    displaylogo = FALSE,
+    responsive = TRUE,
+    displayModeBar = TRUE,
+    scrollZoom = TRUE
+  )
 }
 
 
@@ -886,8 +934,13 @@ if (nrow(ivi_anzsco2) > 0 &&
     group_by(State) |>
     arrange(Month, .by_group = TRUE) |>
     mutate(
-      Index = Vacancies /
-        first(Vacancies[Month >= as.Date("2019-01-01")]) * 100
+      baseline = if (any(Month >= as.Date("2019-01-01"), na.rm = TRUE)) {
+        first(Vacancies[Month >= as.Date("2019-01-01")])
+      } else {
+        first(Vacancies)
+      },
+      Index = if_else(!is.na(baseline) & baseline != 0,
+                      Vacancies / baseline * 100, NA_real_)
     ) |>
     ungroup()
 }
@@ -947,7 +1000,7 @@ ui <- fluidPage(
         border-radius: 18px;
         margin-top: 18px;
         margin-bottom: 25px;
-        box-shadow: 0 8px 25px rgba(16, 42, 67, 0.15);
+        box-shadow: 0 8px 25px rgba(31, 48, 64, 0.15);
       }
       .dashboard-header h1 { margin: 0 0 8px 0; font-size: 30px; font-weight: 750; }
       .dashboard-header p  { margin: 4px 0; color: rgba(255, 255, 255, 0.88); }
@@ -1081,12 +1134,61 @@ ui <- fluidPage(
         color: #718096; font-size: 12px; border-top: 1px solid #E2E8F0;
       }
 
+      /* Plotly sizing fixes: prevent charts collapsing in cards or tabs */
+      .section-card, .plotly-frame, .tab-content, .tab-pane {
+        min-width: 0 !important;
+      }
+      .plotly-frame {
+        display: block !important;
+        width: 100% !important;
+        min-height: 300px;
+        overflow: visible !important;
+      }
+      .plotly-frame .shiny-plot-output,
+      .plotly-frame .html-widget,
+      .plotly-frame .plotly,
+      .plotly-frame .plot-container,
+      .plotly-frame .svg-container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .plotly-frame .shiny-plot-output {
+        display: block !important;
+      }
+      .tab-content { overflow: visible !important; }
+
       @media (max-width: 900px) {
         .dashboard-header { padding: 25px; }
         .dashboard-header h1 { font-size: 24px; }
         .section-card { padding: 17px; }
         .research-question { font-size: 18px; }
       }
+    "))
+    ,
+    tags$script(HTML("
+      // Plotly can initialise while its tab is hidden, leaving a blank or
+      // incorrectly sized chart. Resize all charts whenever a tab is shown.
+      (function() {
+        function resizeVisiblePlots() {
+          if (window.Plotly && window.jQuery) {
+            window.jQuery('.plotly').each(function() {
+              try { window.Plotly.Plots.resize(this); } catch (e) {}
+            });
+          }
+        }
+        if (window.jQuery) {
+          window.jQuery(document).on('shown.bs.tab', 'a[data-toggle=\"tab\"]', function() {
+            window.setTimeout(resizeVisiblePlots, 150);
+            window.setTimeout(resizeVisiblePlots, 500);
+          });
+          window.jQuery(window).on('resize', function() {
+            window.setTimeout(resizeVisiblePlots, 100);
+          });
+          window.jQuery(document).on('shiny:connected', function() {
+            window.setTimeout(resizeVisiblePlots, 500);
+          });
+        }
+      })();
     "))
   ),
 
@@ -1670,7 +1772,10 @@ server <- function(input, output, session) {
       return(empty_plot("Labour-market slack data are unavailable."))
     }
 
-    data <- slack_long(labour_market_slack)
+    data <- slack_long(labour_market_slack) |>
+      filter(!is.na(date), !is.na(rate))
+
+    if (nrow(data) == 0) return(empty_plot("No valid slack observations are available."))
 
     p <- ggplot(data, aes(x = date, y = rate, colour = measure)) +
       geom_line(linewidth = 1) +
@@ -1884,7 +1989,9 @@ server <- function(input, output, session) {
     }
 
     plot_data <- slack_long(data) |>
-      filter(measure %in% input$slack_measures)
+      filter(measure %in% input$slack_measures, !is.na(date), !is.na(rate))
+
+    if (nrow(plot_data) == 0) return(empty_plot("No valid observations for the selected measures."))
 
     p <- ggplot(plot_data, aes(x = date, y = rate, colour = measure)) +
       geom_line(linewidth = 1) +
