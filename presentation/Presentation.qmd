@@ -1,6 +1,6 @@
 ---
 title: "Job Vacancies and Labour-Market Slack in Australia"
-subtitle: "Examining the short-run relationship between labour demand and labour-market slack"
+subtitle: "Examining Short-Run Changes in Labour Demand and Slack"
 author:
   - "Trisha Andrea"
   - "Rimlan Alva"
@@ -31,15 +31,17 @@ combined <- combined |>
 ---
 ## Why does this matter?
 
+<br>
+
 ::: columns
 
 ::: {.column width="55%"}
 
-### Job vacancies signal labour demand
+### Labour demand & slack
 
-- More vacancies generally indicate stronger demand for workers.
-- Labour-market slack shows how much available labour is not being fully used.
-- Understanding how these move together can provide insight into changing labour-market conditions.
+**Job vacancies** indicate employers' demand for workers.
+
+**Labour-market slack** shows how much available labour is not fully utilised.
 
 :::
 
@@ -69,7 +71,11 @@ combined <- combined |>
 
 ## Data
 
+<div style="height: 10px;"></div>
+
 We use Australian labour-market data from **ABS** and **Jobs and Skills Australia**.
+
+<div style="height: 15px;"></div>
 
 ::: columns
 
@@ -77,17 +83,13 @@ We use Australian labour-market data from **ABS** and **Jobs and Skills Australi
 
 ### Labour Demand
 
-**ABS Job Vacancies**
-
-Quarterly vacancies  
-*Main analysis*
+**ABS Job Vacancies**  
+Quarterly vacancies · *Main analysis*
 
 <br>
 
-**Internet Vacancy Index (JSA)**
-
-Monthly online job advertisements  
-*Additional exploration*
+**JSA Internet Vacancy Index**  
+Monthly online job advertisements · *Additional exploration*
 
 :::
 
@@ -100,9 +102,9 @@ Monthly online job advertisements
 
 **ABS Labour Force**
 
-- Unemployment
-- Underemployment
-- Underutilisation
+- **Unemployment** — without work
+- **Underemployment** — wants more hours
+- **Underutilisation** — combines both
 
 :::
 
@@ -250,33 +252,17 @@ ggplot(
 
 ## Interactive Labour-Market Dashboard
 
-We developed a **Shiny dashboard** to make the analysis interactive and easier to explore.
+<br><br><br>
 
-::: columns
+<div style="text-align: center; font-size: 1.3em;">
 
-::: {.column width="50%"}
+**Exploring Australia's labour market interactively**
 
-### Explore
+<br>
 
-- Labour demand and job vacancies
-- Labour-market slack and tightness
-- Vacancy–slack relationships
-- Wage and occupation patterns
+*Live Shiny demonstration*
 
-:::
-
-::: {.column width="50%"}
-
-### Interact
-
-- Filter time periods and indicators
-- Compare different slack measures
-- Explore interactive plots and tables
-- Search and download project data
-
-:::
-
-:::
+</div>
 
 ## Main Results
 
