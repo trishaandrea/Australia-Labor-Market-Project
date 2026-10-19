@@ -638,6 +638,8 @@ A positive value represents an increase from the previous observation, while a n
 ## 5.4 Correlation Analysis
 Pearson correlation coefficients are used as a descriptive measure of the direction and strength of the linear association between the labour-market variables.
 
+Scatter plots and model diagnostics were also examined to assess whether a linear relationship adequately represented the data. Where diagnostic patterns suggested non-linearity, flexible non-linear trends were considered.
+
 The correlation coefficient ranges from -1 to 1. A positive coefficient indicates that two variables tend to move in the same direction, while a negative coefficient indicates that they tend to move in opposite directions. Values closer to zero indicate a weaker linear association.
 
 Correlations are examined for the labour-market indicators in levels and for their changes over time. The three measures of labour-market slack are considered separately so that the relationship is not assessed using unemployment alone.

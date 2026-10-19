@@ -129,7 +129,7 @@ Monthly online job advertisements · *Additional exploration*
 
 ### 3. Examine the relationship
 
-**Scatter plots · Linear trends · Correlations**
+**Scatter plots · Trend analysis · Correlations**
 
 ## Labour-Market Tightness Over Time
 
@@ -321,7 +321,7 @@ ggplot(
     alpha = 0.6
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE
   ) +
   facet_wrap(
@@ -339,6 +339,8 @@ ggplot(
     panel.grid.minor = element_blank()
   )
 ```
+
+
 ## Interpretation & Limitations
 
 ### Interpretation
