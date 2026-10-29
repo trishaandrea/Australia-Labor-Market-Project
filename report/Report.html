@@ -156,13 +156,28 @@ window.Quarto = {
 
 
 <p><strong>Executive Summary</strong></p>
-<p>To be completed after the analyis and discussion are finalised.</p>
+<section id="executive-summary" class="level1">
+<h1>Executive Summary</h1>
+<p>This report investigates the relationship between labour-market tightness and slack in Australia, focusing on the research question: <strong>To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?</strong> Labour-market tightness reflects the availability of job opportunities relative to jobseekers, while labour-market slack represents unused labour capacity.</p>
+<p>The analysis combines Australian Bureau of Statistics (ABS) job vacancy data with labour-market measures, including unemployment, underemployment and underutilisation. Job vacancies are used as an indicator of labour demand, while underutilisation is treated as the primary observable proxy for labour-market slack. The analysis examines changes over time, correlations between quarterly changes, the vacancy-to-unemployment ratio, and the relationship between labour-market conditions and wage price index growth.</p>
+<p>The results show negative correlations between changes in job vacancies and changes in unemployment (−0.54), underemployment (−0.81) and underutilisation (−0.80). These results indicate that vacancy changes are more strongly associated with changes in underemployment and underutilisation than with unemployment in the analysed sample. The relationship between vacancy-based tightness and unemployment is also strong, although it requires careful interpretation because unemployment is used in the denominator of the tightness measure.</p>
+<p>The wage analysis provides additional descriptive evidence about the relationship between labour-market conditions and wage growth. However, the results do not establish that changes in vacancies cause changes in slack or wages. Common economic influences, time trends, unusual periods and the construction of the indicators may affect the observed relationships.</p>
+<p>Overall, the findings demonstrate the value of examining multiple indicators of labour-market slack rather than relying on unemployment alone. The report also highlights the importance of uncertainty assessment, sensitivity analysis and careful interpretation when using labour-market indicators to inform economic analysis and policy discussions.</p>
+</section>
 <section id="introduction" class="level1">
 <h1>1. Introduction</h1>
+<p>Labour-market conditions are important for understanding economic activity, employment opportunities and wage pressures. When demand for workers is strong, employers may advertise more vacancies and face greater difficulty filling positions. At the same time, the economy may continue to have unused labour capacity, including people who are unemployed and people who are employed but would prefer to work additional hours. Consequently, unemployment alone may not provide a complete picture of labour-market conditions.</p>
+<p>This report examines labour-market tightness and slack in Australia. Labour-market tightness describes the demand for workers relative to the available pool of unemployed jobseekers. Labour-market slack refers to unused labour capacity. In this analysis, slack is examined through three indicators: unemployment, underemployment and underutilisation. Unemployment captures people without a job who meet the relevant criteria for being unemployed; underemployment captures employed people who want and are available to work additional hours; and underutilisation provides a broader measure that incorporates both unemployed and underemployed people under the relevant statistical definitions.</p>
+<p>The central research question is:</p>
+<p><strong>To what extent are changes in job vacancies associated with changes in labour-market slack in Australia?</strong></p>
+<p>The analysis uses Australian Bureau of Statistics (ABS) job vacancy data as the primary indicator of labour demand and examines its relationship with changes in unemployment, underemployment and underutilisation. It also constructs a vacancy-to-unemployment ratio as an indicator of labour-market tightness. The analysis distinguishes between relationships in the levels of indicators and relationships in their changes, because these approaches describe different aspects of labour-market dynamics. Wage Price Index (WPI) growth is examined as an additional outcome to explore how labour-market conditions relate to wage growth over time.</p>
+<p>The report has three objectives. First, it describes how Australian labour-market slack has evolved across different economic periods. Second, it quantifies the association between changes in vacancies and changes in alternative measures of slack. Third, it examines the tightness measure and its relationship with wage growth, while considering the limitations of these indicators.</p>
+<p>The contribution of the analysis is to compare multiple measures of slack within a consistent empirical framework. This is important because unemployment, underemployment and underutilisation capture different aspects of unused labour capacity and may not respond identically to changing labour demand. The results may help inform how labour-market indicators are interpreted, although they are not intended to establish causal effects.</p>
+<p>The remainder of the report is organised as follows. Section 2 explains the key concepts and economic context. Section 3 describes the data sources and measurement choices. Section 4 presents the exploratory analysis, and Section 5 outlines the empirical methods. Section 6 reports the results. Sections 7 and 8 discuss the findings, limitations and potential extensions, before Section 9 concludes.</p>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">1.1 Background</h2>
 <p>The labour market plays an important role in the Australian economy by connecting employers seeking workers with individuals who are available and willing to work. Labour-market conditions change over time as the demand for workers and the availability of labour respond to economic conditions. Understanding these changes requires consideration of both the demand for labour and the extent to which available labour resources are being utilised.</p>
-<p>Job vacancies provide an important indicator of labour demand because a higher level of vacancies generally reflects greater demand from employers for additional workers. In Australia, vacancy demand can be measured using both ABS Job Vacancies and the Jobs and Skills Australia (JSA) Internet Vacancy Index (IVI). These measures capture different aspects of recruitment activity. ABS Job Vcanacies measures positions available for immediate filling at a particular point in time, while the IVI measures newly lodged online job advertisements during each month <span class="citation" data-cites="ABS2026JobVacancies">(<a href="#ref-ABS2026JobVacancies" role="doc-biblioref">Australian Bureau of Statistics 2026</a>)</span>. The distinction between these measures is important when considering their use in the analysis.</p>
+<p>Job vacancies provide an important indicator of labour demand because a higher level of vacancies generally reflects greater demand from employers for additional workers. In Australia, vacancy demand can be measured using both ABS Job Vacancies and the Jobs and Skills Australia (JSA) Internet Vacancy Index (IVI). These measures capture different aspects of recruitment activity. ABS Job Vacancies measures positions available for immediate filling at a particular point in time, while the IVI measures newly lodged online job advertisements during each month <span class="citation" data-cites="ABS2026JobVacancies">(<a href="#ref-ABS2026JobVacancies" role="doc-biblioref">Australian Bureau of Statistics 2026</a>)</span>. The distinction between these measures is important when considering their use in the analysis.</p>
 <p>Labour demand alone does not provide a complete picture of labour-market conditions. The supply side is also important, particularly the amount of labour that is available but not fully utilised. This is commonly described as labour-market slack or labour underutilisation. Unemployment captures people without work who are actively seeking employment, but it does not include workers who are employed but would prefer and are available to work additional hours. The ABS therefore also reports underemployment and underutilisation. Underutilisation combines unemployment and underemployment and provides a broader measure of unused labour capacity.</p>
 <p>Considering labour demand and labour-market slack together provides a more complete view of labour-market conditions. Periods of stronger demand for workers may coincide with lower levels of unused labour capacity, while weaker demand may coincide with greater labour-market slack. This motivates examining not only the individual trends in vacancies and slack, but also whether changes in these measures are associated with one another over time.</p>
 <p>A related concept is labour-market tightness, which compares the demand for workers with the availability of unemployed workers. In this project, tightness is measured using the ratio of ABS Job Vacancies to unemployed persons. This provides a complementary perspective on labour-market conditions and is examined alongside the direct relationship between changes in vacancies and labour-market slack.</p>
@@ -194,46 +209,45 @@ window.Quarto = {
 </section>
 <section id="report-structure" class="level2">
 <h2 class="anchored" data-anchor-id="report-structure">1.5 Report Structure</h2>
-<p>The remainder of this report is organised as follows. Section 2 introduces the key concepts of labour demand, labour-market slack and labour-market tightness. Section 3 describes the datasets, variable construction and measurement choices. Section 4 presents an exploratory analysis of labour demand, slack and tightness in Australia. Section 5 outlines the analytical methodology, including the analysis of changes and correlations. Section 6 presents the main results for the relationship between vacancy changes and labour-market slack, followed by supporting tightness analysis and supplementary wage and forecasting extensions. Section 7 discusses the findings and their implications, Section 8 outlines the limitations of the analysis and possible extensions, and Section 9 concludes the report.</p>
+<p>The remainder of this report is organised as follows. Section 2 introduces the key concepts of labour demand, labour-market slack and labour-market tightness. Section 3 describes the datasets, variable construction and measurement choices. Section 4 presents an exploratory analysis of labour demand, slack and tightness in Australia. Section 5 outlines the analytical methodology, including the analysis of changes and correlations, and introduces the interactive Shiny dashboard developed to complement the statistical analysis. Section 6 presents the main results for the relationship between vacancy changes and labour-market slack, followed by supporting tightness analysis and supplementary wage and forecasting extensions. Section 7 discusses the findings and their implications, Section 8 outlines the limitations of the analysis and possible extensions, and Section 9 concludes the report.</p>
 </section>
 </section>
-<section id="labour-market-concepts-and-background" class="level1">
-<h1>2. Labour-Market Concepts and Background</h1>
-<section id="labour-demand-and-job-vacancies" class="level2">
-<h2 class="anchored" data-anchor-id="labour-demand-and-job-vacancies">2.1 Labour Demand and Job Vacancies</h2>
-<p>Labour demand refers to employers’ demand for workers. Job vacancies provide an observable measure of this demand because they represent positions that employers are seeking to fill. Higher vacancies generally indicate stronger labour demand, while lower vacancies may indicate weaker demand.</p>
-<p>This project uses job vacancies as the main measure of labour demand and examines whether short-run changes in vacancies are associated with changes in unemployment, underemployment and underutilisation. The vacancy datasets used in the analysis are described in Section 3.</p>
+<section id="concepts-and-definitions" class="level1">
+<h1>2. Concepts and Definitions</h1>
+<section id="labour-demand" class="level2">
+<h2 class="anchored" data-anchor-id="labour-demand">2.1 Labour Demand</h2>
+<p>Labour demand refers to employers’ demand for workers to produce goods and services. Job vacancies provide an observable indicator of unfilled positions for which employers are seeking workers. An increase in vacancies may indicate stronger recruitment demand, while a decrease may indicate weaker demand. However, vacancies do not measure all labour demand: they may also be affected by recruitment practices, job turnover, the difficulty of filling particular positions and changes in the composition of available jobs.</p>
+<p>This report uses two vacancy indicators. The Australian Bureau of Statistics (ABS) Job Vacancies series measures the stock of vacancies at a point in time, whereas Jobs and Skills Australia’s Internet Vacancy Index (IVI) tracks online job advertisements. These measures provide related but distinct information. The ABS series is the primary vacancy measure for the quarterly analysis, while the IVI provides supplementary evidence about changes in online recruitment activity.</p>
 </section>
 <section id="labour-market-slack" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-slack">2.2 Labour-Market Slack</h2>
-<p>Labour-market slack refers to the extent to which available labour resources are not fully utilised. Unemployment captures people who are without work and actively seeking and available for employment, but it does not capture all forms of unused labour capacity. For example, some employed people may wish to work additional hours but are unable to do so.</p>
-<p>This project examines three measures from the Australian Bureau of Statistics (ABS) Labour Force Survey: unemployment, underemployment and underutilisation. Unemployment measures the extent of joblessness among people seeking and available for work, while underemployment captures employed people who would prefer and are available to work additional hours. Underutilisation combines unemployment and underemployment, providing a broader indicator of unused labour capacity.</p>
-<p>Underutilisation is used as the primary observable proxy for labour-market slack because it captures both unemployment and insufficient hours among employed workers. Unemployment and underemployment are also examined separately to assess whether their associations with changes in job vacancies differ across these dimensions of slack.</p>
-<p>However, underutilisation does not capture every possible dimension of unused labour capacity, including all forms of marginal attachment to the labour force. These measures should therefore be interpreted as observable indicators of labour underutilisation rather than a complete measure of all potential labour resources.</p>
-<p>Examining labour-market slack alongside labour demand provides a basis for assessing how changes in employer demand are associated with unused labour capacity. Stronger labour demand may coincide with lower unemployment or underemployment, while weaker demand may coincide with greater slack. However, these relationships may also reflect changes in labour-force participation, industry composition, working hours and broader economic conditions.</p>
+<p>Labour-market slack refers to unused or underused labour capacity in the economy. It includes people who are unemployed and seeking work, as well as employed people who would prefer and are available to work additional hours. Slack matters because the unemployment rate alone may understate the extent of unused labour capacity.</p>
+<p>This report examines three indicators:</p>
+<ul>
+<li><strong>Unemployment:</strong> people without a job who meet the ABS criteria for being unemployed, including relevant job-search and availability requirements.</li>
+<li><strong>Underemployment:</strong> employed people who meet the relevant criteria for wanting and being available to work additional hours.</li>
+<li><strong>Underutilisation:</strong> a broader indicator that combines unemployment and underemployment within the ABS’s published statistical framework.</li>
+</ul>
+<p>These measures capture different aspects of the labour market. Unemployment focuses on people without work, whereas underemployment captures unused working-hour capacity among people who already have jobs. Underutilisation therefore provides a broader perspective on labour-market slack than unemployment alone.</p>
+<p>The indicators should not be interpreted as interchangeable. They may respond differently to changes in economic conditions because people can move between employment, unemployment and underemployment. For example, employers may reduce employees’ working hours without immediately increasing unemployment. In this situation, underemployment may rise even if the unemployment rate changes relatively little.</p>
 </section>
 <section id="labour-market-tightness" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-tightness">2.3 Labour-Market Tightness</h2>
-<p>Labour market tightness describes the balance between the demand for workers and the availability of workers seeking employment. A labour market is generally considered tighter when employers have a relatively large number of vacancies compared with the number of unemployed people available to fill them. Conversely, a less tight labour market occurs when there are fewer vacancies relative to the number of unemployed people.</p>
-<p>In this project, labour market tightness is measured using the vacancy to unemployment ratio. The measure is calculated as the number of job vacancies relative to the number of unemployed people:</p>
-<p><span class="math display">\[
-\text{Labour-Market Tightness} =
-\frac{\text{Job Vacancies}}{\text{Unemployed Persons}}
-\]</span></p>
-<p>A higher ratio indicates that there are more vacancies relative to unemployed people, while a lower ratio indicates that unemployed people are more numerous relative to available vacancies. The measure therefore provides an indicator of the balance between labour demand and the available pool of unemployed workers.</p>
-<p>The vacancy to unemployment ratio is useful because considering vacancies and unemployment separately does not fully describe the conditions faced by employers and job seekers. An increase in vacancies may indicate stronger labour demand, but its implications for labour market conditions depend partly on how many unemployed workers are available. Similarly, a decline in unemployment may indicate improving labour market conditions, but the degree of tightness also depends on the number of vacancies available.</p>
-<p>In this analyis, the tightness measure is constructed using the seasonally adjusted ABS Job Vacancies series and the seasonally adjusted ABS number of unemployed persons. The resulting measure is examined at a quarterly frequency to investigate its relationship with labour market slack, particularly unemployment, underemployment and underutilisation.</p>
-<p>Labour market tightness and labour market slack represent two related but distinct dimensions of labour market conditions. Tightness focuses on the relationship between employer demand and the pool of unemployed workers, whereas slack focuses on the extent to which available labour in underutilised. Examining both measures together provides a broader view of whether changes in labour demand are associated with changes in unused labour capacity in Australia.</p>
+<p>Labour-market tightness describes the balance between employers’ demand for workers and the available pool of unemployed jobseekers. A relatively tight labour market has more vacancies relative to unemployed people, while a less tight market has fewer vacancies relative to the number of unemployed people.</p>
+<p>In this report, tightness is measured using the ratio of ABS Job Vacancies to the number of unemployed people. The ratio provides a simple indicator of vacancies relative to unemployed jobseekers and allows conditions to be compared over time.</p>
+<p>However, this ratio is not a complete measure of the balance between labour demand and labour supply. It does not account directly for underemployed workers, people entering or leaving the labour force, differences in skills, or the geographical distribution of vacancies and jobseekers. It should therefore be interpreted as an indicator of tightness rather than a comprehensive measure of all available labour supply.</p>
+<p>A further consideration is that unemployment appears in the denominator of the ratio. Consequently, the relationship between the tightness ratio and unemployment is partly mechanical: a fall in unemployment increases the ratio even if vacancies remain unchanged. This limitation is considered when interpreting the empirical results.</p>
 </section>
-<section id="relationship-between-labour-demand-and-slack" class="level2">
-<h2 class="anchored" data-anchor-id="relationship-between-labour-demand-and-slack">2.4 Relationship Between Labour Demand and Slack</h2>
-<p>Labour demand and labour-market slack are generally expected to move in opposite directions. Stronger demand for workers may create more employment opportunities and reduce unemployment or underemployment, while weaker demand may be associated with greater slack.</p>
-<p>However, this relationship may not be immediate or consistent across all periods. The analysis therefore examines whether short-run changes in job vacancies are associated with changes in unemployment, underemployment and underutilisation, with labour-market tightness used as a complementary measure.</p>
+<section id="expected-relationship-between-vacancies-and-slack" class="level2">
+<h2 class="anchored" data-anchor-id="expected-relationship-between-vacancies-and-slack">2.4 Expected Relationship Between Vacancies and Slack</h2>
+<p>Economic reasoning suggests that stronger labour demand may coincide with lower labour-market slack. When employers advertise more vacancies, unemployed people may have more opportunities to find work. Underemployment may also decline if employers increase the hours offered to existing workers.</p>
+<p>Accordingly, this report expects changes in vacancies to be negatively associated with changes in unemployment, underemployment and underutilisation. However, the strength of these relationships need not be the same across the three indicators. Underemployment may capture adjustments in working hours that are not reflected immediately in unemployment.</p>
+<p>These expected relationships are hypotheses to be examined empirically, not conclusions assumed in advance. Vacancy movements and labour-market slack may both respond to broader economic conditions, and the timing of their responses may differ. The analysis therefore investigates statistical associations and does not interpret correlations as evidence of causation.</p>
 </section>
-<section id="australian-labour-market-context" class="level2">
-<h2 class="anchored" data-anchor-id="australian-labour-market-context">2.5 Australian Labour-Market Context</h2>
-<p>Australia’s labour market has experienced substantial changes over the period covered by this study, including economic slowdowns and major disruptions such as the Global Financial Crisis and the COVID-19 pandemic. These events affected both labour demand and unused labour capacity.</p>
-<p>These changing conditions provide useful context for examining whether the relationship between job vacancies and labour-market slack varies over time. The historical analysis provides broader context, while the main analysis focuses on periods where vacancy and slack measures can be consistently aligned.</p>
+<section id="summary-of-the-conceptual-framework" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-the-conceptual-framework">2.5 Summary of the Conceptual Framework</h2>
+<p>The analysis treats vacancies as an indicator of labour demand and unemployment, underemployment and underutilisation as indicators of unused labour capacity. The vacancy-to-unemployment ratio provides a separate summary measure of labour-market tightness. Comparing these indicators helps establish whether the relationship between recruitment demand and labour-market slack depends on how slack is measured.</p>
+<p>The central empirical question is whether changes in vacancies are associated with changes in the three slack indicators, and whether the strength of the association differs across them. The analysis also considers wage growth as an extension, while recognising that wages may respond to labour-market conditions with a delay and are influenced by other economic factors.</p>
 </section>
 </section>
 <section id="data-and-measurement" class="level1">
@@ -280,7 +294,7 @@ window.Quarto = {
 <p>This section describes the ABS Labour Force data used to measure unemployment, underemployment and underutilisation.</p>
 <section id="data-source-and-labour-market-measures" class="level3">
 <h3 class="anchored" data-anchor-id="data-source-and-labour-market-measures">3.3.1 Data Source and Labour-Market Measures</h3>
-<p>The analysis of labour market slack uses data from the Australian Bureau of Statistics (ABS) Labour Force Survey. The Labour Force Survey provides monthly measures of employment, unemployment, undermeployment and labour-force participation for the Australian population aged 15 years and over. These measures provide the basis for constructing observable indicators of labour market slack over time.</p>
+<p>The analysis of labour market slack uses data from the Australian Bureau of Statistics (ABS) Labour Force Survey. The Labour Force Survey provides monthly measures of employment, unemployment, underemeployment and labour-force participation for the Australian population aged 15 years and over. These measures provide the basis for constructing observable indicators of labour market slack over time.</p>
 <p>Three measures are central to this analysis. The unemployment rate captures the proportion of the labour force that is unemployed, while the underemployment rate captures employed people who want and are available to work additional hours. The underutilisation rate combines unemployment and underemployment and provides a broader measure of labour underutilisation.</p>
 <p>The analysis retains unemployment and underemployment as separate measures while using underutilisation as the primary proxy for overall labour market slack. This approach allows the analysis to distinguish between different forms of unused labour capacity rather than relying on unemployment alone.</p>
 </section>
@@ -837,6 +851,12 @@ UU_t =
 <p>The classification is therefore treated as an exploratory descriptive analysis rather than a formal test of labour-market mismatch. In particular, a high-tightness and high-slack observation does not by itself demonstrate that a mismatch exists. It only identifies a period in which the two aggregate indicators are simultaneously above their respective sample medians.</p>
 <p>The analysis subsequently compares the number and characteristics of observations in each group. Changes in tightness, unemployment, underemployment and underutilisation are also compared between the high-tightness and high-slack group and the remaining observations. This provides an additional basis for examining whether these periods display different patterns of labour-market adjustment.</p>
 </section>
+<section id="interactive-shiny-dashboard" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-shiny-dashboard">5.8 Interactive Shiny Dashboard</h2>
+<p>An interactive Shiny dashboard was developed to complement the static analysis presented in this report. The dashboard allows users to explore labour demand, labour-market slack and tightness interactively, while also providing supplementary views of market conditions, wage pressure, occupation demand and skill-level demand.</p>
+<p>The dashboard includes interactive Plotly visualisations, selectable labour-market indicators and time periods, correlation summaries, and a data explorer. A dedicated Research Question section allows users to compare quarterly changes in job vacancies or labour-market tightness with changes in unemployment, underemployment and underutilisation.</p>
+<p>The dashboard is intended as an exploratory and communication tool rather than a separate modelling framework. The main statistical findings and interpretations are therefore reported in the following sections, while the dashboard provides an interactive way to examine the underlying patterns and supporting analyses.</p>
+</section>
 </section>
 <section id="results" class="level1">
 <h1>6. Results</h1>
@@ -856,35 +876,70 @@ UU_t =
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_underutilisation =</span> underutilisation_rate <span class="sc">-</span> <span class="fu">lag</span>(underutilisation_rate)</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>vacancy_change_correlations <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Slack measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment"</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment"</span>,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Correlation</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_unemployment,</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_underemployment,</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_underutilisation,</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>get_cor_ci <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    x,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    y,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">use =</span> <span class="st">"complete.obs"</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"pearson"</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">correlation =</span> <span class="fu">unname</span>(test<span class="sc">$</span>estimate),</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower =</span> test<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> test<span class="sc">$</span>conf.int[<span class="dv">2</span>]</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>unemployment_ci <span class="ot">&lt;-</span> <span class="fu">get_cor_ci</span>(</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_unemployment</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>underemployment_ci <span class="ot">&lt;-</span> <span class="fu">get_cor_ci</span>(</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_underemployment</span>
 <span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  vacancy_change_correlations,</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>underutilisation_ci <span class="ot">&lt;-</span> <span class="fu">get_cor_ci</span>(</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  changes<span class="sc">$</span>delta_underutilisation</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>vacancy_change_correlations <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Slack measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment"</span>,</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment"</span>,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Correlation</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>    unemployment_ci[<span class="st">"correlation"</span>],</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    underemployment_ci[<span class="st">"correlation"</span>],</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    underutilisation_ci[<span class="st">"correlation"</span>]</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>      <span class="st">"[%.2f, %.2f]"</span>,</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>      unemployment_ci[<span class="st">"lower"</span>],</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>      unemployment_ci[<span class="st">"upper"</span>]</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>      <span class="st">"[%.2f, %.2f]"</span>,</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>      underemployment_ci[<span class="st">"lower"</span>],</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>      underemployment_ci[<span class="st">"upper"</span>]</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>      <span class="st">"[%.2f, %.2f]"</span>,</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>      underutilisation_ci[<span class="st">"lower"</span>],</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>      underutilisation_ci[<span class="st">"upper"</span>]</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>  vacancy_change_correlations,</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-vacancy-change-correlations" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vacancy-change-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -897,20 +952,24 @@ Table&nbsp;2: Correlation between quarterly changes in job vacancies and labour-
 <tr class="header">
 <th style="text-align: left;">Slack measure</th>
 <th style="text-align: right;">Correlation</th>
+<th style="text-align: left;">95% CI</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Unemployment</td>
 <td style="text-align: right;">-0.54</td>
+<td style="text-align: left;">[-0.68, -0.35]</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Underemployment</td>
 <td style="text-align: right;">-0.81</td>
+<td style="text-align: left;">[-0.88, -0.72]</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Underutilisation</td>
 <td style="text-align: right;">-0.80</td>
+<td style="text-align: left;">[-0.87, -0.69]</td>
 </tr>
 </tbody>
 </table>
@@ -960,7 +1019,7 @@ Table&nbsp;2: Correlation between quarterly changes in job vacancies and labour-
 <span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
 <span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(</span>
 <span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"loess"</span>,</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">se =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">se =</span> <span class="cn">FALSE</span></span>
 <span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
 <span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> measure,</span>
@@ -984,59 +1043,156 @@ Figure&nbsp;7: Changes in job vacancies and labour-market slack
 </div>
 </div>
 </div>
-<p>Table <a href="#tbl-vacancy-change-correlations" class="quarto-xref">Table&nbsp;2</a> shows negative correlations between changes in job vacancies and all three measures of labour-market slack. The correlation is approximately -0.54 for unemployment, -0.81 for underemployment and -0.80 for underutilisation.</p>
+<p>Table <a href="#tbl-vacancy-change-correlations" class="quarto-xref">Table&nbsp;2</a> shows negative correlations between changes in job vacancies and all three measures of labour-market slack. The correlation is approximately -0.54 for unemployment, -0.81 for underemployment and -0.80 for underutilisation. The 95% confidence intervals remain below zero for all three measures, although the estimated relationships vary in strength.</p>
 <p>Figure <a href="#fig-vacancy-change-slack" class="quarto-xref">Figure&nbsp;7</a> also shows an overall negative association. The LOESS trends indicate that the relationships are not fully linear, particularly for unemployment and underutilisation.</p>
 <p>Overall, quarters with increasing job vacancies tended to coincide with reductions in labour-market slack. However, these relationships are descriptive and do not establish causation.</p>
+<section id="sensitivity-to-extreme-observations" class="level3">
+<h3 class="anchored" data-anchor-id="sensitivity-to-extreme-observations">Sensitivity to Extreme Observations</h3>
+<p>To assess whether the main results are sensitive to unusually large changes in job vacancies, extreme observations were identified using the interquartile range (IQR) rule.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>changes_no_extreme <span class="ot">&lt;-</span> changes <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    delta_vacancies <span class="sc">&gt;=</span> lower_bound,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    delta_vacancies <span class="sc">&lt;=</span> upper_bound</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>sensitivity_correlations <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Slack measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Full sample</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_unemployment,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_underemployment,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>      changes<span class="sc">$</span>delta_underutilisation,</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Excluding extreme vacancy changes</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_unemployment,</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_underemployment,</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_vacancies,</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>      changes_no_extreme<span class="sc">$</span>delta_underutilisation,</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>  sensitivity_correlations,</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-sensitivity-correlations" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sensitivity-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Sensitivity of vacancy–slack correlations to extreme observations
+</figcaption>
+<div aria-describedby="tbl-sensitivity-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Slack measure</th>
+<th style="text-align: right;">Full sample</th>
+<th style="text-align: right;">Excluding extreme vacancy changes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Unemployment</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">-0.41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Underemployment</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-0.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Underutilisation</td>
+<td style="text-align: right;">-0.80</td>
+<td style="text-align: right;">-0.41</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The sensitivity analysis shows that the direction of the relationship remains negative after excluding quarters with extreme changes in job vacancies. However, the strength of the correlations becomes weaker. The unemployment correlation decreases from -0.54 to -0.41, while the underemployment and underutilisation correlations decrease from -0.81 to -0.30 and from -0.80 to -0.41, respectively.</p>
+<p>This suggests that the overall negative association between vacancy changes and labour-market slack is not solely driven by extreme observations, since the direction of the relationship remains unchanged. However, the relatively strong correlations in the full sample are partly influenced by periods with unusually large vacancy movements. The magnitude of the estimated relationships should therefore be interpreted with caution.</p>
+</section>
 </section>
 <section id="labour-market-tightness-and-labour-market-slack" class="level2">
 <h2 class="anchored" data-anchor-id="labour-market-tightness-and-labour-market-slack">6.2 Labour-Market Tightness and Labour-Market Slack</h2>
-<p>As a complementary analysis, labour-market tightness was compared with unemployment, underemployment and underutilisation. Unlike job vacancies alone, the tightness measure considers the number of vacancies relative to the number of unemployed persons.</p>
+<p>As a complementary analysis, labour-market tightness was compared with unemployment, underemployment and underutilisation. Unlike job vacancies alone, the tightness measure considers the number of vacancies relative to the number of unemployed persons. Because unemployment is included in the denominator of the tightness measure, the relationship between tightness and unemployment is partly mechanical. The tightness–unemployment relationship is therefore interpreted cautiously and is not treated as independent evidence of a behavioural relationship.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>slack_long <span class="ot">&lt;-</span> combined <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    Quarter,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    Tightness,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    unemployment_rate,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    underemployment_rate,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    underutilisation_rate</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      unemployment_rate,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      underemployment_rate,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      underutilisation_rate</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"Measure"</span>,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"Rate"</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure =</span> <span class="fu">recode</span>(</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>      Measure,</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">unemployment_rate =</span> <span class="st">"Unemployment"</span>,</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">underemployment_rate =</span> <span class="st">"Underemployment"</span>,</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">underutilisation_rate =</span> <span class="st">"Underutilisation"</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  slack_long,</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Tightness, <span class="at">y =</span> Rate)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_smooth</span>(</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"loess"</span>,</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> Measure,</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">scales =</span> <span class="st">"free_y"</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Labour-market tightness"</span>,</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Rate (%)"</span></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>slack_long <span class="ot">&lt;-</span> combined <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    Quarter,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    Tightness,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    unemployment_rate,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    underemployment_rate,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    underutilisation_rate</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>      unemployment_rate,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      underemployment_rate,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      underutilisation_rate</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"Measure"</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"Rate"</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Measure =</span> <span class="fu">recode</span>(</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      Measure,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">unemployment_rate =</span> <span class="st">"Unemployment"</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">underemployment_rate =</span> <span class="st">"Underemployment"</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">underutilisation_rate =</span> <span class="st">"Underutilisation"</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  slack_long,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Tightness, <span class="at">y =</span> Rate)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_smooth</span>(</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"loess"</span>,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> Measure,</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">scales =</span> <span class="st">"free_y"</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Labour-market tightness"</span>,</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Rate (%)"</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-results-tightness-slack" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1058,48 +1214,48 @@ Figure&nbsp;8: Relationship between labour-market tightness and measures of labo
 <h2 class="anchored" data-anchor-id="changes-in-labour-market-tightness-and-slack">6.3 Changes in Labour-Market Tightness and Slack</h2>
 <p>To examine whether the relationship between labour-market tightness and slack also appears in short-run movements, quarter-to-quarter changes in tightness were compared with changes in unemployment, underemployment and underutilisation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tightness_changes <span class="ot">&lt;-</span> combined <span class="sc">|&gt;</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Quarter) <span class="sc">|&gt;</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_tightness =</span> Tightness <span class="sc">-</span> <span class="fu">lag</span>(Tightness),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_unemployment =</span> unemployment_rate <span class="sc">-</span> <span class="fu">lag</span>(unemployment_rate),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_underemployment =</span> underemployment_rate <span class="sc">-</span> <span class="fu">lag</span>(underemployment_rate),</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_underutilisation =</span> underutilisation_rate <span class="sc">-</span> <span class="fu">lag</span>(underutilisation_rate)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>tightness_change_correlations <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Slack measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment"</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment"</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Correlation</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_unemployment,</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_underemployment,</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_underutilisation,</span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  tightness_change_correlations,</span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tightness_changes <span class="ot">&lt;-</span> combined <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Quarter) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_tightness =</span> Tightness <span class="sc">-</span> <span class="fu">lag</span>(Tightness),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_unemployment =</span> unemployment_rate <span class="sc">-</span> <span class="fu">lag</span>(unemployment_rate),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_underemployment =</span> underemployment_rate <span class="sc">-</span> <span class="fu">lag</span>(underemployment_rate),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">delta_underutilisation =</span> underutilisation_rate <span class="sc">-</span> <span class="fu">lag</span>(underutilisation_rate)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>tightness_change_correlations <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Slack measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unemployment"</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underemployment"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Correlation</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_unemployment,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_underemployment,</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_tightness,</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>      tightness_changes<span class="sc">$</span>delta_underutilisation,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  tightness_change_correlations,</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-tightness-change-correlations" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tightness-change-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Correlation between quarterly changes in labour-market tightness and slack
+Table&nbsp;4: Correlation between quarterly changes in labour-market tightness and slack
 </figcaption>
 <div aria-describedby="tbl-tightness-change-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1130,7 +1286,7 @@ Table&nbsp;3: Correlation between quarterly changes in labour-market tightness a
 </figure>
 </div>
 </div>
-<p>Table <a href="#tbl-tightness-change-correlations" class="quarto-xref">Table&nbsp;3</a> shows negative correlations between changes in labour-market tightness and changes in all three measures of slack. The correlations are approximately <strong>-0.77</strong> for unemployment, <strong>-0.68</strong> for underemployment and <strong>-0.77</strong> for underutilisation.</p>
+<p>Table <a href="#tbl-tightness-change-correlations" class="quarto-xref">Table&nbsp;4</a> shows negative correlations between changes in labour-market tightness and changes in all three measures of slack. The correlations are approximately <strong>-0.77</strong> for unemployment, <strong>-0.68</strong> for underemployment and <strong>-0.77</strong> for underutilisation. As in the level-based analysis, the relationship involving unemployment should be interpreted cautiously because unemployment is part of the denominator used to construct the tightness measure.</p>
 <p>This indicates that quarters with increasing labour-market tightness generally coincided with reductions in labour-market slack. The similar negative relationships across the three measures suggest that the inverse relationship is not limited to unemployment alone.</p>
 <p>Together with Section 6.2, these results show that the negative relationship between tightness and slack is visible both in their levels and in their short-run movements. However, these correlations describe contemporaneous associations and do not establish causation.</p>
 </section>
@@ -1141,47 +1297,47 @@ Table&nbsp;3: Correlation between quarterly changes in labour-market tightness a
 <h3 class="anchored" data-anchor-id="broad-occupation-groups">Broad Occupation Groups</h3>
 <p>The latest available national observation was used to compare online job vacancies across broad occupation groups.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>latest_month <span class="ot">&lt;-</span> <span class="fu">max</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  ivi_anzsco2<span class="sc">$</span>Month,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>occupation_latest <span class="ot">&lt;-</span> ivi_anzsco2 <span class="sc">|&gt;</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    Level <span class="sc">==</span> <span class="dv">2</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    State <span class="sc">==</span> <span class="st">"AUST"</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    Month <span class="sc">==</span> latest_month</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Vacancies)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  occupation_latest,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Vacancies,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">reorder</span>(Title, Vacancies),</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> Title</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option =</span> <span class="st">"D"</span>) <span class="sc">+</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Online Job Vacancies by Occupation"</span>,</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Australia,"</span>,</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">format</span>(latest_month, <span class="st">"%B %Y"</span>)</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Online job vacancies"</span>,</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>latest_month <span class="ot">&lt;-</span> <span class="fu">max</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  ivi_anzsco2<span class="sc">$</span>Month,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>occupation_latest <span class="ot">&lt;-</span> ivi_anzsco2 <span class="sc">|&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    Level <span class="sc">==</span> <span class="dv">2</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    State <span class="sc">==</span> <span class="st">"AUST"</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    Month <span class="sc">==</span> latest_month</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Vacancies)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  occupation_latest,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Vacancies,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">reorder</span>(Title, Vacancies),</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> Title</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option =</span> <span class="st">"D"</span>) <span class="sc">+</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Online Job Vacancies by Occupation"</span>,</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Australia,"</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">format</span>(latest_month, <span class="st">"%B %Y"</span>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Online job vacancies"</span>,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-results-occupation-vacancies" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1202,54 +1358,54 @@ Figure&nbsp;9: Online job vacancies by broad occupation group in the latest avai
 <h3 class="anchored" data-anchor-id="skill-levels">Skill Levels</h3>
 <p>Vacancy levels were also compared across skill levels to examine whether labour demand was distributed evenly across different skill requirements.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>latest_skill_month <span class="ot">&lt;-</span> <span class="fu">max</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  ivi_skill<span class="sc">$</span>Month,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>skill_latest <span class="ot">&lt;-</span> ivi_skill <span class="sc">|&gt;</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    State <span class="sc">==</span> <span class="st">"AUST"</span>,</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    Month <span class="sc">==</span> latest_skill_month,</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    Skill_level <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Skill_level) <span class="sc">|&gt;</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Vacancies =</span> <span class="fu">sum</span>(Vacancies, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  skill_latest,</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Vacancies,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">reorder</span>(</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(<span class="st">"Skill Level"</span>, Skill_level),</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>      Vacancies</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">factor</span>(Skill_level)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option =</span> <span class="st">"D"</span>) <span class="sc">+</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Online Job Vacancies by Skill Level"</span>,</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Australia,"</span>,</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>      <span class="fu">format</span>(latest_skill_month, <span class="st">"%B %Y"</span>)</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Online job vacancies"</span>,</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>latest_skill_month <span class="ot">&lt;-</span> <span class="fu">max</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  ivi_skill<span class="sc">$</span>Month,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>skill_latest <span class="ot">&lt;-</span> ivi_skill <span class="sc">|&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    State <span class="sc">==</span> <span class="st">"AUST"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    Month <span class="sc">==</span> latest_skill_month,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    Skill_level <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Skill_level) <span class="sc">|&gt;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Vacancies =</span> <span class="fu">sum</span>(Vacancies, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  skill_latest,</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Vacancies,</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">reorder</span>(</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(<span class="st">"Skill Level"</span>, Skill_level),</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>      Vacancies</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">factor</span>(Skill_level)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option =</span> <span class="st">"D"</span>) <span class="sc">+</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Online Job Vacancies by Skill Level"</span>,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Australia,"</span>,</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>      <span class="fu">format</span>(latest_skill_month, <span class="st">"%B %Y"</span>)</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Online job vacancies"</span>,</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-results-skill-vacancies" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1273,70 +1429,70 @@ Figure&nbsp;10: Online job vacancies by skill level in the latest available obse
 <p>As a supplementary analysis, the Wage Price Index (WPI) was used to examine whether labour-market conditions are associated with wage growth. This extends the main analysis by considering whether tighter labour-market conditions and lower labour-market slack are also reflected in wage movements.</p>
 <p>The analysis compares quarterly WPI growth with labour-market tightness and underutilisation in the same quarter, as well as WPI growth one and two quarters ahead.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>wpi_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/processed/wpi_vacancy_slack.csv"</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Quarter) <span class="sc">|&gt;</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">WPI_growth_lead1 =</span> <span class="fu">lead</span>(WPI_growth, <span class="dv">1</span>),</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">WPI_growth_lead2 =</span> <span class="fu">lead</span>(WPI_growth, <span class="dv">2</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>wpi_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Labour-market measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Tightness"</span>,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Same quarter</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth,</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth,</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">1 quarter ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead1,</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead1,</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2 quarters ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead2,</span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead2,</span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>  wpi_results,</span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>wpi_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/processed/wpi_vacancy_slack.csv"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Quarter) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">WPI_growth_lead1 =</span> <span class="fu">lead</span>(WPI_growth, <span class="dv">1</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">WPI_growth_lead2 =</span> <span class="fu">lead</span>(WPI_growth, <span class="dv">2</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>wpi_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Labour-market measure</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Tightness"</span>,</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Underutilisation"</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Same quarter</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth,</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth,</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">1 quarter ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead1,</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead1,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2 quarters ahead</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>Tightness,</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead2,</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>underutilisation_rate,</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>      wpi_data<span class="sc">$</span>WPI_growth_lead2,</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">use =</span> <span class="st">"complete.obs"</span></span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>  wpi_results,</span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-wpi-timing" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wpi-timing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Correlation between labour-market conditions and WPI growth
+Table&nbsp;5: Correlation between labour-market conditions and WPI growth
 </figcaption>
 <div aria-describedby="tbl-wpi-timing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1375,7 +1531,7 @@ Table&nbsp;4: Correlation between labour-market conditions and WPI growth
 </figure>
 </div>
 </div>
-<p>Table <a href="#tbl-wpi-timing" class="quarto-xref">Table&nbsp;4</a> compares the relationship between labour-market conditions and wage growth across different timing assumptions. Labour-market tightness is positively associated with WPI growth, while underutilisation is negatively associated with WPI growth.</p>
+<p>Table <a href="#tbl-wpi-timing" class="quarto-xref">Table&nbsp;5</a> compares the relationship between labour-market conditions and wage growth across different timing assumptions. Labour-market tightness is positively associated with WPI growth, while underutilisation is negatively associated with WPI growth.</p>
 <p>The relationships persist when labour-market conditions are compared with wage growth one and two quarters ahead. For tightness, the correlation increases slightly from 0.40 in the same quarter to 0.44 two quarters ahead. In contrast, the negative correlation for underutilisation becomes weaker, changing from -0.77 in the same quarter to -0.65 two quarters ahead. This suggests that the timing of the relationship with wage growth differs across the two labour-market measures.</p>
 <p>Overall, the WPI extension provides additional context for the main findings. Tighter labour-market conditions tend to be associated with stronger wage growth, while greater underutilisation tends to be associated with weaker wage growth. These relationships are descriptive and should not be interpreted as evidence of causality.</p>
 </section>
