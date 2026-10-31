@@ -163,32 +163,64 @@ combined |>
 # It does not establish causality.
 # ============================================================
 
-correlations <- combined |>
+# Pearson correlations
+pearson_correlations <- combined |>
   summarise(
-    
     tightness_unemployment =
       cor(
         Tightness,
         unemployment_rate,
-        use = "complete.obs"
+        use = "complete.obs",
+        method = "pearson"
       ),
     
     tightness_underemployment =
       cor(
         Tightness,
         underemployment_rate,
-        use = "complete.obs"
+        use = "complete.obs",
+        method = "pearson"
       ),
     
     tightness_underutilisation =
       cor(
         Tightness,
         underutilisation_rate,
-        use = "complete.obs"
+        use = "complete.obs",
+        method = "pearson"
       )
   )
 
-print(correlations)
+# Spearman correlations — sensitivity check
+spearman_correlations <- combined |>
+  summarise(
+    tightness_unemployment =
+      cor(
+        Tightness,
+        unemployment_rate,
+        use = "complete.obs",
+        method = "spearman"
+      ),
+    
+    tightness_underemployment =
+      cor(
+        Tightness,
+        underemployment_rate,
+        use = "complete.obs",
+        method = "spearman"
+      ),
+    
+    tightness_underutilisation =
+      cor(
+        Tightness,
+        underutilisation_rate,
+        use = "complete.obs",
+        method = "spearman"
+      )
+  )
+
+print(pearson_correlations)
+print(spearman_correlations)
 
 
 # ============================================================
@@ -254,7 +286,7 @@ ggplot(
     na.rm = TRUE
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE,
     na.rm = TRUE
   ) +
@@ -296,7 +328,7 @@ ggplot(
     na.rm = TRUE
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE,
     na.rm = TRUE
   ) +
@@ -338,7 +370,7 @@ ggplot(
     na.rm = TRUE
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE,
     na.rm = TRUE
   ) +
@@ -413,7 +445,7 @@ ggplot(
     na.rm = TRUE
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE,
     na.rm = TRUE
   ) +
@@ -546,7 +578,7 @@ ggplot(
     na.rm = TRUE
   ) +
   geom_smooth(
-    method = "lm",
+    method = "loess",
     se = TRUE,
     na.rm = TRUE
   ) +
@@ -620,9 +652,10 @@ message(
 message("")
 message("============================================")
 
-correlations
+pearson_correlations
+spearman_correlations
 change_correlations
 
-correlations |> print(width = Inf)
-
+pearson_correlations |> print(width = Inf)
+spearman_correlations |> print(width = Inf)
 change_correlations |> print(width = Inf)
