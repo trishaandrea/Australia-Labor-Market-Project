@@ -1,15 +1,21 @@
+
 # ============================================================
 # Labour Market Forecasting
 # ETC-5543 Australian Labour Market Project
+# Measures:
+#   - Unemployment
+#   - Underemployment
+#   - Underutilisation
 #
-# Author: Rimlan
-#
-# Purpose:
-# Explore whether Australian labour-market slack measures
-# can be forecast over the next 12 months using historical data.
+# Models:
+#   - Naive
+#   - Seasonal Naive
+#   - ETS
+#   - ARIMA
 #
 # Final forecast:
-#   - Best-performing model refitted using all available data
+#   - Best-performing model selected using a 12-month test set
+#   - Selected model refitted using all available observations
 #   - 12-month forecast
 #   - 80% and 95% prediction intervals
 #
@@ -47,6 +53,7 @@ if (length(missing_packages) > 0) {
       "))"
     )
   )
+
 }
 
 
@@ -113,6 +120,7 @@ find_project_file <- function(filename) {
   }
 
   found[[1]]
+
 }
 
 
@@ -132,22 +140,13 @@ if (is.na(slack_file)) {
       getwd()
     )
   )
+
 }
 
 
 processed_dir <- dirname(
   slack_file
 )
-
-
-if (!dir.exists(processed_dir)) {
-
-  dir.create(
-    processed_dir,
-    recursive = TRUE
-  )
-
-}
 
 
 # ============================================================
@@ -210,7 +209,7 @@ if (length(missing_columns) > 0) {
 
 
 cat(
-  "✓ Required variables found.\n"
+  "Required variables found.\n"
 )
 
 
@@ -232,19 +231,13 @@ forecast_data <- labour_market_slack |>
     date = as.Date(date),
 
     unemployment_rate =
-      as.numeric(
-        unemployment_rate
-      ),
+      as.numeric(unemployment_rate),
 
     underemployment_rate =
-      as.numeric(
-        underemployment_rate
-      ),
+      as.numeric(underemployment_rate),
 
     underutilisation_rate =
-      as.numeric(
-        underutilisation_rate
-      )
+      as.numeric(underutilisation_rate)
 
   ) |>
 
@@ -256,42 +249,20 @@ forecast_data <- labour_market_slack |>
 
 
 # ------------------------------------------------------------
-# Remove duplicate dates
+# 6.1 Remove duplicate dates
 # ------------------------------------------------------------
 
-forecast_data <- forecast_data |>
+if (anyDuplicated(forecast_data$date) > 0) {
 
-  group_by(date) |>
+  stop(
+    "Duplicate dates detected. Check the source data."
+  )
 
-  summarise(
-
-    unemployment_rate =
-      mean(
-        unemployment_rate,
-        na.rm = TRUE
-      ),
-
-    underemployment_rate =
-      mean(
-        underemployment_rate,
-        na.rm = TRUE
-      ),
-
-    underutilisation_rate =
-      mean(
-        underutilisation_rate,
-        na.rm = TRUE
-      ),
-
-    .groups = "drop"
-
-  ) |>
-
-  arrange(date)
+}
 
 
 # ------------------------------------------------------------
-# Replace infinite values with NA
+# 6.2 Replace infinite values with NA
 # ------------------------------------------------------------
 
 forecast_data <- forecast_data |>
@@ -317,6 +288,39 @@ forecast_data <- forecast_data |>
   )
 
 
+# ------------------------------------------------------------
+# 6.3 Check monthly continuity
+# ------------------------------------------------------------
+
+forecast_data <- forecast_data |>
+
+  mutate(
+    date = yearmonth(date)
+  )
+
+
+expected_months <- seq(
+  min(forecast_data$date),
+  max(forecast_data$date),
+  by = 1
+)
+
+
+if (!identical(
+  as.character(forecast_data$date),
+  as.character(expected_months)
+)) {
+
+  stop(
+    paste0(
+      "Missing monthly observations detected.\n",
+      "Check the source data before forecasting."
+    )
+  )
+
+}
+
+
 # ============================================================
 # 7. Data quality report
 # ============================================================
@@ -330,18 +334,12 @@ cat("============================================\n\n")
 cat(
   "Data range: ",
   format(
-    min(
-      forecast_data$date,
-      na.rm = TRUE
-    ),
+    as.Date(min(forecast_data$date)),
     "%B %Y"
   ),
   " to ",
   format(
-    max(
-      forecast_data$date,
-      na.rm = TRUE
-    ),
+    as.Date(max(forecast_data$date)),
     "%B %Y"
   ),
   "\n"
@@ -360,25 +358,13 @@ missing_summary <- forecast_data |>
   summarise(
 
     unemployment_missing =
-      sum(
-        is.na(
-          unemployment_rate
-        )
-      ),
+      sum(is.na(unemployment_rate)),
 
     underemployment_missing =
-      sum(
-        is.na(
-          underemployment_rate
-        )
-      ),
+      sum(is.na(underemployment_rate)),
 
     underutilisation_missing =
-      sum(
-        is.na(
-          underutilisation_rate
-        )
-      )
+      sum(is.na(underutilisation_rate))
 
   )
 
@@ -430,9 +416,7 @@ run_forecast_analysis <- function(
       date,
 
       value =
-        all_of(
-          value_column
-        )
+        all_of(value_column)
 
     ) |>
 
@@ -441,6 +425,21 @@ run_forecast_analysis <- function(
     ) |>
 
     arrange(date)
+
+
+  # Check for missing values
+
+  if (anyNA(series_data$value)) {
+
+    stop(
+      paste0(
+        "Missing values detected in ",
+        measure_name,
+        ". Check the source data."
+      )
+    )
+
+  }
 
 
   if (
@@ -463,10 +462,6 @@ run_forecast_analysis <- function(
   # ==========================================================
 
   series_ts <- series_data |>
-
-    mutate(
-      date = yearmonth(date)
-    ) |>
 
     as_tsibble(
       index = date
@@ -510,6 +505,24 @@ run_forecast_analysis <- function(
   cat(
     "Testing observations:",
     nrow(test_data),
+    "\n\n"
+  )
+
+
+  cat(
+    "Training period:",
+    as.character(min(train_data$date)),
+    "to",
+    as.character(max(train_data$date)),
+    "\n"
+  )
+
+
+  cat(
+    "Testing period:",
+    as.character(min(test_data$date)),
+    "to",
+    as.character(max(test_data$date)),
     "\n\n"
   )
 
@@ -635,6 +648,18 @@ run_forecast_analysis <- function(
     )
 
 
+  if (length(best_model_name) == 0) {
+
+    stop(
+      paste(
+        "No model produced a valid RMSE for",
+        measure_name
+      )
+    )
+
+  }
+
+
   cat(
     "\nBest model:",
     best_model_name,
@@ -658,13 +683,99 @@ run_forecast_analysis <- function(
     augment()
 
 
+  # Determine the number of estimated AR and MA parameters
+  # for an ARIMA model.
+
+  model_report <- selected_model |>
+    report()
+
+
+  arima_df <- 0L
+
+  if (best_model_name == "ARIMA") {
+
+    arima_order <- selected_model |>
+      tidy()
+
+    arima_df <- sum(
+      grepl(
+        "^(ar|ma)[0-9]+$",
+        arima_order$term
+      )
+    )
+
+  }
+
+
   residual_ljung_box <- residuals |>
 
     features(
+
       .innov,
+
       ljung_box,
-      lag = 12
+
+      lag = 12,
+
+      dof = arima_df
+
+    ) |>
+
+    mutate(
+      measure = measure_name,
+      model = best_model_name,
+      .before = 1
     )
+
+
+  cat(
+    "\nResidual Ljung-Box test:\n\n"
+  )
+
+
+  print(
+    residual_ljung_box
+  )
+
+
+  # Residual ACF plot
+
+  residual_acf_plot <- residuals |>
+
+    ACF(.innov) |>
+
+    autoplot() +
+
+    labs(
+
+      title =
+        paste(
+          "Residual ACF:",
+          measure_name
+        ),
+
+      subtitle =
+        paste(
+          "Selected model:",
+          best_model_name
+        ),
+
+      x =
+        "Lag",
+
+      y =
+        "Autocorrelation"
+
+    ) +
+
+    theme_minimal(
+      base_size = 12
+    )
+
+
+  print(
+    residual_acf_plot
+  )
 
 
   # ==========================================================
@@ -721,45 +832,35 @@ run_forecast_analysis <- function(
   # 8.12 Extract forecast intervals
   # ==========================================================
 
-  interval_80 <- final_forecast_raw |>
-
-    hilo(
-      level = 80
-    ) |>
-
-    as_tibble()
-
-
-  interval_95 <- final_forecast_raw |>
-
-    hilo(
-      level = 95
-    ) |>
-
-    as_tibble()
-
-
-  # ==========================================================
-  # 8.13 Create forecast table
-  # ==========================================================
-
   final_forecast <- final_forecast_raw |>
+
+    hilo(
+      level = c(80, 95)
+    ) |>
+
+    unpack_hilo(
+      cols = c(`80%`, `95%`)
+    ) |>
 
     as_tibble() |>
 
-    select(
-      date,
-      .mean
-    ) |>
+    transmute(
 
-    rename(
-      forecast = .mean
+      date = as.Date(date),
+
+      forecast = .mean,
+
+      lo80 = `80%_lower`,
+
+      hi80 = `80%_upper`,
+
+      lo95 = `95%_lower`,
+
+      hi95 = `95%_upper`
+
     ) |>
 
     mutate(
-
-      date =
-        as.Date(date),
 
       measure =
         measure_name,
@@ -769,113 +870,6 @@ run_forecast_analysis <- function(
 
       type =
         "Forecast"
-
-    )
-
-
-  # ==========================================================
-  # 8.14 Extract 80% intervals
-  # ==========================================================
-
-  interval_80_values <- interval_80 |>
-
-    mutate(
-
-      interval =
-        as.character(
-          `80%`
-        ),
-
-      lo80 =
-        readr::parse_number(
-          stringr::str_extract(
-            interval,
-            "(?<=\\[)[^,]+"
-          )
-        ),
-
-      hi80 =
-        readr::parse_number(
-          stringr::str_extract(
-            interval,
-            "(?<=,)[^\\]]+"
-          )
-        )
-
-    ) |>
-
-    select(
-
-      date,
-
-      lo80,
-
-      hi80
-
-    )
-
-
-  # ==========================================================
-  # 8.15 Extract 95% intervals
-  # ==========================================================
-
-  interval_95_values <- interval_95 |>
-
-    mutate(
-
-      interval =
-        as.character(
-          `95%`
-        ),
-
-      lo95 =
-        readr::parse_number(
-          stringr::str_extract(
-            interval,
-            "(?<=\\[)[^,]+"
-          )
-        ),
-
-      hi95 =
-        readr::parse_number(
-          stringr::str_extract(
-            interval,
-            "(?<=,)[^\\]]+"
-          )
-        )
-
-    ) |>
-
-    select(
-
-      date,
-
-      lo95,
-
-      hi95
-
-    )
-
-
-  # ==========================================================
-  # 8.16 Combine intervals
-  # ==========================================================
-
-  final_forecast <- final_forecast |>
-
-    left_join(
-
-      interval_80_values,
-
-      by = "date"
-
-    ) |>
-
-    left_join(
-
-      interval_95_values,
-
-      by = "date"
 
     ) |>
 
@@ -903,7 +897,59 @@ run_forecast_analysis <- function(
 
 
   # ==========================================================
-  # 8.17 Historical data
+  # 8.13 Validate forecast intervals
+  # ==========================================================
+
+  if (anyNA(
+    final_forecast |>
+      select(
+        forecast,
+        lo80,
+        hi80,
+        lo95,
+        hi95
+      )
+  )) {
+
+    stop(
+      paste(
+        "Missing forecast values or intervals for",
+        measure_name
+      )
+    )
+
+  }
+
+
+  invalid_intervals <- final_forecast |>
+
+    filter(
+
+      lo95 > lo80 |
+
+      lo80 > forecast |
+
+      forecast > hi80 |
+
+      hi80 > hi95
+
+    )
+
+
+  if (nrow(invalid_intervals) > 0) {
+
+    stop(
+      paste(
+        "Forecast interval validation failed for",
+        measure_name
+      )
+    )
+
+  }
+
+
+  # ==========================================================
+  # 8.14 Historical data
   # ==========================================================
 
   historical <- series_data |>
@@ -923,7 +969,7 @@ run_forecast_analysis <- function(
 
 
   # ==========================================================
-  # 8.18 Forecast plot
+  # 8.15 Forecast plot
   # ==========================================================
 
   forecast_plot <- ggplot() +
@@ -946,8 +992,11 @@ run_forecast_analysis <- function(
 
       ),
 
+      fill =
+        "#E67E22",
+
       alpha =
-        0.15
+        0.12
 
     ) +
 
@@ -969,6 +1018,9 @@ run_forecast_analysis <- function(
 
       ),
 
+      fill =
+        "#E67E22",
+
       alpha =
         0.25
 
@@ -985,7 +1037,10 @@ run_forecast_analysis <- function(
           date,
 
         y =
-          value
+          value,
+
+        colour =
+          "Historical"
 
       ),
 
@@ -1005,7 +1060,10 @@ run_forecast_analysis <- function(
           date,
 
         y =
-          forecast
+          forecast,
+
+        colour =
+          "Forecast"
 
       ),
 
@@ -1030,6 +1088,24 @@ run_forecast_analysis <- function(
 
     ) +
 
+    scale_colour_manual(
+
+      values = c(
+
+        "Historical" =
+          "#17365D",
+
+        "Forecast" =
+          "#E67E22"
+
+      )
+
+    ) +
+
+    scale_y_continuous(
+      labels = label_number(suffix = "%")
+    ) +
+
     labs(
 
       title =
@@ -1049,13 +1125,17 @@ run_forecast_analysis <- function(
         NULL,
 
       y =
-        paste0(
-          measure_name,
-          " rate (%)"
-        ),
+        "Rate",
+
+      colour =
+        NULL,
 
       caption =
-        "Historical data: ABS. Forecast is model-based and is not an official ABS forecast."
+        paste(
+          "Historical data: ABS.",
+          "Forecasts are model-based exploratory projections,",
+          "not official ABS forecasts."
+        )
 
     ) +
 
@@ -1085,7 +1165,7 @@ run_forecast_analysis <- function(
         element_blank(),
 
       legend.position =
-        "none"
+        "bottom"
 
     )
 
@@ -1096,7 +1176,7 @@ run_forecast_analysis <- function(
 
 
   # ==========================================================
-  # 8.19 Forecast summary
+  # 8.16 Forecast summary
   # ==========================================================
 
   latest_value <- series_data |>
@@ -1161,7 +1241,7 @@ run_forecast_analysis <- function(
 
 
   # ==========================================================
-  # 8.20 Return results
+  # 8.17 Return results
   # ==========================================================
 
   list(
@@ -1177,6 +1257,9 @@ run_forecast_analysis <- function(
 
     diagnostics =
       residual_ljung_box,
+
+    residual_acf =
+      residual_acf_plot,
 
     forecast =
       final_forecast,
@@ -1298,23 +1381,11 @@ all_accuracy <- bind_rows(
 
 all_diagnostics <- bind_rows(
 
-  underutilisation_results$diagnostics |>
-    mutate(
-      measure =
-        "Underutilisation"
-    ),
+  underutilisation_results$diagnostics,
 
-  unemployment_results$diagnostics |>
-    mutate(
-      measure =
-        "Unemployment"
-    ),
+  unemployment_results$diagnostics,
 
-  underemployment_results$diagnostics |>
-    mutate(
-      measure =
-        "Underemployment"
-    )
+  underemployment_results$diagnostics
 
 )
 
@@ -1361,7 +1432,47 @@ print(
 
 
 # ============================================================
-# 15. Save forecast results
+# 15. Overall model performance comparison
+# ============================================================
+
+overall_accuracy <- all_accuracy |>
+
+  select(
+
+    measure,
+
+    model,
+
+    RMSE,
+
+    MAE,
+
+    MASE
+
+  ) |>
+
+  arrange(
+
+    measure,
+
+    RMSE
+
+  )
+
+
+cat("\n")
+cat("============================================\n")
+cat("OVERALL FORECAST ACCURACY COMPARISON\n")
+cat("============================================\n\n")
+
+
+print(
+  overall_accuracy
+)
+
+
+# ============================================================
+# 16. Save forecast results
 # ============================================================
 
 forecast_output_file <- file.path(
@@ -1383,7 +1494,7 @@ write_csv(
 
 
 # ============================================================
-# 16. Save model accuracy
+# 17. Save model accuracy
 # ============================================================
 
 accuracy_output_file <- file.path(
@@ -1405,7 +1516,7 @@ write_csv(
 
 
 # ============================================================
-# 17. Save diagnostics
+# 18. Save diagnostics
 # ============================================================
 
 diagnostics_output_file <- file.path(
@@ -1427,7 +1538,7 @@ write_csv(
 
 
 # ============================================================
-# 18. Save forecast summaries
+# 19. Save forecast summaries
 # ============================================================
 
 summary_output_file <- file.path(
@@ -1449,7 +1560,7 @@ write_csv(
 
 
 # ============================================================
-# 19. Save best models
+# 20. Save best models
 # ============================================================
 
 best_model_output_file <- file.path(
@@ -1471,7 +1582,29 @@ write_csv(
 
 
 # ============================================================
-# 20. Print output files
+# 21. Save overall model comparison
+# ============================================================
+
+overall_accuracy_file <- file.path(
+
+  processed_dir,
+
+  "labour_market_forecast_model_comparison.csv"
+
+)
+
+
+write_csv(
+
+  overall_accuracy,
+
+  overall_accuracy_file
+
+)
+
+
+# ============================================================
+# 22. Print output files
 # ============================================================
 
 cat("\n")
@@ -1515,8 +1648,15 @@ cat(
 )
 
 
+cat(
+  "Overall model comparison:\n",
+  overall_accuracy_file,
+  "\n\n"
+)
+
+
 # ============================================================
-# 21. Primary underutilisation results
+# 23. Primary underutilisation results
 # ============================================================
 
 cat("\n")
@@ -1543,6 +1683,16 @@ print(
 
 
 cat(
+  "\nResidual diagnostics:\n\n"
+)
+
+
+print(
+  underutilisation_results$diagnostics
+)
+
+
+cat(
   "\nForecast summary:\n\n"
 )
 
@@ -1554,6 +1704,7 @@ print(
 
 cat("\n")
 cat("IMPORTANT:\n")
+
 cat(
   "These are exploratory model-based forecasts using\n",
   "historical labour-market patterns.\n",
@@ -1565,3 +1716,4 @@ cat("\n")
 cat(
   "Forecasting analysis complete.\n"
 )
+x
