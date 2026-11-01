@@ -1716,4 +1716,3 @@ cat("\n")
 cat(
   "Forecasting analysis complete.\n"
 )
-x
