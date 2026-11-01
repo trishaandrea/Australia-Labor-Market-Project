@@ -1,4 +1,4 @@
-.model,lb_stat,lb_pvalue,measure
-ETS,5.61865212580251,0.93407334709971,Underutilisation
-ETS,12.237129407915818,0.4268283820746379,Unemployment
-ETS,9.1296951010313,0.6918146398627891,Underemployment
+measure,model,.model,lb_stat,lb_pvalue
+Underutilisation,ETS,ETS,6.116089286433148,0.9101172264820904
+Unemployment,Naive,Naive,61.158685469729036,1.3868216575119163e-8
+Underemployment,Naive,Naive,22.135833210895406,0.0360253491112168
