@@ -43,7 +43,6 @@ dir.create(
 abs_latest_url <-
   "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release"
 
-
 # ============================================================
 # 4. START MESSAGE
 # ============================================================
@@ -115,40 +114,25 @@ message(
 # 7. IDENTIFY RELEASE DATE
 # ============================================================
 
-release_match <- str_match(
+release_match <- stringr::str_match(
   page_text,
-  "Released\\s+([0-9]{2}/[0-9]{2}/20[0-9]{2})"
+  "Released\\s+([0-9]{2}/[0-9]{2}/[0-9]{4})"
 )
 
-
-if (
-  !is.na(
-    release_match[1, 2]
+if (is.na(release_match[1, 2])) {
+  stop(
+    "Could not identify the ABS release date. ",
+    "Check the latest-release webpage before continuing."
   )
-) {
-
-  release_date <-
-    dmy(
-      release_match[1, 2]
-    )
-
-} else {
-
-  warning(
-    "Could not identify the ABS release date. Using today's date."
-  )
-
-  release_date <-
-    Sys.Date()
-
 }
 
+release_date <- lubridate::dmy(release_match[1, 2])
 
-message(
-  "Release date: ",
-  release_date
-)
+if (is.na(release_date)) {
+  stop("The ABS release date could not be parsed.")
+}
 
+message("Release date: ", release_date)
 
 # ============================================================
 # 8. CONVERT REFERENCE PERIOD TO DATE
@@ -453,74 +437,34 @@ message(
 # 18. DOWNLOAD FUNCTION
 # ============================================================
 
-download_abs_file <- function(
-    url,
-    destination
-) {
+download_abs_file <- function(url, destination) {
 
-  if (
-    file.exists(
-      destination
-    )
-  ) {
-
-    message(
-      "Already downloaded: ",
-      basename(destination)
-    )
-
-    return(
-      invisible(FALSE)
-    )
-
-  }
-
-
-  message(
-    "Downloading: ",
-    basename(destination)
+  # Create the destination folder if it does not exist
+  dir.create(
+    dirname(destination),
+    recursive = TRUE,
+    showWarnings = FALSE
   )
 
+  message("Downloading: ", basename(destination))
 
-  request(url) |>
-
-    req_user_agent(
-      "Australian Labour Market Slack Project"
-    ) |>
-
-    req_perform() |>
-
-    resp_body_raw() |>
-
-    writeBin(
-      destination
-    )
-
-
-  if (
-    !file.exists(
-      destination
-    )
-  ) {
-
-    stop(
-      "Download failed: ",
-      basename(destination)
-    )
-
-  }
-
-
-  message(
-    "Saved: ",
-    destination
+  # Download the Excel file
+  download.file(
+    url = url,
+    destfile = destination,
+    mode = "wb",
+    quiet = FALSE
   )
 
+  # Confirm that the downloaded file exists
+  if (!file.exists(destination)) {
+    stop("Download failed: ", destination)
+  }
 
-  invisible(TRUE)
+  message("Successfully downloaded: ", destination)
 
+  return(destination)
 }
-
 
 # ============================================================
 # 19. CREATE FILE PATHS
