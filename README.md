@@ -105,15 +105,25 @@ A **Shiny dashboard** accompanies the analysis and provides interactive explorat
 ```text
 Australia-Labor-Market-Project/
 ├── R/
-│   ├── trisha/         # Data cleaning, labour demand, and combined labour-market analysis
-│   └── rimlan/         # Slack, tightness, wages, and forecasting analysis
+│   ├── rimlan/             # Labour-market slack, wages, tightness, and forecasting analysis
+│   └── trisha/             # Data cleaning, labour demand, and combined labour-market analysis
 ├── data/
-│   ├── raw/            # Original source data
-│   └── processed/      # Cleaned and analysis-ready datasets
-├── shiny/              # Interactive Shiny dashboard
-├── Report.qmd          # Final project report
-├── Presentation.qmd    # Presentation materials
-└── README.md
+│   ├── raw/                # Original source data
+│   └── processed/          # Cleaned and analysis-ready datasets
+├── presentation/
+│   ├── Presentation.qmd    # Presentation source
+│   ├── Presentation.html   # Rendered presentation
+│   └── _extensions/        # Quarto presentation extensions
+├── report/
+│   ├── Report.qmd          # Final report source
+│   ├── Report.html         # Rendered final report
+│   └── references.bib      # Bibliography
+├── shiny/
+│   └── app.R               # Interactive Shiny dashboard
+├── .gitignore
+├── Australia-Labor-Market-Project.Rproj
+├── README.md
+└── README.html
 ```
 
 ## Authors

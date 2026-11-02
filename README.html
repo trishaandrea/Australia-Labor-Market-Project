@@ -506,15 +506,25 @@ provides interactive exploration of:</p>
 <h2>Repository Structure</h2>
 <pre class="text"><code>Australia-Labor-Market-Project/
 ├── R/
-│   ├── trisha/         # Data cleaning, labour demand, and combined labour-market analysis
-│   └── rimlan/         # Slack, tightness, wages, and forecasting analysis
+│   ├── rimlan/             # Labour-market slack, wages, tightness, and forecasting analysis
+│   └── trisha/             # Data cleaning, labour demand, and combined labour-market analysis
 ├── data/
-│   ├── raw/            # Original source data
-│   └── processed/      # Cleaned and analysis-ready datasets
-├── shiny/              # Interactive Shiny dashboard
-├── Report.qmd          # Final project report
-├── Presentation.qmd    # Presentation materials
-└── README.md</code></pre>
+│   ├── raw/                # Original source data
+│   └── processed/          # Cleaned and analysis-ready datasets
+├── presentation/
+│   ├── Presentation.qmd    # Presentation source
+│   ├── Presentation.html   # Rendered presentation
+│   └── _extensions/        # Quarto presentation extensions
+├── report/
+│   ├── Report.qmd          # Final report source
+│   ├── Report.html         # Rendered final report
+│   └── references.bib      # Bibliography
+├── shiny/
+│   └── app.R               # Interactive Shiny dashboard
+├── .gitignore
+├── Australia-Labor-Market-Project.Rproj
+├── README.md
+└── README.html</code></pre>
 </div>
 <div id="authors" class="section level2">
 <h2>Authors</h2>
