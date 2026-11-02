@@ -304,12 +304,21 @@ correlation_summary <- function(data, x_column) {
     x <- data[[x_column]][ok]
     y <- data[[y_column]][ok]
 
-    r <- if (
-      length(x) >= 3 &&
+    enough_data <- length(x) >= 3 &&
+      length(y) >= 3 &&
+      is.finite(sd(x)) &&
+      is.finite(sd(y)) &&
       sd(x) > 0 &&
       sd(y) > 0
-    ) {
-      cor(x, y)
+
+    pearson <- if (enough_data) {
+      cor(x, y, method = "pearson")
+    } else {
+      NA_real_
+    }
+
+    spearman <- if (enough_data) {
+      cor(x, y, method = "spearman")
     } else {
       NA_real_
     }
@@ -317,11 +326,12 @@ correlation_summary <- function(data, x_column) {
     tibble(
       Measure = measure,
       Observations = length(x),
-      `Pearson correlation` = round(r, 3),
+      `Pearson correlation` = round(pearson, 3),
+      `Spearman correlation` = round(spearman, 3),
       Direction = case_when(
-        is.na(r) ~ "Unavailable",
-        r < 0 ~ "Negative",
-        r > 0 ~ "Positive",
+        is.na(pearson) ~ "Unavailable",
+        pearson < 0 ~ "Negative",
+        pearson > 0 ~ "Positive",
         TRUE ~ "Zero"
       )
     )
@@ -477,6 +487,9 @@ wpi <- read_project_data("labour_market_wpi.csv")
 ivi_broad <- read_project_data("ivi_anzsco2_clean.csv")
 ivi_detailed <- read_project_data("ivi_anzsco4_clean.csv")
 ivi_skill <- read_project_data("ivi_skill_clean.csv")
+forecast_data <- read_project_data("labour_market_forecast.csv")
+forecast_accuracy <- read_project_data("labour_market_forecast_accuracy.csv")
+forecast_best <- read_project_data("labour_market_forecast_best_models.csv")
 
 
 # ============================================================
@@ -948,7 +961,51 @@ if (nrow(wpi) > 0) {
 
 
 # ============================================================
-# 10. STATE CHOICES
+# 10. FORECAST OUTPUTS
+# ============================================================
+
+forecast_prepared <- tibble()
+
+if (
+  nrow(forecast_data) > 0 &&
+  all(
+    c("date", "measure", "forecast", "lo80", "hi80", "lo95", "hi95") %in%
+      names(forecast_data)
+  )
+) {
+  forecast_prepared <- forecast_data |>
+    mutate(
+      date = parse_dates(date),
+      across(
+        any_of(c("forecast", "lo80", "hi80", "lo95", "hi95")),
+        parse_numbers
+      ),
+      measure = as.character(measure)
+    ) |>
+    filter(!is.na(date), !is.na(measure)) |>
+    arrange(measure, date)
+}
+
+if (nrow(forecast_accuracy) > 0) {
+  forecast_accuracy <- forecast_accuracy |>
+    mutate(
+      measure = as.character(measure),
+      model = as.character(model),
+      across(any_of(c("RMSE", "MAE", "MASE")), parse_numbers)
+    )
+}
+
+if (nrow(forecast_best) > 0) {
+  forecast_best <- forecast_best |>
+    mutate(
+      measure = as.character(measure),
+      best_model = as.character(best_model)
+    )
+}
+
+
+# ============================================================
+# 11. STATE CHOICES
 # ============================================================
 
 states <- unique(
@@ -980,7 +1037,7 @@ state_choices <- setNames(
 
 
 # ============================================================
-# 11. USER INTERFACE
+# 12. USER INTERFACE
 # ============================================================
 
 ui <- fluidPage(
@@ -1474,7 +1531,9 @@ ui <- fluidPage(
           "Wage Price Index",
           "IVI broad occupations",
           "IVI detailed occupations",
-          "IVI skill levels"
+          "IVI skill levels",
+          "Slack forecasts",
+          "Forecast accuracy"
         )
       ),
       downloadButton(
@@ -1484,6 +1543,39 @@ ui <- fluidPage(
       br(),
       br(),
       DTOutput("explorer_table")
+    ),
+
+    tabPanel(
+      "Slack Forecasts",
+      br(),
+      div(
+        class = "dashboard-card",
+        h3("Short-Horizon Forecasts"),
+        p(
+          "These forecasts are read from the outputs produced by ",
+          "the forecasting script. They are statistical projections, ",
+          "not official ABS forecasts or causal predictions."
+        ),
+        p(
+          class = "note",
+          "Forecasts and accuracy metrics update only when the R ",
+          "forecasting script is rerun and its CSV outputs are regenerated."
+        )
+      ),
+      fluidRow(
+        column(
+          6,
+          selectInput(
+            "forecast_measure",
+            "Slack measure:",
+            choices = c("Underutilisation", "Unemployment", "Underemployment"),
+            selected = "Underutilisation"
+          )
+        )
+      ),
+      plot_card("Observed Rates and Forecast", "forecast_plot", "520px"),
+      table_card("Holdout Forecast Accuracy", "forecast_accuracy_table"),
+      table_card("Selected Forecast Models", "forecast_best_table")
     ),
 
     tabPanel(
@@ -1510,7 +1602,9 @@ ui <- fluidPage(
         p(
           "ABS Job Vacancies are used for the main ",
           "quarterly analysis. IVI advertisements ",
-          "provide complementary recruitment indicators."
+          "provide complementary recruitment indicators. ",
+          "ABS vacancies are a quarterly stock; IVI is a ",
+          "monthly flow of online advertisements."
         ),
 
         h3("Labour-Market Tightness"),
@@ -1524,7 +1618,8 @@ ui <- fluidPage(
         p(
           "Changes are calculated only between ",
           "consecutive quarterly observations. ",
-          "Missing values are not interpolated."
+          "Missing values are not interpolated. Changes ",
+          "are not calculated across the ABS vacancy-data gap."
         ),
 
         h3("Market Conditions"),
@@ -1554,7 +1649,7 @@ ui <- fluidPage(
 
 
 # ============================================================
-# 12. SERVER
+# 13. SERVER
 # ============================================================
 
 server <- function(input, output, session) {
@@ -2438,6 +2533,123 @@ server <- function(input, output, session) {
 
 
   # ----------------------------------------------------------
+  # SLACK FORECASTS
+  # ----------------------------------------------------------
+
+  output$forecast_plot <- renderPlotly({
+    measure <- input$forecast_measure
+    history_column <- unname(slack_columns[[measure]])
+
+    validate(
+      need(
+        nrow(slack) > 0 && history_column %in% names(slack),
+        "Observed slack data are unavailable."
+      ),
+      need(
+        nrow(forecast_prepared) > 0,
+        "Forecast outputs are unavailable. Run labour_market_forecast.R first."
+      )
+    )
+
+    history <- slack |>
+      transmute(
+        date = date,
+        value = parse_numbers(.data[[history_column]])
+      ) |>
+      filter(!is.na(date), is.finite(value))
+
+    selected_measure <- input$forecast_measure
+    predictions <- forecast_prepared |>
+      filter(measure == selected_measure)
+
+    validate(
+      need(nrow(predictions) > 0, paste("No forecast rows for", measure))
+    )
+
+    p <- ggplot() +
+      geom_line(
+        data = history,
+        aes(date, value),
+        colour = "#2774C6",
+        linewidth = 0.9,
+        na.rm = TRUE
+      ) +
+      geom_ribbon(
+        data = predictions,
+        aes(x = date, ymin = lo95, ymax = hi95),
+        fill = "#087F8C",
+        alpha = 0.12,
+        na.rm = TRUE
+      ) +
+      geom_ribbon(
+        data = predictions,
+        aes(x = date, ymin = lo80, ymax = hi80),
+        fill = "#087F8C",
+        alpha = 0.24,
+        na.rm = TRUE
+      ) +
+      geom_line(
+        data = predictions,
+        aes(date, forecast),
+        colour = "#087F8C",
+        linewidth = 1.1,
+        na.rm = TRUE
+      ) +
+      geom_vline(
+        xintercept = as.numeric(min(predictions$date)),
+        linetype = "dashed",
+        colour = "#718096"
+      ) +
+      labs(
+        x = NULL,
+        y = "Rate (%)",
+        subtitle = paste(
+          "Selected model:",
+          if ("model" %in% names(predictions)) {
+            paste(unique(predictions$model), collapse = ", ")
+          } else {
+            "not recorded"
+          },
+          "| shaded bands: 80% and 95% prediction intervals"
+        )
+      ) +
+      chart_theme()
+
+    as_interactive(p)
+  })
+
+  output$forecast_accuracy_table <- renderDT({
+    validate(
+      need(
+        nrow(forecast_accuracy) > 0,
+        "Forecast accuracy outputs are unavailable."
+      )
+    )
+
+    data <- forecast_accuracy |>
+      filter(measure == input$forecast_measure) |>
+      arrange(RMSE)
+
+    validate(need(nrow(data) > 0, "No accuracy rows for this measure."))
+    make_table(data)
+  })
+
+  output$forecast_best_table <- renderDT({
+    validate(
+      need(
+        nrow(forecast_best) > 0,
+        "Selected-model output is unavailable."
+      )
+    )
+
+    make_table(
+      forecast_best |>
+        filter(measure == input$forecast_measure)
+    )
+  })
+
+
+  # ----------------------------------------------------------
   # DATA EXPLORER
   # ----------------------------------------------------------
 
@@ -2449,7 +2661,9 @@ server <- function(input, output, session) {
       "Wage Price Index" = wpi_prepared,
       "IVI broad occupations" = broad_occupations,
       "IVI detailed occupations" = ivi_detailed,
-      "IVI skill levels" = ivi_skill
+      "IVI skill levels" = ivi_skill,
+      "Slack forecasts" = forecast_prepared,
+      "Forecast accuracy" = forecast_accuracy
     )
   })
 
@@ -2499,7 +2713,7 @@ server <- function(input, output, session) {
 
 
 # ============================================================
-# 13. RUN APPLICATION
+# 14. RUN APPLICATION
 # ============================================================
 
 shinyApp(
