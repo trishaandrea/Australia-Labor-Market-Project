@@ -1,12 +1,18 @@
 ---
 title: "Labour-Market Tightness and Slack in Australia"
 author: "Rimlan & Trisha"
+
 format:
   html:
+    toc: true
     number-sections: true
     code-fold: true
     code-summary: "Show R code"
+    embed-resources: true
+
   pdf:
+    documentclass: article
+    toc: true
     number-sections: true
     fontsize: 10pt
     geometry:
@@ -14,13 +20,18 @@ format:
       - bottom=0.7in
       - left=0.75in
       - right=0.75in
-    linestretch: 1.0
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
 
 execute:
   echo: false
   warning: false
   message: false
+
 bibliography: references.bib
+csl: references.csl
+link-citations: true
 ---
 
 **Executive Summary**
@@ -111,7 +122,7 @@ This report uses two vacancy indicators. The Australian Bureau of Statistics (AB
 
 ## Labour-Market Slack
 
-Labour-market slack refers to unused or underused labour capacity in the economy. It includes people who are unemployed and seeking work, as well as employed people who would prefer and are available to work additional hours. Slack matters because the unemployment rate alone may understate the extent of unused labour capacity.
+Labour-market slack refers to unused or underused labour capacity in the economy. It includes people who are unemployed and seeking work, as well as employed people who would prefer and are available to work additional hours. The ABS Labour Force Framework provides the statistical basis for classifying people according to their labour-force status [@ABSLabourForceFramework].
 
 This report examines three indicators:
 
@@ -119,7 +130,7 @@ This report examines three indicators:
 - **Underemployment:** employed people who meet the relevant criteria for wanting and being available to work additional hours.
 - **Underutilisation:** a broader indicator that combines unemployment and underemployment within the ABS's published statistical framework.
 
-These measures capture different aspects of the labour market. Unemployment focuses on people without work, whereas underemployment captures unused working-hour capacity among people who already have jobs. Underutilisation therefore provides a broader perspective on labour-market slack than unemployment alone.
+These measures capture different aspects of the labour market. Unemployment focuses on people without work, whereas underemployment captures unused working-hour capacity among people who already have jobs. Underutilisation therefore provides a broader perspective on labour-market slack than unemployment alone [@ABSUnderutilisedLabour].
 
 The indicators should not be interpreted as interchangeable. They may respond differently to changes in economic conditions because people can move between employment, unemployment and underemployment. For example, employers may reduce employees' working hours without immediately increasing unemployment. In this situation, underemployment may rise even if the unemployment rate changes relatively little.
 
@@ -240,8 +251,8 @@ measured for a particular reference period.
 
 
 ## ABS Labour Force Data
-This section describes the ABS Labour Force data used to measure
-unemployment, underemployment and underutilisation.
+
+The analysis of labour-market slack uses data from the Australian Bureau of Statistics (ABS) Labour Force Survey. The Labour Force Survey provides monthly measures of employment, unemployment, underemployment and labour-force participation for the Australian population aged 15 years and over. These measures provide the basis for constructing observable indicators of labour-market slack over time [@ABSLabourForce].
 
 ### Data Source and Labour-Market Measures
 The analysis of labour market slack uses data from the Australian Bureau of Statistics (ABS) Labour Force Survey. The Labour Force Survey provides monthly measures of employment, unemployment, underemployment and labour-force participation for the Australian population aged 15 years and over. These measures provide the basis for constructing observable indicators of labour market slack over time. 
@@ -1158,7 +1169,7 @@ However, this analysis provides a cross-sectional snapshot of the latest availab
 
 ## Wage Price Index Extension
 
-As a supplementary analysis, the Wage Price Index (WPI) was used to examine whether labour-market conditions are associated with wage growth. This extends the main analysis by considering whether tighter labour-market conditions and lower labour-market slack are also reflected in wage movements.
+As a supplementary analysis, the Wage Price Index (WPI), published by the Australian Bureau of Statistics, is used to examine whether labour-market conditions are associated with wage growth. The WPI measures changes in hourly wage prices over time and extends the main analysis by considering whether tighter labour-market conditions and lower labour-market slack are also reflected in wage movements [@ABSWagePriceIndex].
 
 The analysis compares quarterly WPI growth with labour-market tightness and underutilisation in the same quarter, as well as WPI growth one and two quarters ahead.
 

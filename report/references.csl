@@ -1,0 +1,52 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl"
+       version="1.0"
+       class="in-text"
+       default-locale="en-AU">
+
+  <info>
+    <title>Author Date Full Names</title>
+    <id>http://www.zotero.org/styles/author-date-full-names</id>
+    <link href="http://www.zotero.org/styles/author-date-full-names"
+          rel="self"/>
+    <category citation-format="author-date"/>
+    <updated>2026-11-03T00:00:00+00:00</updated>
+  </info>
+
+  <citation>
+    <layout prefix="(" suffix=")" delimiter="; ">
+      <group delimiter=", ">
+        <names variable="author">
+          <name form="long" and="text"/>
+        </names>
+        <date variable="issued">
+          <date-part name="year"/>
+        </date>
+      </group>
+    </layout>
+  </citation>
+
+  <bibliography hanging-indent="true" entry-spacing="1">
+    <sort>
+      <key variable="author"/>
+      <key variable="issued"/>
+      <key variable="title"/>
+    </sort>
+    <layout>
+      <group delimiter=". ">
+        <names variable="author">
+          <name form="long" and="text"/>
+        </names>
+        <date variable="issued">
+          <date-part name="year"/>
+        </date>
+        <text variable="title" quotes="true"/>
+        <text variable="publisher"/>
+        <text variable="URL"/>
+      </group>
+      <text value="."/>
+    </layout>
+  </bibliography>
+
+</style>
