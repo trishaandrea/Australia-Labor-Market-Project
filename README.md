@@ -89,6 +89,10 @@ The project also examines:
 
 ## Interactive Dashboard
 
+### Live Dashboard
+
+[Open the interactive Shiny dashboard](https://2g1bha-rimlan-alva.shinyapps.io/labour-market-dashboard/)
+
 A **Shiny dashboard** accompanies the analysis and provides interactive exploration of:
 
 - labour demand
