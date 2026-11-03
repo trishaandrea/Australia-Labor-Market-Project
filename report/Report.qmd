@@ -1264,20 +1264,51 @@ These comparisons provide a descriptive indication of whether labour-market cond
 
 ## Interactive Shiny Dashboard
 
-An interactive Shiny dashboard was developed to complement the static analysis presented in this report. The dashboard allows users to explore labour demand, labour-market slack and tightness interactively, while also providing supplementary views of market conditions, wage pressure, occupation demand and skill-level demand.
+An interactive Shiny dashboard was developed to complement the static analysis presented in this report. It allows users to explore the underlying data and examine how labour-market indicators and relationships vary across historical periods, measures and lags.
 
-The dashboard includes interactive Plotly visualisations, selectable labour-market indicators and time periods, correlation summaries, and a data explorer. A dedicated Research Question section allows users to compare quarterly changes in job vacancies or labour-market tightness with changes in unemployment, underemployment and underutilisation.
+**Access the live dashboard:** [https://2g1bha-rimlan-alva.shinyapps.io/labour-market-dashboard/](https://2g1bha-rimlan-alva.shinyapps.io/labour-market-dashboard/)
 
-The dashboard is intended as an exploratory and communication tool rather than a separate modelling framework. The main statistical findings and interpretations are therefore reported in the Results section, while the dashboard provides an interactive way to examine the underlying patterns and supporting analyses.
+The dashboard is hosted on the free shinyapps.io plan. The initial loading time may be approximately 10–30 seconds. If the live application is temporarily unavailable, Figure @fig-dashboard-overview provides a screenshot of the dashboard interface. The application can also be run locally from the project folder using `shiny::runApp("shiny")`, provided the required R packages and processed data files are available.
+
+| Tab | Description |
+|---|---|
+| Overview | Latest vacancies, labour-market tightness, unemployment and underutilisation, including year-on-year changes |
+| Labour Demand | National and state online job advertisements, growth and moving averages |
+| Labour-Market Slack | Unemployment, underemployment and underutilisation across historical periods |
+| Tightness & Slack | Labour-market tightness over time and vacancy changes against changes in slack, including selectable lags |
+| Market Conditions | Periods of relatively high or low tightness and slack, compared with sample medians |
+| Research Question | Correlations between quarterly changes in vacancies or tightness and labour-market slack |
+| Wage Pressure | Wage Price Index growth in relation to tightness and underutilisation |
+| Occupation Demand | Broad and detailed occupational demand and skill levels across states and territories |
+| Slack Forecasts | Short-horizon forecasts and associated accuracy measures |
+| Data Explorer | Searchable data tables and downloadable filtered datasets |
+
+The dashboard is intended as an exploratory and communication tool rather than a source of additional statistical models. The main empirical findings and interpretations are presented in this report. Dashboard outputs are generated from processed CSV files; therefore, updated forecasts and tables become available only after the relevant R scripts have been rerun and the application redeployed.
 
 # Limitations
 
-The analysis has several limitations. The IVI does not capture all job vacancies, while aggregate labour-market measures may conceal differences across occupations and regions. The tightness measure should also be interpreted cautiously because unemployment appears in its denominator. Finally, the analysis is descriptive, so the observed relationships may be influenced by broader economic conditions and should not be interpreted as causal.
+The results indicate that changes in job vacancies are negatively associated with changes in unemployment, underemployment and underutilisation. The strongest Pearson correlations are observed for underemployment (-0.81) and underutilisation (-0.80), compared with unemployment (-0.54). This suggests that the relationship between vacancy movements and labour-market slack may be more apparent when broader measures of unused labour capacity are considered.
+
+One possible interpretation is that labour-market adjustments occur through both employment and working hours. Underemployment captures people who are employed but want and are available to work additional hours, so it can provide information about unused labour capacity that is not reflected in unemployment alone. However, the correlations do not establish the mechanisms responsible for these relationships.
+
+The tightness analysis provides complementary evidence. Higher vacancy-to-unemployment ratios tend to coincide with lower levels of labour-market slack, and changes in tightness are negatively associated with changes in all three slack measures. The relationship between tightness and unemployment requires particular caution because unemployment is included in the denominator of the ratio. This construction can generate a negative relationship even without an independent economic effect.
+
+The supplementary occupation and skill-level analysis shows that online recruitment demand varies across different groups. These differences provide context for the aggregate results but do not demonstrate that occupational composition explains the observed correlations. Similarly, the WPI analysis identifies associations between labour-market conditions and wage growth, but it does not isolate the effect of vacancies or tightness on wages.
+
+Several limitations should be considered. First, the ABS Job Vacancies series contains a gap associated with the suspension of the survey between 2008 and 2009. Retaining these observations as missing avoids inventing estimates, but reduces the number of usable observations for analyses involving vacancies. Second, the IVI measures online advertisements from contributing job boards rather than all vacancies, and an advertisement does not necessarily represent a single position. Third, the vacancy-to-unemployment ratio does not account directly for underemployed workers, people outside the labour force, or differences in skills and geographical location.
+
+Fourth, the analysis relies primarily on descriptive plots and correlations. The estimates do not control for other economic factors, establish causal effects, or demonstrate that the relationships will persist in future periods. Correlations may also be sensitive to unusual economic episodes, the sample period and the choice of correlation measure. Finally, the latest historical period is shorter than earlier periods, which limits direct comparisons of period averages.
+
+Future work could investigate lagged relationships between vacancies and slack, assess whether results change when unusual periods are excluded, and use regression models with relevant economic controls. These extensions would provide a more detailed assessment of the robustness of the observed relationships. They would still require careful interpretation before any causal conclusions could be drawn.
 
 # Conclusion
 
-This report examined whether changes in job vacancies are associated with short-run changes in labour-market slack in Australia. The results show a negative association, with stronger relationships for underemployment and underutilisation than for unemployment.
+This report examined the extent to which changes in job vacancies are associated with short-run changes in labour-market slack in Australia. The results indicate negative associations between changes in vacancies and changes in unemployment (-0.54), underemployment (-0.81) and underutilisation (-0.80). The relationships are stronger for underemployment and underutilisation than for unemployment, highlighting the value of examining broader measures of unused labour capacity.
 
-Overall, the findings suggest that job vacancies provide useful information about short-run labour-market conditions and that broader measures of slack provide additional information beyond unemployment alone. However, the results are descriptive and should not be interpreted as causal.
+The analysis of labour-market tightness provides complementary evidence: higher tightness generally coincides with lower slack, and changes in tightness are negatively associated with changes in all three slack measures. The wage analysis also identifies associations between labour-market conditions and WPI growth, although these relationships are descriptive rather than causal.
+
+Overall, job vacancies provide useful information about changing labour-market conditions, but vacancy measures and unemployment alone do not capture every dimension of unused labour capacity. Underemployment and underutilisation add important context to the interpretation of labour-market movements.
+
+The findings should be interpreted in light of the limitations of the data, the missing vacancy observations, the construction of the tightness ratio and the descriptive nature of the methods. The report therefore answers the research question in terms of observed statistical association, not causation. Further analysis incorporating additional economic controls and robustness checks would be needed to establish whether the relationships persist under alternative modelling assumptions.
 
 # References
