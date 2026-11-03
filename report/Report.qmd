@@ -1322,6 +1322,10 @@ Overall, job vacancies provide useful information about changing labour-market c
 
 The findings should be interpreted in light of the limitations of the data, the missing vacancy observations, the construction of the tightness ratio and the descriptive nature of the methods. The report therefore answers the research question in terms of observed statistical association, not causation. Further analysis incorporating additional economic controls and robustness checks would be needed to establish whether the relationships persist under alternative modelling assumptions.
 
+# Acknowledgement of Generative AI Use
+
+Generative AI tools, including ChatGPT, were used to assist with code debugging and writing refinement. All outputs were reviewed and verified by the authors.
+
 # Project Repository
 
 The complete source code and supporting materials for this project are available in the GitHub repository. The repository includes the Quarto report, data-processing scripts, datasets and Shiny dashboard source code required to support the analysis.
